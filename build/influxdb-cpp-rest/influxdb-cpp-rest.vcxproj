@@ -132,9 +132,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db.h" />
+    <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db_utf8.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db.cpp" />
+    <ClCompile Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db_utf8.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

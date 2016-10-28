@@ -18,9 +18,15 @@
     <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db_utf8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db_utf8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
