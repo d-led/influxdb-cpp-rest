@@ -1,0 +1,1 @@
+nuget { "package:version" }

@@ -3,9 +3,9 @@
 using namespace web;
 using namespace web::http;
 
-inline influxdb::raw::db::db(string_t const & url) :client(url) {}
+influxdb::raw::db::db(string_t const & url) :client(url) {}
 
-inline void influxdb::raw::db::post(string_t const & query) {
+void influxdb::raw::db::post(string_t const & query) {
     uri_builder builder(U("/query"));
 
     builder.append_query(U("q"), query);
@@ -14,7 +14,7 @@ inline void influxdb::raw::db::post(string_t const & query) {
     client.request(methods::POST, builder.to_string()).get();
 }
 
-inline json::value influxdb::raw::db::get(string_t const & query) {
+json::value influxdb::raw::db::get(string_t const & query) {
     uri_builder builder(U("/query"));
 
     builder.append_query(U("q"), query);
@@ -31,7 +31,7 @@ inline json::value influxdb::raw::db::get(string_t const & query) {
     }
 }
 
-inline void influxdb::raw::db::measure(string_t const & db, string_t const & lines) {
+void influxdb::raw::db::measure(string_t const & db, string_t const & lines) {
     uri_builder builder(client.base_uri());
     builder.append(U("/write"));
     builder.append_query(U("db"), db);
