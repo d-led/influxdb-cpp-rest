@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_line.h" />
     <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db.h" />
     <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db_utf8.h" />
     <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_simple_api.h" />

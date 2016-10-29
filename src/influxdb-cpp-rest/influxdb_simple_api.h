@@ -7,6 +7,8 @@ namespace influxdb {
 
     namespace api {
 
+        class line;
+
         class simple_db {
             struct impl;
             std::unique_ptr<impl> pimpl;
@@ -18,8 +20,8 @@ namespace influxdb {
         public:
             void create();
             void drop();
+            void insert(line const& lines);
         };
-
     }
 
 }

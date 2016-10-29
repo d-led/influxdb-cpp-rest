@@ -36,11 +36,12 @@ string_t influxdb::raw::db::get(string_t const & query) {
     auto response = client.request(methods::POST, builder.to_string()).get();
     if (response.status_code() == status_codes::OK)
     {
-        return response.body().extract<string_t>().get();
+        return response.extract_string().get();
     }
     else
     {
         throw_response(response);
+        return string_t();
     }
 }
 

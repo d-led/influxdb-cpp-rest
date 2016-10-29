@@ -51,7 +51,9 @@ TEST_CASE("connecting to a nonexistent db results in an exception") {
 connected_test::connected_test() :
     db("http://localhost:8086")
 {
-    db.post("drop database testdb; create database testdb");
+    db.post("drop database testdb");
+    wait();
+    db.post("create database testdb");
 }
 
 
