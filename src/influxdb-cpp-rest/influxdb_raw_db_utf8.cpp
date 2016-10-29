@@ -16,8 +16,6 @@ public:
 influxdb::raw::db_utf8::db_utf8(std::string const & url) :
     pimpl(std::make_unique<impl>(url))
 {
-    if (!pimpl)
-        throw std::exception("Out of memory");
 }
 
 influxdb::raw::db_utf8::~db_utf8()

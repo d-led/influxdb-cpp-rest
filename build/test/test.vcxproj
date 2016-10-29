@@ -169,6 +169,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\test\sanitizer_test.cpp" />
+    <ClCompile Include="..\..\src\test\simple_api_test.cpp" />
     <ClCompile Include="..\..\src\test\test_main.cpp" />
     <ClCompile Include="..\..\src\test\utf8_client_test.cpp" />
   </ItemGroup>

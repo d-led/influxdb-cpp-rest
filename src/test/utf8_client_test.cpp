@@ -6,7 +6,6 @@
 #include <chrono>
 #include <thread>
 
-
 struct connected_test {
     influxdb::raw::db_utf8 db;
     static const int milliseconds_waiting_time = 10;
@@ -22,6 +21,7 @@ struct connected_test {
 };
 
 TEST_CASE_METHOD(connected_test, "creating a database", "[connected]") {
+    wait();
     CHECK(db.get("show databases").find("testdb") != std::string::npos);
 }
 
@@ -35,7 +35,7 @@ TEST_CASE_METHOD(connected_test, "posting simple values", "[connected]") {
     CHECK(db.get("select * from testdb..test").find("hello") != std::string::npos);
 }
 
-TEST_CASE_METHOD(connected_test, "line protocol violation results in an exception","[connected]") {
+TEST_CASE_METHOD(connected_test, "line protocol violation results in an exception", "[connected]") {
     CHECK_THROWS(db.insert("testdb", "bla bla bla"));
 }
 
@@ -48,7 +48,7 @@ TEST_CASE("connecting to a nonexistent db results in an exception") {
     CHECK_THROWS(db.get("show databases"));
 }
 
-inline connected_test::connected_test() :
+connected_test::connected_test() :
     db("http://localhost:8086")
 {
     db.post("drop database testdb; create database testdb");
@@ -56,7 +56,7 @@ inline connected_test::connected_test() :
 
 
 
-inline connected_test::~connected_test() {
+connected_test::~connected_test() {
     try {
         db.post("drop database testdb");
     }
@@ -69,6 +69,6 @@ inline connected_test::~connected_test() {
 
 // eventually consistent
 
-inline void connected_test::wait() {
+void connected_test::wait() {
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_waiting_time));
 }
