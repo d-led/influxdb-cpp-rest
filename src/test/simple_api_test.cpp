@@ -42,7 +42,7 @@ namespace {
     };
 }
 
-TEST_CASE_METHOD(simple_connected_test, "creating the db", "[connected]") {
+TEST_CASE_METHOD(simple_connected_test, "creating the db using the simple api", "[connected]") {
     CHECK(db_exists());
 }
 
@@ -52,7 +52,7 @@ TEST_CASE("tags and values should be formatted according to the line protocol") 
     CHECK(kvp.get().find("a=\"b\",b=42i,c=33.") != std::string::npos);
 }
 
-TEST_CASE_METHOD(simple_connected_test, "inserting values", "[connected]") {
+TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api", "[connected]") {
     wait();
     db.insert(line("test", key_value_pairs("mytag", 424242L), key_value_pairs("value", "hello world!")));
     wait();
