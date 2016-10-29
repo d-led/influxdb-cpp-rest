@@ -12,7 +12,11 @@ namespace influxdb {
             return std::regex_match(input, check_identifier);
         }
 
-
+        void throw_on_invalid_identifier(std::string const & input)
+        {
+            if (!valid_identifier(input))
+                throw std::runtime_error(std::string("Invalid identifier: ") + input);
+        }
     }
 
 }
