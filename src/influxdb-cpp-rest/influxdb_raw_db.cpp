@@ -2,8 +2,15 @@
 
 #include <cpprest/streams.h>
 
+using namespace utility;
 using namespace web;
 using namespace web::http;
+
+namespace {
+    void throw_response(http_response const& response) {
+        throw std::runtime_error(conversions::utf16_to_utf8(response.extract_string().get()));
+    }
+}
 
 influxdb::raw::db::db(string_t const & url) :client(url) {}
 
@@ -13,7 +20,11 @@ void influxdb::raw::db::post(string_t const & query) {
     builder.append_query(U("q"), query);
 
     // synchronous for now
-    client.request(methods::POST, builder.to_string()).get();
+    auto response = client.request(methods::POST, builder.to_string()).get();
+
+    if (response.status_code() != status_codes::OK) {
+        throw_response(response);
+    }
 }
 
 string_t influxdb::raw::db::get(string_t const & query) {
@@ -29,7 +40,7 @@ string_t influxdb::raw::db::get(string_t const & query) {
     }
     else
     {
-        return string_t();
+        throw_response(response);
     }
 }
 
@@ -45,5 +56,8 @@ void influxdb::raw::db::measure(string_t const & db, string_t const & lines) {
     request.set_body(lines);
 
     // synchronous for now
-    client.request(request).get();
+    auto response = client.request(request).get();
+    if (!(response.status_code() == status_codes::OK || response.status_code() == status_codes::NoContent)) {
+        throw_response(response);
+    }
 }
