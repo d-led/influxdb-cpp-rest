@@ -4,7 +4,6 @@
 
 using utility::string_t;
 using web::http::client::http_client;
-using web::json::value;
 
 namespace influxdb {
     namespace raw {
@@ -18,7 +17,7 @@ namespace influxdb {
             void post(string_t const& query);
 
             /// read queries
-            value get(string_t const& query);
+            string_t get(string_t const& query);
 
             /// post measurements
             void measure(string_t const& db, string_t const& lines);

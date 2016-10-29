@@ -32,7 +32,7 @@ std::string influxdb::raw::db_utf8::get(std::string const& query) {
     return conversions::utf16_to_utf8(
         pimpl->db_utf16.get(
             conversions::utf8_to_utf16(query)
-        ).serialize()
+        )
     );
 }
 

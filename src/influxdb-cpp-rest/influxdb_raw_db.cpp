@@ -1,5 +1,7 @@
 #include "influxdb_raw_db.h"
 
+#include <cpprest/streams.h>
+
 using namespace web;
 using namespace web::http;
 
@@ -14,7 +16,7 @@ void influxdb::raw::db::post(string_t const & query) {
     client.request(methods::POST, builder.to_string()).get();
 }
 
-json::value influxdb::raw::db::get(string_t const & query) {
+string_t influxdb::raw::db::get(string_t const & query) {
     uri_builder builder(U("/query"));
 
     builder.append_query(U("q"), query);
@@ -23,11 +25,11 @@ json::value influxdb::raw::db::get(string_t const & query) {
     auto response = client.request(methods::POST, builder.to_string()).get();
     if (response.status_code() == status_codes::OK)
     {
-        return response.extract_json().get();
+        return response.body().extract<string_t>().get();
     }
     else
     {
-        return json::value();
+        return string_t();
     }
 }
 
