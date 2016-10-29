@@ -15,6 +15,9 @@ namespace influxdb {
             std::string res;
 
         public:
+
+            key_value_pairs() = default;
+
             template<typename V>
             key_value_pairs(std::string const& key, V const& value) {
                 add(key, value);

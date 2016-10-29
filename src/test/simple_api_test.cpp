@@ -19,8 +19,11 @@ namespace {
         static const int milliseconds_waiting_time = 10;
         static constexpr const char* db_name = "simpletestdb";
 
-        // drop and create test db once
+        // drop and create test db
         simple_connected_test();
+
+        // drop the db
+        ~simple_connected_test();
 
         bool db_exists();
 
@@ -73,6 +76,15 @@ simple_connected_test::simple_connected_test() :
     wait();
 }
 
+simple_connected_test::~simple_connected_test()
+{
+    try {
+        db.drop();
+    }
+    catch (std::exception& e) {
+        std::cerr << "FAILED: " << e.what() << std::endl;
+    }
+}
 
 // eventually consistent
 void simple_connected_test::wait() {

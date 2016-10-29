@@ -1,23 +1,32 @@
 #include <iostream>
 
 #include <influxdb_raw_db_utf8.h>
+#include <influxdb_simple_api.h>
+#include <influxdb_line.h>
 
+
+using namespace influxdb::api;
 
 int main(int argc, char* argv[])
 {
     try
     {
-        influxdb::raw::db_utf8 db("http://localhost:8086");
+        const char* url = "http://localhost:8086";
+        influxdb::raw::db_utf8 db(url);
+        influxdb::api::simple_db api(url, "demo");
 
-        db.post("drop database mydb; create database mydb");
+        api.drop();
+        api.create();
 
         // {"results":[{"series":[{"columns":["name"],"name":"databases","values":[["_internal"],["mydb"]]}]}]}
         std::cout << db.get("show databases") << std::endl;
 
-        db.insert("mydb", "test value=42");
+        api.insert(line("test", key_value_pairs(), key_value_pairs("value", 42)));
 
         // {"results":[{"series":[{"columns":["time","value"],"name":"test","values":[["2016-10-28T22:11:22.8110348Z",42]]}]}]}
-        std::cout << db.get("select * from mydb..test") << std::endl;
+        std::cout << db.get("select * from demo..test") << std::endl;
+
+        api.drop();
     }
     catch (std::exception const& e)
     {
