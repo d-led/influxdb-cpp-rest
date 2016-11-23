@@ -1,8 +1,9 @@
 #include <catch.hpp>
 
-#include "../influxdb-cpp-rest/influxdb_raw_db_utf8.h"
 #include "../influxdb-cpp-rest/influxdb_simple_api.h"
 #include "../influxdb-cpp-rest/influxdb_line.h"
+
+#include "fixtures.h"
 
 #include <chrono>
 #include <thread>
@@ -13,11 +14,8 @@ using influxdb::api::key_value_pairs;
 using influxdb::api::line;
 
 namespace {
-    struct simple_connected_test {
+    struct simple_connected_test : connected_test {
         simple_db db;
-        influxdb::raw::db_utf8 tdb;
-        static const int milliseconds_waiting_time = 10;
-        static constexpr const char* db_name = "simpletestdb";
 
         // drop and create test db
         simple_connected_test();
@@ -26,9 +24,6 @@ namespace {
         ~simple_connected_test();
 
         bool db_exists();
-
-        // eventually consistent
-        void wait();
 
         struct result_t {
             std::string line;
@@ -40,7 +35,7 @@ namespace {
         };
 
         inline result_t result(std::string const& measurement) {
-            return result_t(tdb.get(std::string("select * from ") + db_name + ".." + measurement));
+            return result_t(raw_db.get(std::string("select * from ") + db_name + ".." + measurement));
         }
     };
 }
@@ -56,9 +51,9 @@ TEST_CASE("tags and values should be formatted according to the line protocol") 
 }
 
 TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api", "[connected]") {
-    wait();
     db.insert(line("test", key_value_pairs("mytag", 424242L), key_value_pairs("value", "hello world!")));
-    wait();
+
+    wait_for([] {return false; },3);
     
     auto res = result("test");
     CHECK(res.contains("424242i"));
@@ -66,32 +61,30 @@ TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api",
     CHECK(res.contains("hello world!"));
 }
 
+TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
+    using Clock = std::chrono::high_resolution_clock;
+    const int count = 100;
+    auto t1 = Clock::now();
+    for (int i = 0; i < count; i++) {
+        db.insert(line("test", key_value_pairs("mytag", 424242L), key_value_pairs("value", "hello world!")));
+    }
+    auto t2 = Clock::now();
+    auto diff = t2 - t1;
+    auto count_per_second = static_cast<double>(count) / (std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.);
+    CHECK(count_per_second > 1000.0);
+    WARN(count_per_second);
+}
+
 simple_connected_test::simple_connected_test() :
-    db("http://localhost:8086", db_name),
-    tdb("http://localhost:8086")
+    db("http://localhost:8086", db_name)
 {
-    db.drop();
-    wait();
-    db.create();
-    wait();
 }
 
 simple_connected_test::~simple_connected_test()
 {
-    try {
-        db.drop();
-    }
-    catch (std::exception& e) {
-        std::cerr << "FAILED: " << e.what() << std::endl;
-    }
-}
-
-// eventually consistent
-void simple_connected_test::wait() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_waiting_time));
 }
 
 bool simple_connected_test::db_exists()
 {
-    return tdb.get("show databases").find(db_name) != std::string::npos;
+    return database_exists(db_name);
 }
