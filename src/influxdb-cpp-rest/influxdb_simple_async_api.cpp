@@ -65,7 +65,15 @@ struct influxdb::async_api::simple_db::impl {
 
             listener = incoming_requests.subscribe([this](std::string const& lines) {
                 db.insert(name, lines);
-            });
+            },
+                [](std::exception_ptr ep) {
+                try { std::rethrow_exception(ep); }
+                catch (const std::exception& ex) {
+                    std::cerr << "influxdb::async_api::simple_db error: " << ex.what() << std::endl;
+                }
+            },
+            [] {})
+            ;
 
             /* //buffering...
 
