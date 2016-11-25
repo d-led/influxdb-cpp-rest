@@ -4,10 +4,11 @@
 #include <memory>
 
 namespace influxdb {
+    namespace api {
+        class line;
+    }
 
     namespace async_api {
-
-        class line;
 
         class simple_db {
             struct impl;
@@ -20,7 +21,7 @@ namespace influxdb {
         public:
             void create();
             void drop();
-            void insert(line const& lines);
+            void insert(influxdb::api::line const& lines);
         };
     }
 
