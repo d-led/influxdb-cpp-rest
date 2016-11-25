@@ -7,9 +7,10 @@
 
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
-#include <thread>
+#include <rx.hpp>
 #include <chrono>
 #include <atomic>
+#include <fmt/ostream.h>
 
 using namespace influxdb::utility;
 
@@ -20,7 +21,7 @@ struct influxdb::async_api::simple_db::impl {
     zmq::context_t context;
     zmq::socket_t push,pull;
     std::atomic<bool> started;
-    std::thread loop;
+    rxcpp::subscription listener;
 
     impl(std::string const& url, std::string const& name) :
         db(url),
@@ -44,22 +45,57 @@ struct influxdb::async_api::simple_db::impl {
 
         started = true;
 
-        loop = std::move(std::thread([this] {
-            printf("starting to listen\n");
-            while (started) {
-                zmq::multipart_t msg(pull);
+        auto incoming_requests = rxcpp::observable<>::
+                create<std::string>(
+                    [this](rxcpp::subscriber<std::string> out) {
+                        while (started) {
+                            zmq::message_t request;
+                            zmq::multipart_t msg(pull);
+
+                            if (!msg.empty())
+                                out.on_next(msg.popstr());
+                        }
+                        out.on_completed();
+            })
+            .as_dynamic()
+            .subscribe_on(rxcpp::synchronize_new_thread())
+            ;
+
+            listener = incoming_requests.subscribe([this](std::string const& lines) {
+                db.insert(name, lines);
+            });
+
+            /* //buffering...
+
+            int counter = 0, count = 0;
+
+            incoming_requests.
+                subscribe(
+                    [this, &counter, &count](rxcpp::observable<std::string> window) {
+                int id = counter++;
+                printf("[window %d] Create window\n", id);
                 
-                if (!msg.empty())
-                    db.insert(name, msg.popstr());
-            }
-            printf("stopped listening\n");
-        }));
+                window.count()
+                    .subscribe([this](int c) {printf("Count in window: %d\n", c); });
+
+                window.scan(std::make_shared<fmt::MemoryWriter>(), [](std::shared_ptr<fmt::MemoryWriter> const& w, std::string const& v) { *w << v << "\n"; return w; })
+                    .last()
+                    .subscribe([this](std::shared_ptr<fmt::MemoryWriter> const& w) {
+                        printf("Len: %zd\n", w->size());
+                        db.insert(name, w->str());
+                    });
+                window.subscribe(
+                    [id, &count](std::string const&) {
+                    count++; 
+                },
+                    [id, &count]() {printf("[window %d] OnCompleted: %d\n", id, count); });
+            })
+            ;*/
     }
 
     ~impl() {
+        listener.unsubscribe();
         started = false;
-        if (loop.joinable())
-            loop.join();
     }
 };
 

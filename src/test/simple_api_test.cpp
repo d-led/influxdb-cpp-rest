@@ -82,7 +82,7 @@ TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
     WARN(count_per_second);
     auto query = std::string("select count(*) from ") + db_name + "..asynctest";
     // wait for asynchronous fill
-    wait_for([this,query] { return raw_db.get(query).find("1024") != std::string::npos; }, 10);
+    wait_for([this,query] { return raw_db.get(query).find("1024") != std::string::npos; }, 100);
     printf("%s\n", raw_db.get(query).c_str());
     //CHECK(raw_db.get(query).find("1024") != std::string::npos);
 }
