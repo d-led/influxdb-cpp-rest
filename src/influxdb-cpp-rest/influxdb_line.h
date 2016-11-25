@@ -5,6 +5,7 @@
 #include <utility>
 #include <type_traits>
 #include "input_sanitizer.h"
+#include <fmt/ostream.h>
 
 namespace influxdb {
 
@@ -12,11 +13,12 @@ namespace influxdb {
 
         // https://docs.influxdata.com/influxdb/v1.0/write_protocols/line_protocol_tutorial/
         class key_value_pairs {
-            std::string res;
+            fmt::MemoryWriter res;
 
         public:
 
-            key_value_pairs() = default;
+            key_value_pairs() {};
+            ~key_value_pairs() {};
 
             template<typename V>
             key_value_pairs(std::string const& key, V const& value) {
@@ -34,7 +36,7 @@ namespace influxdb {
 
                 add_comma_if_necessary();
 
-                res += key + "=" + std::to_string(value) + "i";
+                res << key << "=" << value << "i";
 
                 return *this;
             }
@@ -50,7 +52,7 @@ namespace influxdb {
 
                 add_comma_if_necessary();
 
-                res += key + "=" + std::to_string(value);
+                res << key << "=" << value;
 
                 return *this;
             }
@@ -60,48 +62,51 @@ namespace influxdb {
 
                 add_comma_if_necessary();
 
-                res += key + "=\"" + value + "\"";
+                res << key << "=\"" << value << "\"";
 
                 return *this;
             }
 
             inline std::string get() const {
-                return res;
+                return res.str();
             }
 
             inline bool empty() const {
-                return res.empty();
+                return !res.size();
             }
 
         private:
-            void add_comma_if_necessary() {
-                if (!res.empty())
-                    res += ",";
+            inline void add_comma_if_necessary() {
+                if (!this->empty())
+                    res << ",";
             }
         };
 
         /// simplest, probably slow implementation
         class line {
-            std::string res;
+            fmt::MemoryWriter res;
 
         public:
+            line() {};
+            ~line() {};
+
             template<typename TMap>
-            inline line(std::string const& measurement, TMap tags, TMap values) {
+            inline line(std::string const& measurement, TMap const& tags, TMap const& values) {
                 influxdb::utility::throw_on_invalid_identifier(measurement);
 
-                res += measurement;
+                res << measurement;
                 if (!tags.empty()) {
-                    res += "," + tags.get();
+                    res << "," << tags.get();
                 }
 
                 if (!values.empty()) {
-                    res += " " + values.get();
+                    res << " " << values.get();
                 }
             }
 
         public:
             inline std::string get() const {
-                return res;
+                return res.str();
             }
         };
 

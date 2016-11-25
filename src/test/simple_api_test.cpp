@@ -46,9 +46,9 @@ TEST_CASE_METHOD(simple_connected_test, "creating the db using the simple api", 
 }
 
 TEST_CASE("tags and values should be formatted according to the line protocol") {
-    auto kvp = key_value_pairs("a", "b").add("b", 42).add("c", 33.0);
+    auto&& kvp=key_value_pairs("a", "b").add("b", 42).add("c", 33.01);
 
-    CHECK(kvp.get().find("a=\"b\",b=42i,c=33.") != std::string::npos);
+    CHECK(kvp.get().find("a=\"b\",b=42i,c=33.01") != std::string::npos);
 }
 
 TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api", "[connected]") {

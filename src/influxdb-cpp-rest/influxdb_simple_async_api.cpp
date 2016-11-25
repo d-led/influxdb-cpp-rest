@@ -52,8 +52,10 @@ struct influxdb::async_api::simple_db::impl {
                             zmq::message_t request;
                             zmq::multipart_t msg(pull);
 
-                            if (!msg.empty())
-                                out.on_next(msg.popstr());
+                            if (!msg.empty()) {
+                                auto msg_s(msg.popstr());
+                                out.on_next(msg_s);
+                            }
                         }
                         out.on_completed();
             })
