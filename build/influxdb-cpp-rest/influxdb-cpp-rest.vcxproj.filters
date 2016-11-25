@@ -30,6 +30,9 @@
     <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\influxdb-cpp-rest\influxdb_simple_async_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\influxdb-cpp-rest\influxdb_raw_db.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\influxdb-cpp-rest\influxdb_simple_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\influxdb-cpp-rest\influxdb_simple_async_api.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
