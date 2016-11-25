@@ -94,8 +94,8 @@ struct influxdb::async_api::simple_db::impl {
     }
 
     ~impl() {
-        listener.unsubscribe();
         started = false;
+        listener.unsubscribe();
     }
 };
 
