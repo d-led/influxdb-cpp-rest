@@ -1,3 +1,6 @@
 [submodule "deps/catch"]
 	path = deps/catch
 	url = https://github.com/philsquared/Catch.git
+[submodule "deps/cppzmq"]
+	path = deps/cppzmq
+	url = https://github.com/zeromq/cppzmq.git
