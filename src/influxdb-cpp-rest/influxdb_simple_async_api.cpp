@@ -63,44 +63,32 @@ struct influxdb::async_api::simple_db::impl {
             .subscribe_on(rxcpp::synchronize_new_thread())
             ;
 
-            listener = incoming_requests.subscribe([this](std::string const& lines) {
-                db.insert(name, lines);
-            },
-                [](std::exception_ptr ep) {
-                try { std::rethrow_exception(ep); }
-                catch (const std::exception& ex) {
-                    std::cerr << "influxdb::async_api::simple_db error: " << ex.what() << std::endl;
-                }
-            },
-            [] {})
+            listener = incoming_requests
+                .window_with_time_or_count(std::chrono::milliseconds(100), 1000, rxcpp::synchronize_new_thread())
+                .observe_on(rxcpp::synchronize_new_thread())
+                .subscribe(
+                    [this](rxcpp::observable<std::string> window) {
+                        window.scan(std::make_shared<fmt::MemoryWriter>(), [](std::shared_ptr<fmt::MemoryWriter> const& w, std::string const& v) {
+                            *w << v << '\n';
+                            return w;
+                        })
+                        .start_with(std::make_shared<fmt::MemoryWriter>())
+                        .last()
+                        .observe_on(rxcpp::synchronize_new_thread())
+                        .subscribe([this](std::shared_ptr<fmt::MemoryWriter> const& w) {
+                            if (w->size() > 0u) {
+                                db.insert(name, w->str());
+                            }
+                        },
+                        [](std::exception_ptr ep) {
+                            try { std::rethrow_exception(ep); }
+                            catch (const std::runtime_error& ex) {
+                                std::cerr << ex.what() << std::endl;
+                            }
+                        },
+                        [] {});
+                })
             ;
-
-            /* //buffering...
-
-            int counter = 0, count = 0;
-
-            incoming_requests.
-                subscribe(
-                    [this, &counter, &count](rxcpp::observable<std::string> window) {
-                int id = counter++;
-                printf("[window %d] Create window\n", id);
-                
-                window.count()
-                    .subscribe([this](int c) {printf("Count in window: %d\n", c); });
-
-                window.scan(std::make_shared<fmt::MemoryWriter>(), [](std::shared_ptr<fmt::MemoryWriter> const& w, std::string const& v) { *w << v << "\n"; return w; })
-                    .last()
-                    .subscribe([this](std::shared_ptr<fmt::MemoryWriter> const& w) {
-                        printf("Len: %zd\n", w->size());
-                        db.insert(name, w->str());
-                    });
-                window.subscribe(
-                    [id, &count](std::string const&) {
-                    count++; 
-                },
-                    [id, &count]() {printf("[window %d] OnCompleted: %d\n", id, count); });
-            })
-            ;*/
     }
 
     ~impl() {

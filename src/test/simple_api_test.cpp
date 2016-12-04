@@ -68,11 +68,11 @@ TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api",
 TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
     influxdb::async_api::simple_db asyncdb("http://localhost:8086", db_name);
     using Clock = std::chrono::high_resolution_clock;
-    const int count = 1024;
+    const int count = 1024000;
     printf("started sending\n");
     auto t1 = Clock::now();
     for (int i = 0; i < count; i++) {
-        asyncdb.insert(line("asynctest", key_value_pairs("mytag", 424242L), key_value_pairs("value", "hello world!")));
+        asyncdb.insert(line("asynctest", key_value_pairs("mytag", 424242L), key_value_pairs("value", fmt::format("hello world {}!", i))));
     }
     auto t2 = Clock::now();
     printf("stopped sending\n");
@@ -82,7 +82,7 @@ TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
     WARN(count_per_second);
     auto query = std::string("select count(*) from ") + db_name + "..asynctest";
     // wait for asynchronous fill
-    wait_for([this,query] { return raw_db.get(query).find("1024") != std::string::npos; }, 100);
+    wait_for([this,query] { return raw_db.get(query).find("102400") != std::string::npos; }, 100);
     printf("%s\n", raw_db.get(query).c_str());
     //CHECK(raw_db.get(query).find("1024") != std::string::npos);
 }
