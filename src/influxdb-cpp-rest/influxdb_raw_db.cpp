@@ -45,6 +45,7 @@ string_t influxdb::raw::db::get(string_t const & query) {
     }
 }
 
+void influxdb::raw::db::insert(string_t const & db, std::string const & lines) {
     uri_builder builder(client.base_uri());
     builder.append(U("/write"));
     builder.append_query(U("db"), db);
