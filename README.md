@@ -43,7 +43,7 @@ auto json_response = raw_db.get(query).find(std::to_string(count));
 &darr;
 
 ```
-{"results":[{"series":[{"name":"asynctest","columns":["time","count_value"],"values":[["1970-01-01T00:00:00Z",123456]]}]}]}
+{"results":[{"series":[{"name":"asynctest","columns":["time","count_value"],"values":[["...Z",123456]]}]}]}
 ```
 
 ## Build & Test
