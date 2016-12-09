@@ -20,7 +20,7 @@ namespace influxdb {
             std::string get(std::string const& query);
 
             /// post measurements
-            void insert(std::string const& db, std:: string const& lines);
+            void insert(std::string const& db, std::string const& lines);
         };
     }
 }

@@ -62,29 +62,47 @@ TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api",
     CHECK(res.contains("hello world!"));
 }
 
-#include <zmq.hpp>
-#include <zmq_addon.hpp>
-
 TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
-    influxdb::async_api::simple_db asyncdb("http://localhost:8086", db_name);
-    using Clock = std::chrono::high_resolution_clock;
-    const int count = 1024000;
-    printf("started sending\n");
-    auto t1 = Clock::now();
-    for (int i = 0; i < count; i++) {
-        asyncdb.insert(line("asynctest", key_value_pairs("mytag", 424242L), key_value_pairs("value", fmt::format("hello world {}!", i))));
+    SECTION("Set up") {
+        influxdb::async_api::simple_db asyncdb("http://localhost:8086", db_name);
+        using Clock = std::chrono::high_resolution_clock;
+        const int count = 123456;
+
+        //https://www.influxdata.com/influxdb-1-1-released-with-up-to-60-performance-increase-and-new-query-functionality/
+        const int MAX_VALUES_PER_TAG = 100000;
+
+        SECTION("Send") {
+            auto t1 = Clock::now();
+            for (int i = 0; i < count; i++) {
+                asyncdb.insert(line("asynctest", key_value_pairs("my_count", i % MAX_VALUES_PER_TAG), key_value_pairs("value", "hi!")));
+            }
+            auto t2 = Clock::now();
+
+            SECTION("Calculation") {
+                auto diff = t2 - t1;
+                auto count_per_second = static_cast<double>(count) / (std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.);
+                CHECK(count_per_second > 1000.0);
+                printf("async inserts per second: %f\n", count_per_second);
+
+
+                SECTION("Making sure, all entries arrived") {
+                    // wait for asynchronous fill
+                    auto query = std::string("select count(*) from ") + db_name + "..asynctest";
+                    wait_for([this, query, count] { return raw_db.get(query).find(std::to_string(count)) != std::string::npos; }, 100);
+                    bool all_entries_arrived = raw_db.get(query).find(std::to_string(count)) != std::string::npos;
+
+                    CHECK(all_entries_arrived);
+
+                    auto t2 = Clock::now();
+                    auto count_per_second = static_cast<double>(count) / (std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.);
+                    printf("actual inserts per second: ~ %f\n", count_per_second);
+
+                    if (!all_entries_arrived)
+                        printf("Response: %s\n", raw_db.get(query).c_str());
+                }
+            }
+        }
     }
-    auto t2 = Clock::now();
-    printf("stopped sending\n");
-    auto diff = t2 - t1;
-    auto count_per_second = static_cast<double>(count) / (std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.);
-    CHECK(count_per_second > 1000.0);
-    WARN(count_per_second);
-    auto query = std::string("select count(*) from ") + db_name + "..asynctest";
-    // wait for asynchronous fill
-    wait_for([this,query] { return raw_db.get(query).find("102400") != std::string::npos; }, 100);
-    printf("%s\n", raw_db.get(query).c_str());
-    //CHECK(raw_db.get(query).find("1024") != std::string::npos);
 }
 
 simple_connected_test::simple_connected_test() :

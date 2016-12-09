@@ -45,7 +45,6 @@ string_t influxdb::raw::db::get(string_t const & query) {
     }
 }
 
-void influxdb::raw::db::insert(string_t const & db, string_t const & lines) {
     uri_builder builder(client.base_uri());
     builder.append(U("/write"));
     builder.append_query(U("db"), db);
@@ -54,7 +53,9 @@ void influxdb::raw::db::insert(string_t const & db, string_t const & lines) {
 
     request.set_request_uri(builder.to_uri());
     request.set_method(methods::POST);
-    request.set_body(lines);
+    std::vector<unsigned char> lines_v;
+    std::transform(std::begin(lines), std::end(lines), std::back_inserter(lines_v), [](char c) {return (unsigned char)c; });
+    request.set_body(lines_v);
 
     // synchronous for now
     auto response = client.request(request).get();

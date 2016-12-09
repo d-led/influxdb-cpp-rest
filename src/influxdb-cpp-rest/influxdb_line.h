@@ -89,6 +89,14 @@ namespace influxdb {
         public:
             line() {};
             ~line() {};
+            
+            line(line const& other) {
+                res << other.get();
+            }
+
+            line(line && other) {
+                res = std::move(other.res);
+            }
 
             template<typename TMap>
             inline line(std::string const& measurement, TMap const& tags, TMap const& values) {
