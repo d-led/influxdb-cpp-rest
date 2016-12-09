@@ -24,11 +24,15 @@ struct influxdb::async_api::simple_db::impl {
     std::atomic<bool> started;
     rxcpp::subscription listener;
     rxcpp::subjects::subject<influxdb::api::line> subj;
+    unsigned window_max_lines;
+    std::chrono::milliseconds window_max_ms;
 
-    impl(std::string const& url, std::string const& name) :
+    impl(std::string const& url, std::string const& name, unsigned window_max_lines, unsigned window_max_ms) :
         db(url, name),
         simpledb(url, name),
-        started(false)
+        started(false),
+        window_max_lines(window_max_lines),
+        window_max_ms(window_max_ms)
     {
         throw_on_invalid_identifier(name);
         start_once();
@@ -47,13 +51,15 @@ struct influxdb::async_api::simple_db::impl {
             });
 
             listener = incoming_requests
-                .window_with_time_or_count(std::chrono::milliseconds(100), 50000, rxcpp::synchronize_new_thread())
+                .window_with_time_or_count(window_max_ms, window_max_lines, rxcpp::synchronize_new_thread())
                 .subscribe(
                     [this](rxcpp::observable<std::string> window) {
-                        window.scan(std::make_shared<fmt::MemoryWriter>(), [this](std::shared_ptr<fmt::MemoryWriter> const& w, std::string const& v) {
-                            *w << v << '\n';
-                            return w;
-                        })
+                        window.scan(
+                            std::make_shared<fmt::MemoryWriter>(),
+                            [this](std::shared_ptr<fmt::MemoryWriter> const& w, std::string const& v) {
+                                *w << v << '\n';
+                                return w;
+                            })
                         .start_with(std::make_shared<fmt::MemoryWriter>())
                         .last()
                         .observe_on(rxcpp::synchronize_new_thread())
@@ -80,7 +86,12 @@ struct influxdb::async_api::simple_db::impl {
 
 
 influxdb::async_api::simple_db::simple_db(std::string const& url, std::string const& name) :
-    pimpl(std::make_unique<impl>(url, name))
+    simple_db(url, name, 50000, 100)
+{
+}
+
+influxdb::async_api::simple_db::simple_db(std::string const & url, std::string const & name, unsigned window_max_lines, unsigned window_max_ms) :
+    pimpl(std::make_unique<impl>(url, name, window_max_lines, window_max_ms))
 {
 }
 
