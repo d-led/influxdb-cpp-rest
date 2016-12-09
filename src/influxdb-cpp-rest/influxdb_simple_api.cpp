@@ -1,3 +1,9 @@
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+
 #include "influxdb_simple_api.h"
 #include "influxdb_raw_db_utf8.h"
 #include "input_sanitizer.h"
