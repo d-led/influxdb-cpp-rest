@@ -97,7 +97,7 @@ TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
                     auto count_per_second = static_cast<double>(count) / (std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.);
                     printf("actual inserts per second: ~ %f\n", count_per_second);
 
-                    //if (!all_entries_arrived)
+                    if (!all_entries_arrived)
                         printf("Response: %s\n", raw_db.get(query).c_str());
                 }
             }

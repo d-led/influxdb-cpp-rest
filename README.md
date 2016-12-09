@@ -45,3 +45,8 @@ auto json_response = raw_db.get(query).find(std::to_string(count));
 ```
 {"results":[{"series":[{"name":"asynctest","columns":["time","count_value"],"values":[["1970-01-01T00:00:00Z",123456]]}]}]}
 ```
+
+## Build & Test
+
+The library should be easy to build, given `RxCpp` and `cpprestsdk` can be found. The Visual Studio 2015 solution is self-contained. A locally running, authentication-free instance of InfluxDB is required to run the test.
+ 
