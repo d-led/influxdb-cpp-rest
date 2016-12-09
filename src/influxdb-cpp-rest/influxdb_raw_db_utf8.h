@@ -26,6 +26,9 @@ namespace influxdb {
 
             /// post measurements
             void insert(std::string const& lines);
+
+            /// post measurements without waiting for an answer
+            void insert_async(std::string const& lines);
         };
     }
 }

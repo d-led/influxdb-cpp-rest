@@ -59,7 +59,7 @@ struct influxdb::async_api::simple_db::impl {
                         .observe_on(rxcpp::synchronize_new_thread())
                         .subscribe([this](std::shared_ptr<fmt::MemoryWriter> const& w) {
                             if (w->size() > 0u) {
-                                db.insert(w->str());
+                                db.insert_async(w->str());
                             }
                         },
                         [](std::exception_ptr ep) {

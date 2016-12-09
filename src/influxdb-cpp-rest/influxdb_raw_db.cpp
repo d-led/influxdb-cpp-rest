@@ -13,8 +13,18 @@ using namespace web;
 using namespace web::http;
 
 namespace {
-    void throw_response(http_response const& response) {
+    inline void throw_response(http_response const& response) {
         throw std::runtime_error(conversions::utf16_to_utf8(response.extract_string().get()));
+    }
+
+    inline http_request request_from(uri const& uri_with_db, std::string const& lines) {
+        http_request request;
+
+        request.set_request_uri(uri_with_db);
+        request.set_method(methods::POST);
+        request.set_body(lines);
+
+        return request;
     }
 }
 
@@ -63,15 +73,13 @@ string_t influxdb::raw::db::get(string_t const & query)
 
 void influxdb::raw::db::insert(std::string const & lines)
 {
-    http_request request;
-
-    request.set_request_uri(uri_with_db);
-    request.set_method(methods::POST);
-    request.set_body(lines);
-
-    // synchronous for now
-    auto response = client.request(request).get();
+    auto response = client.request(request_from(uri_with_db, lines)).get();
     if (!(response.status_code() == status_codes::OK || response.status_code() == status_codes::NoContent)) {
         throw_response(response);
     }
+}
+
+void influxdb::raw::db::insert_async(std::string const & lines)
+{
+    client.request(request_from(uri_with_db, lines));
 }

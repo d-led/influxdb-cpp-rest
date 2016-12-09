@@ -45,3 +45,8 @@ std::string influxdb::raw::db_utf8::get(std::string const& query) {
 void influxdb::raw::db_utf8::insert(std::string const & lines) {
     pimpl->db_utf16.insert(lines);
 }
+
+void influxdb::raw::db_utf8::insert_async(std::string const & lines)
+{
+    pimpl->db_utf16.insert_async(lines);
+}
