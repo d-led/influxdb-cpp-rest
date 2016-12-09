@@ -6,17 +6,20 @@
 #pragma once
 
 #include <cpprest/http_client.h>
+#include <string>
 
 using utility::string_t;
 using web::http::client::http_client;
+using web::uri;
 
 namespace influxdb {
     namespace raw {
         class db {
             http_client client;
+            uri uri_with_db;
 
         public:
-            db(string_t const& url);
+            db(string_t const& url, string_t const& name);
 
             /// post queries
             void post(string_t const& query);
@@ -25,7 +28,7 @@ namespace influxdb {
             string_t get(string_t const& query);
 
             /// post measurements
-            void insert(string_t const& db, std::string const& lines);
+            void insert(std::string const& lines);
         };
     }
 }

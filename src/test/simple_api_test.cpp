@@ -82,7 +82,7 @@ TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
                 auto diff = t2 - t1;
                 auto count_per_second = static_cast<double>(count) / (std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.);
                 CHECK(count_per_second > 1000.0);
-                printf("async inserts per second: %f\n", count_per_second);
+                std::cout << "async inserts per second: " << count_per_second << std::endl;
 
 
                 SECTION("Making sure, all entries arrived") {
@@ -95,10 +95,10 @@ TEST_CASE_METHOD(simple_connected_test, "more than 1000 inserts per second") {
 
                     auto t2 = Clock::now();
                     auto count_per_second = static_cast<double>(count) / (std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.);
-                    printf("actual inserts per second: ~ %f\n", count_per_second);
+                    std::cout << "actual inserts per second >~: " << count_per_second << std::endl;
 
                     if (!all_entries_arrived)
-                        printf("Response: %s\n", raw_db.get(query).c_str());
+                        std::cout << "Response: " << raw_db.get(query) << std::endl;
                 }
             }
         }

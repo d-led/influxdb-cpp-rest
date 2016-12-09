@@ -19,7 +19,6 @@
 using namespace influxdb::utility;
 
 struct influxdb::async_api::simple_db::impl {
-    std::string name;
     influxdb::raw::db_utf8 db;
     influxdb::api::simple_db simpledb;
     std::atomic<bool> started;
@@ -27,9 +26,8 @@ struct influxdb::async_api::simple_db::impl {
     rxcpp::subjects::subject<influxdb::api::line> subj;
 
     impl(std::string const& url, std::string const& name) :
-        db(url),
+        db(url, name),
         simpledb(url, name),
-        name(name),
         started(false)
     {
         throw_on_invalid_identifier(name);
@@ -61,7 +59,7 @@ struct influxdb::async_api::simple_db::impl {
                         .observe_on(rxcpp::synchronize_new_thread())
                         .subscribe([this](std::shared_ptr<fmt::MemoryWriter> const& w) {
                             if (w->size() > 0u) {
-                                db.insert(name, w->str());
+                                db.insert(w->str());
                             }
                         },
                         [](std::exception_ptr ep) {

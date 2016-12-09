@@ -15,12 +15,14 @@ struct influxdb::raw::db_utf8::impl {
     db db_utf16;
 
 public:
-    impl(std::string const& url) :db_utf16(conversions::utf8_to_utf16(url))
+    impl(std::string const& url,std::string const& name)
+        :
+        db_utf16(conversions::utf8_to_utf16(url), conversions::utf8_to_utf16(name))
     {}
 };
 
-influxdb::raw::db_utf8::db_utf8(std::string const & url) :
-    pimpl(std::make_unique<impl>(url))
+influxdb::raw::db_utf8::db_utf8(std::string const & url, std::string const& name) :
+    pimpl(std::make_unique<impl>(url, name))
 {
 }
 
@@ -40,6 +42,6 @@ std::string influxdb::raw::db_utf8::get(std::string const& query) {
     );
 }
 
-void influxdb::raw::db_utf8::insert(std::string const & db, std::string const & lines) {
-    pimpl->db_utf16.insert(conversions::utf8_to_utf16(db), lines);
+void influxdb::raw::db_utf8::insert(std::string const & lines) {
+    pimpl->db_utf16.insert(lines);
 }

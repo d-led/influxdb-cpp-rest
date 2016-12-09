@@ -5,7 +5,7 @@
 #include <thread>
 
 connected_test::connected_test() :
-    raw_db("http://localhost:8086")
+    raw_db("http://localhost:8086", db_name)
 {
     raw_db.post(std::string("drop database ") + db_name);
     wait_for_no_db(db_name);

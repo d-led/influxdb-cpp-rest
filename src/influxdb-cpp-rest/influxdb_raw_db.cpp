@@ -18,9 +18,18 @@ namespace {
     }
 }
 
-influxdb::raw::db::db(string_t const & url) :client(url) {}
+influxdb::raw::db::db(string_t const & url, string_t const & name)
+    :
+    client(url)
+{
+    uri_builder builder(client.base_uri());
+    builder.append(U("/write"));
+    builder.append_query(U("db"), name);
+    uri_with_db = builder.to_uri();
+}
 
-void influxdb::raw::db::post(string_t const & query) {
+void influxdb::raw::db::post(string_t const & query)
+{
     uri_builder builder(U("/query"));
 
     builder.append_query(U("q"), query);
@@ -33,7 +42,8 @@ void influxdb::raw::db::post(string_t const & query) {
     }
 }
 
-string_t influxdb::raw::db::get(string_t const & query) {
+string_t influxdb::raw::db::get(string_t const & query)
+{
     uri_builder builder(U("/query"));
 
     builder.append_query(U("q"), query);
@@ -51,18 +61,13 @@ string_t influxdb::raw::db::get(string_t const & query) {
     }
 }
 
-void influxdb::raw::db::insert(string_t const & db, std::string const & lines) {
-    uri_builder builder(client.base_uri());
-    builder.append(U("/write"));
-    builder.append_query(U("db"), db);
-
+void influxdb::raw::db::insert(std::string const & lines)
+{
     http_request request;
 
-    request.set_request_uri(builder.to_uri());
+    request.set_request_uri(uri_with_db);
     request.set_method(methods::POST);
-    std::vector<unsigned char> lines_v;
-    std::transform(std::begin(lines), std::end(lines), std::back_inserter(lines_v), [](char c) {return (unsigned char)c; });
-    request.set_body(lines_v);
+    request.set_body(lines);
 
     // synchronous for now
     auto response = client.request(request).get();

@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     try
     {
         const char* url = "http://localhost:8086";
-        influxdb::raw::db_utf8 db(url);
+        influxdb::raw::db_utf8 db(url, "demo");
         influxdb::api::simple_db api(url, "demo");
         influxdb::async_api::simple_db async_api(url, "demo");
 

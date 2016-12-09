@@ -10,7 +10,7 @@ TEST_CASE_METHOD(connected_test, "creating a database", "[connected]") {
 TEST_CASE_METHOD(connected_test, "posting simple values", "[connected]") {
     CHECK(raw_db.get("select * from testdb..test").find("hello") == std::string::npos);
 
-    raw_db.insert("testdb", "test value=\"hello\"");
+    raw_db.insert("test value=\"hello\"");
 
     wait_for([] {return false; }, 3);
 
@@ -18,7 +18,7 @@ TEST_CASE_METHOD(connected_test, "posting simple values", "[connected]") {
 }
 
 TEST_CASE_METHOD(connected_test, "line protocol violation results in an exception", "[connected]") {
-    CHECK_THROWS(raw_db.insert("testdb", "bla bla bla"));
+    CHECK_THROWS(raw_db.insert("bla bla bla"));
 }
 
 TEST_CASE_METHOD(connected_test, "gibberish query results in an exception", "[connected]") {
@@ -26,6 +26,6 @@ TEST_CASE_METHOD(connected_test, "gibberish query results in an exception", "[co
 }
 
 TEST_CASE("connecting to a nonexistent db results in an exception") {
-    influxdb::raw::db_utf8 db("http://localhost:424242");
+    influxdb::raw::db_utf8 db("http://localhost:424242", "testdb");
     CHECK_THROWS(db.get("show databases"));
 }

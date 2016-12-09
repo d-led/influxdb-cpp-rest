@@ -15,7 +15,7 @@ namespace influxdb {
             std::unique_ptr<impl> pimpl;
 
         public:
-            db_utf8(std::string const& url);
+            db_utf8(std::string const& url, std::string const& name);
             ~db_utf8();
 
             /// post queries
@@ -25,7 +25,7 @@ namespace influxdb {
             std::string get(std::string const& query);
 
             /// post measurements
-            void insert(std::string const& db, std::string const& lines);
+            void insert(std::string const& lines);
         };
     }
 }

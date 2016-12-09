@@ -16,7 +16,7 @@ struct influxdb::api::simple_db::impl {
     influxdb::raw::db_utf8 db;
 
     impl(std::string const& url, std::string const& name) :
-        db(url),
+        db(url, name),
         name(name)
     {
         throw_on_invalid_identifier(name);
@@ -44,5 +44,5 @@ void influxdb::api::simple_db::drop()
 
 void influxdb::api::simple_db::insert(line const & lines)
 {
-    pimpl->db.insert(pimpl->name, lines.get());
+    pimpl->db.insert(lines.get());
 }
