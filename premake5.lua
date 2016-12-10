@@ -8,6 +8,9 @@ includedirs {
 	'src/influxdb-cpp-rest'
 }
 
+--linuxbrew
+local cpprestsdk_root = '~/.linuxbrew/Cellar/cpprestsdk/2.9.1'
+
 filter 'system:macosx'
 	includedirs {
 		'/usr/local/include', -- brew install boost cpprestsdk openssl
@@ -17,6 +20,13 @@ filter 'system:macosx'
 		'/usr/local/lib',
 		'/usr/local/opt/icu4c/lib',
 		'/usr/local/opt/openssl/lib',
+	}
+filter 'system:linux' -- conan install .
+	includedirs {
+		cpprestsdk_root..'/include' --same as macosx, via linuxbrew: brew install gcc cmake cpprestsdk
+	}
+	libdirs {
+		cpprestsdk_root..'/lib'
 	}
 filter {}
 
@@ -30,6 +40,17 @@ function default_links()
 			'boost_thread-mt',
 			'boost_system-mt',
 			'boost_chrono'
+		}
+	filter 'system:linux'
+		links {
+			'ssl',
+			'crypto',
+			'cpprest',
+			'fmt',
+			'boost_thread',
+			'boost_system',
+			'boost_chrono',
+			'pthread'
 		}
 	filter {}
 end

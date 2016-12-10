@@ -25,6 +25,14 @@ namespace influxdb {
             key_value_pairs() {};
             ~key_value_pairs() {};
 
+            key_value_pairs(key_value_pairs const& other) {
+                res << other.get();
+            }
+
+            key_value_pairs(key_value_pairs && other) {
+                res = std::move(other.res);
+            }
+
             template<typename V>
             key_value_pairs(std::string const& key, V const& value) {
                 add(key, value);
@@ -94,7 +102,7 @@ namespace influxdb {
         public:
             line() {};
             ~line() {};
-            
+
             line(line const& other) {
                 res << other.get();
             }
