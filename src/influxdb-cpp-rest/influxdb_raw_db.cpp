@@ -14,7 +14,11 @@ using namespace web::http;
 
 namespace {
     inline void throw_response(http_response const& response) {
+#ifndef _MSC_VER
+        throw std::runtime_error(response.extract_string().get());
+#else
         throw std::runtime_error(conversions::utf16_to_utf8(response.extract_string().get()));
+#endif
     }
 
     inline http_request request_from(uri const& uri_with_db, std::string const& lines) {

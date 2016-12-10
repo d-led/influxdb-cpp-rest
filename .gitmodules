@@ -7,3 +7,6 @@
 [submodule "premake"]
 	path = premake
 	url = https://github.com/d-led/premake-meta-cpp.git
+[submodule "deps/rxcpp"]
+	path = deps/rxcpp
+	url = https://github.com/Reactive-Extensions/RxCpp.git

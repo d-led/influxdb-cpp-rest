@@ -17,7 +17,11 @@ struct influxdb::raw::db_utf8::impl {
 public:
     impl(std::string const& url,std::string const& name)
         :
+#ifndef _MSC_VER
+        db_utf16(url, name)
+#else
         db_utf16(conversions::utf8_to_utf16(url), conversions::utf8_to_utf16(name))
+#endif
     {}
 };
 
@@ -31,15 +35,23 @@ influxdb::raw::db_utf8::~db_utf8()
 }
 
 void influxdb::raw::db_utf8::post(std::string const& query) {
+#ifndef _MSC_VER
+    pimpl->db_utf16.post(query);
+#else
     pimpl->db_utf16.post(conversions::utf8_to_utf16(query));
+#endif
 }
 
 std::string influxdb::raw::db_utf8::get(std::string const& query) {
+#ifndef _MSC_VER
+    return pimpl->db_utf16.get(query);
+#else
     return conversions::utf16_to_utf8(
         pimpl->db_utf16.get(
             conversions::utf8_to_utf16(query)
         )
     );
+#endif
 }
 
 void influxdb::raw::db_utf8::insert(std::string const & lines) {

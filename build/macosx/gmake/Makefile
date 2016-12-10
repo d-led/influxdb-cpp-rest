@@ -11,31 +11,41 @@ ifndef verbose
 endif
 
 ifeq ($(config),debug_x32)
+  fmt_config = debug_x32
   influxdb_cpp_rest_config = debug_x32
   demo_config = debug_x32
   test_influxdb_cpp_rest_config = debug_x32
 endif
 ifeq ($(config),debug_x64)
+  fmt_config = debug_x64
   influxdb_cpp_rest_config = debug_x64
   demo_config = debug_x64
   test_influxdb_cpp_rest_config = debug_x64
 endif
 ifeq ($(config),release_x32)
+  fmt_config = release_x32
   influxdb_cpp_rest_config = release_x32
   demo_config = release_x32
   test_influxdb_cpp_rest_config = release_x32
 endif
 ifeq ($(config),release_x64)
+  fmt_config = release_x64
   influxdb_cpp_rest_config = release_x64
   demo_config = release_x64
   test_influxdb_cpp_rest_config = release_x64
 endif
 
-PROJECTS := influxdb-cpp-rest demo test-influxdb-cpp-rest
+PROJECTS := fmt influxdb-cpp-rest demo test-influxdb-cpp-rest
 
 .PHONY: all clean help $(PROJECTS) 
 
 all: $(PROJECTS)
+
+fmt:
+ifneq (,$(fmt_config))
+	@echo "==== Building fmt ($(fmt_config)) ===="
+	@${MAKE} --no-print-directory -C . -f fmt.make config=$(fmt_config)
+endif
 
 influxdb-cpp-rest:
 ifneq (,$(influxdb_cpp_rest_config))
@@ -43,19 +53,20 @@ ifneq (,$(influxdb_cpp_rest_config))
 	@${MAKE} --no-print-directory -C . -f influxdb-cpp-rest.make config=$(influxdb_cpp_rest_config)
 endif
 
-demo: influxdb-cpp-rest
+demo: influxdb-cpp-rest fmt
 ifneq (,$(demo_config))
 	@echo "==== Building demo ($(demo_config)) ===="
 	@${MAKE} --no-print-directory -C . -f demo.make config=$(demo_config)
 endif
 
-test-influxdb-cpp-rest:
+test-influxdb-cpp-rest: influxdb-cpp-rest fmt
 ifneq (,$(test_influxdb_cpp_rest_config))
 	@echo "==== Building test-influxdb-cpp-rest ($(test_influxdb_cpp_rest_config)) ===="
 	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-rest.make config=$(test_influxdb_cpp_rest_config)
 endif
 
 clean:
+	@${MAKE} --no-print-directory -C . -f fmt.make clean
 	@${MAKE} --no-print-directory -C . -f influxdb-cpp-rest.make clean
 	@${MAKE} --no-print-directory -C . -f demo.make clean
 	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-rest.make clean
@@ -72,6 +83,7 @@ help:
 	@echo "TARGETS:"
 	@echo "   all (default)"
 	@echo "   clean"
+	@echo "   fmt"
 	@echo "   influxdb-cpp-rest"
 	@echo "   demo"
 	@echo "   test-influxdb-cpp-rest"

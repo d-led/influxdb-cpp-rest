@@ -6,8 +6,7 @@
 
 struct connected_test {
     influxdb::raw::db_utf8 raw_db;
-    static const int milliseconds_waiting_time = 100;
-
+    const int milliseconds_waiting_time = 100;
     static constexpr const char* db_name = "testdb";
 
     // drop and create test db

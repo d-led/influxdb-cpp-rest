@@ -13,8 +13,8 @@ endif
 ifeq ($(config),debug_x32)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x32/Debug
-  TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
-  OBJDIR = ../../../obj/macosx/gmake/x32/Debug/influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/libfmt.a
+  OBJDIR = ../../../obj/macosx/gmake/x32/Debug/fmt
   DEFINES += -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include
   FORCE_INCLUDE +=
@@ -40,8 +40,8 @@ endif
 ifeq ($(config),debug_x64)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x64/Debug
-  TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
-  OBJDIR = ../../../obj/macosx/gmake/x64/Debug/influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/libfmt.a
+  OBJDIR = ../../../obj/macosx/gmake/x64/Debug/fmt
   DEFINES += -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include
   FORCE_INCLUDE +=
@@ -67,8 +67,8 @@ endif
 ifeq ($(config),release_x32)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x32/Release
-  TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
-  OBJDIR = ../../../obj/macosx/gmake/x32/Release/influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/libfmt.a
+  OBJDIR = ../../../obj/macosx/gmake/x32/Release/fmt
   DEFINES +=
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include
   FORCE_INCLUDE +=
@@ -94,8 +94,8 @@ endif
 ifeq ($(config),release_x64)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x64/Release
-  TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
-  OBJDIR = ../../../obj/macosx/gmake/x64/Release/influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/libfmt.a
+  OBJDIR = ../../../obj/macosx/gmake/x64/Release/fmt
   DEFINES +=
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include
   FORCE_INCLUDE +=
@@ -119,11 +119,10 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/influxdb_raw_db.o \
-	$(OBJDIR)/influxdb_raw_db_utf8.o \
-	$(OBJDIR)/influxdb_simple_api.o \
-	$(OBJDIR)/influxdb_simple_async_api.o \
-	$(OBJDIR)/input_sanitizer.o \
+	$(OBJDIR)/format.o \
+	$(OBJDIR)/ostream.o \
+	$(OBJDIR)/posix.o \
+	$(OBJDIR)/printf.o \
 
 RESOURCES := \
 
@@ -138,7 +137,7 @@ ifeq (/bin,$(findstring /bin,$(SHELL)))
 endif
 
 $(TARGET): $(GCH) $(OBJECTS) $(LDDEPS) $(RESOURCES) ${CUSTOMFILES}
-	@echo Linking influxdb-cpp-rest
+	@echo Linking fmt
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -159,7 +158,7 @@ else
 endif
 
 clean:
-	@echo Cleaning influxdb-cpp-rest
+	@echo Cleaning fmt
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -181,19 +180,16 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
 endif
 
-$(OBJDIR)/influxdb_raw_db.o: ../../../src/influxdb-cpp-rest/influxdb_raw_db.cpp
+$(OBJDIR)/format.o: ../../../deps/fmt/fmt/format.cc
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/influxdb_raw_db_utf8.o: ../../../src/influxdb-cpp-rest/influxdb_raw_db_utf8.cpp
+$(OBJDIR)/ostream.o: ../../../deps/fmt/fmt/ostream.cc
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/influxdb_simple_api.o: ../../../src/influxdb-cpp-rest/influxdb_simple_api.cpp
+$(OBJDIR)/posix.o: ../../../deps/fmt/fmt/posix.cc
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/influxdb_simple_async_api.o: ../../../src/influxdb-cpp-rest/influxdb_simple_async_api.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/input_sanitizer.o: ../../../src/influxdb-cpp-rest/input_sanitizer.cpp
+$(OBJDIR)/printf.o: ../../../deps/fmt/fmt/printf.cc
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
