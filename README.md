@@ -8,6 +8,10 @@ The unbatched aprroach (and without connection reuse) may not be sufficient in s
 
 A batching api leans towards thousands inserts per second. Behind the scenes, the API uses [RxCpp](https://github.com/Reactive-Extensions/RxCpp) and [cppformat](https://github.com/fmtlib/fmt).
 
+## Status
+
+It's worked on my scarce free time. Feel free to contribute, as the progress is rather sporadic.
+
 
 ## Synchronous insertion
 
