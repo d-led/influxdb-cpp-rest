@@ -14,32 +14,30 @@ using influxdb::api::simple_db;
 using influxdb::api::key_value_pairs;
 using influxdb::api::line;
 
-namespace {
-    struct simple_connected_test : connected_test {
-        simple_db db;
+struct simple_connected_test : connected_test {
+    simple_db db;
 
-        // drop and create test db
-        simple_connected_test();
+    // drop and create test db
+    simple_connected_test();
 
-        // drop the db
-        ~simple_connected_test();
+    // drop the db
+    ~simple_connected_test();
 
-        bool db_exists();
+    bool db_exists();
 
-        struct result_t {
-            std::string line;
-            result_t(std::string const& line):line(line) {}
+    struct result_t {
+        std::string line;
+        result_t(std::string const& line):line(line) {}
 
-            inline bool contains(std::string const& what) const {
-                return line.find(what) != std::string::npos;
-            }
-        };
-
-        inline result_t result(std::string const& measurement) {
-            return result_t(raw_db.get(std::string("select * from ") + db_name + ".." + measurement));
+        inline bool contains(std::string const& what) const {
+            return line.find(what) != std::string::npos;
         }
     };
-}
+
+    inline result_t result(std::string const& measurement) {
+        return result_t(raw_db.get(std::string("select * from ") + db_name + ".." + measurement));
+    }
+};
 
 TEST_CASE_METHOD(simple_connected_test, "creating the db using the simple api", "[connected]") {
     CHECK(db_exists());
