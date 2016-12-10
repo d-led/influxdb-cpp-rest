@@ -1,6 +1,6 @@
 # influxdb-cpp-rest
 
-A naive C++ [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk).
+A naive C++(14) [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk).
 
 See [the demo source](src/demo/main.cpp) for the current api example.
 
@@ -10,8 +10,9 @@ A batching api leans towards thousands inserts per second. Behind the scenes, th
 
 ## Status
 
-It's worked on my scarce free time. Feel free to contribute, as the progress is rather sporadic.
+Build and test ok on Win10/Ubuntu64/OSX.
 
+Feel free to contribute, as the progress is rather sporadic due to lack of spare time.
 
 ## Synchronous insertion
 
@@ -53,4 +54,13 @@ auto json_response = raw_db.get(query).find(std::to_string(count));
 ## Build & Test
 
 The library should be easy to build, given `RxCpp` and `cpprestsdk` can be found. The Visual Studio 2015 solution is self-contained. A locally running, authentication-free instance of InfluxDB is required to run the test.
- 
+
+### Dependencies on Linux and OS X
+
+cpprestsdk needs to be built and available, which in turn has platform-specific transient dependencies.
+
+The easiest way to install it on MacOS X and Linux turned out to be via [Homebrew](https://brew.sh) and [Linuxbrew](https://linuxbrew.sh) respectively.
+
+Once the install `brew install cpprestsdk` succeeds, build: `make -C build/<platform>/gmake config=release_x64` and run the test.
+
+If the build fails due to failed dependencies, check [premake5.lua](premake5.lua) for the build config, and regenerate makefiles if necessary via `premake/premake5<os-specific> gmake`
