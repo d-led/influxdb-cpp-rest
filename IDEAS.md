@@ -1,0 +1,3 @@
+- [ ] Linux build/CI
+- [ ] Safe C wrapper (i.e. as a dynamic lib)
+- [ ] test and implement authentication 
