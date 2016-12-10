@@ -5,6 +5,8 @@ task :default do
   args = {
     :license_file => './src/license/header',
     :add_path => 'src/influxdb-cpp-rest',
+    :add_path => 'src/demo',
+    :add_path => 'src/test',
     :output_dir => '.'
   }
 
