@@ -22,14 +22,14 @@ make_static_lib('influxdb-cpp-rest', {
 	'src/influxdb-cpp-rest/**.*',
 })
 
-use_standard('c++11')
+use_standard('c++14')
 
 --------------------------------------------------------------------
 make_console_app('demo', {
 	'src/demo/**.*'
 })
 
-use_standard('c++11')
+use_standard('c++14')
 
 links { 'influxdb-cpp-rest' }
 
@@ -42,6 +42,6 @@ includedirs {
 	'deps/catch/single_include'
 }
 
-use_standard('c++11')
+use_standard('c++14')
 
 --osx: influxd -config /usr/local/etc/influxdb.conf
