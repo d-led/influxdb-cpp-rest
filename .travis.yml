@@ -18,7 +18,7 @@ cache:
  - apt
 
 install:
-  - 'echo -ne '\n' | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
+  - 'echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
   - 'PATH="$HOME/.linuxbrew/bin:$PATH"'
   - 'brew update'
   - 'brew install cpprestsdk influxdb openssl'
