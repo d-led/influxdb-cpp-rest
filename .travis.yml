@@ -6,12 +6,23 @@ compiler:
   - gcc
   # - clang
 
+addons:
+ apt:
+  sources:
+   - ubuntu-toolchain-r-test
+  packages:
+   - g++-5
+
+cache:
+ - apt
+
 install:
-  - 'echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
-  - 'export PATH="$HOME/.linuxbrew/bin:$PATH"'
-  - 'brew update'
-  - 'brew install patchelf zlib binutils linux-headers glibc xz gmp mpfr libmpc isl gcc bzip2 boost makedepend openssl pkg-config curl libidn cmake'
-  - 'brew install --verbose cpprestsdk'
+  - echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
+  - export PATH="$HOME/.linuxbrew/bin:$PATH"
+  - export CXX="g++-5"
+  - brew update
+  - brew install patchelf zlib binutils linux-headers glibc xz gmp mpfr libmpc isl gcc bzip2 boost makedepend openssl pkg-config curl libidn cmake
+  - brew install --verbose cpprestsdk
   # - 'brew install influxdb'
 
 script:
