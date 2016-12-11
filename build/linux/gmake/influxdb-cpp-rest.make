@@ -15,7 +15,7 @@ ifeq ($(config),debug_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Debug
   TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
   OBJDIR = ../../../obj/linux/gmake/x32/Debug/influxdb-cpp-rest
-  DEFINES += -D_DEBUG
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -42,7 +42,7 @@ ifeq ($(config),debug_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Debug
   TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
   OBJDIR = ../../../obj/linux/gmake/x64/Debug/influxdb-cpp-rest
-  DEFINES += -D_DEBUG
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -69,7 +69,7 @@ ifeq ($(config),release_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Release
   TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
   OBJDIR = ../../../obj/linux/gmake/x32/Release/influxdb-cpp-rest
-  DEFINES +=
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -96,7 +96,7 @@ ifeq ($(config),release_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Release
   TARGET = $(TARGETDIR)/libinfluxdb-cpp-rest.a
   OBJDIR = ../../../obj/linux/gmake/x64/Release/influxdb-cpp-rest
-  DEFINES +=
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
