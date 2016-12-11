@@ -1,0 +1,21 @@
+sudo: required
+
+language: cpp
+
+compiler:
+  - gcc
+  # - clang
+
+arch:
+  packages:
+    - clang
+    - libc++
+    - cpprestsdk-git
+  script:
+    - "git submodule init"
+    - "git submodule update"
+    - "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr"
+    - "sudo make install"
+
+script:
+  - "make -C build/linux/gmake config=release_x64"

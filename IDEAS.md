@@ -1,3 +1,4 @@
-- [ ] Linux build/CI
+- [ ] CI
 - [ ] Safe C wrapper (i.e. as a dynamic lib)
-- [ ] test and implement authentication 
+- [ ] test and implement authentication
+- [ ] async error callback
