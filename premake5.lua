@@ -40,18 +40,18 @@ function default_links()
 			'fmt',
 			'boost_thread-mt',
 			'boost_system-mt',
-			'boost_chrono'
+			'boost_chrono',
 		}
 	filter 'system:linux'
 		links {
-			'ssl',
-			'crypto',
-			'cpprest',
-			'fmt',
+			'pthread',
 			'boost_thread-mt',
 			'boost_system',
 			'boost_chrono',
-			'pthread'
+			'crypto',
+			'ssl',
+			'cpprest',
+			'fmt',
 		}
 	filter {}
 end
