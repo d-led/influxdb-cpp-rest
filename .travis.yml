@@ -17,5 +17,21 @@ arch:
     - "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr"
     - "sudo make install"
 
+addons:
+ apt:
+  sources:
+   - boost-latest
+   - ubuntu-toolchain-r-test
+  packages:
+   - g++-5
+   - libboost1.55-all-dev
+   - libssl-dev
+
+cache:
+ - apt
+
+before_script:
+  - export CXX="g++-5"
+
 script:
   - "make -C build/linux/gmake config=release_x64"
