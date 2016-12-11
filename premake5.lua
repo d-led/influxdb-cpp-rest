@@ -44,14 +44,14 @@ function default_links()
 		}
 	filter 'system:linux'
 		links {
-			'pthread',
-			'boost_thread-mt',
-			'boost_system',
-			'boost_chrono',
-			'crypto',
-			'ssl',
-			'cpprest',
 			'fmt',
+			'cpprest',
+			'ssl',
+			'crypto',
+			'boost_chrono',
+			'boost_system',
+			'boost_thread-mt',
+			'pthread',
 		}
 	filter {}
 end
@@ -77,9 +77,9 @@ make_console_app('demo', {
 
 use_standard('c++14')
 
-default_links()
-
 links { 'influxdb-cpp-rest' }
+
+default_links()
 
 --------------------------------------------------------------------
 make_console_app('test-influxdb-cpp-rest', {
@@ -92,9 +92,9 @@ includedirs {
 
 use_standard('c++14')
 
-default_links()
-
 links { 'influxdb-cpp-rest' }
+
+default_links()
 
 
 --osx: influxd -config /usr/local/etc/influxdb.conf

@@ -53,13 +53,13 @@ ifneq (,$(influxdb_cpp_rest_config))
 	@${MAKE} --no-print-directory -C . -f influxdb-cpp-rest.make config=$(influxdb_cpp_rest_config)
 endif
 
-demo: fmt influxdb-cpp-rest
+demo: influxdb-cpp-rest fmt
 ifneq (,$(demo_config))
 	@echo "==== Building demo ($(demo_config)) ===="
 	@${MAKE} --no-print-directory -C . -f demo.make config=$(demo_config)
 endif
 
-test-influxdb-cpp-rest: fmt influxdb-cpp-rest
+test-influxdb-cpp-rest: influxdb-cpp-rest fmt
 ifneq (,$(test_influxdb_cpp_rest_config))
 	@echo "==== Building test-influxdb-cpp-rest ($(test_influxdb_cpp_rest_config)) ===="
 	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-rest.make config=$(test_influxdb_cpp_rest_config)
