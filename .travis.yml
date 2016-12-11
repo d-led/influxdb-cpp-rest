@@ -29,4 +29,4 @@ install:
 
 script:
   # - "ls ~/.linuxbrew/Cellar/*"
-  - make -C build/linux/gmake config=release_x64 _GLIBCXX_USE_CXX11_ABI=0
+  - make -C build/linux/gmake config=release_x64
