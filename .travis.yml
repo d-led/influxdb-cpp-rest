@@ -4,27 +4,13 @@ compiler:
   - gcc
   # - clang
 
-# addons:
- # apt:
-  # sources:
-   # - boost-latest
-   # - ubuntu-toolchain-r-test
-  # packages:
-   # - g++-5
-   # - libboost1.55-all-dev
-   # - libssl-dev
-
-# cache:
- # - apt
-
 install:
   - 'echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
-  - 'PATH="$HOME/.linuxbrew/bin:$PATH"'
+  - 'export PATH="$HOME/.linuxbrew/bin:$PATH"'
   - 'brew update'
-  - 'brew install --verbose cpprestsdk influxdb openssl'
-
-before_script:
-  - export CXX="g++-5"
+  - 'brew install patchelf, zlib, binutils, linux-headers, glibc, xz, gmp, mpfr, libmpc, isl, gcc, bzip2, boost, makedepend, openssl, pkg-config, curl, libidn, cmake'
+  - 'brew install --verbose cpprestsdk'
+  # - 'brew install influxdb'
 
 script:
   - "ls ~/.linuxbrew/Cellar/*"
