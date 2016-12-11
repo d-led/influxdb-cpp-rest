@@ -1,9 +1,0 @@
-version: 1.0.{build}
-image: Visual Studio 2015
-configuration: Release
-platform: x64
-before_build:
-    - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
-build:
-  parallel: false
-  verbosity: detailed
