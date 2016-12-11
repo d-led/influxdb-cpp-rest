@@ -9,9 +9,11 @@ compiler:
 addons:
  apt:
   sources:
+   - boost-latest
    - ubuntu-toolchain-r-test
   packages:
    - g++-5
+   - libboost1.55-all-dev
 
 cache:
  - apt
