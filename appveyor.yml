@@ -8,4 +8,4 @@ build:
   parallel: false
   verbosity: detailed
 build_script:
-  - cmd: "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe" build\influxdb-cpp-rest.sln
+  - cmd: \"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe\" build\influxdb-cpp-rest.sln
