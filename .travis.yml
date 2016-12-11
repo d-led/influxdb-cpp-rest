@@ -21,7 +21,7 @@ install:
   - 'echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
   - 'PATH="$HOME/.linuxbrew/bin:$PATH"'
   - 'brew update'
-  - 'brew install cpprestsdk influxdb openssl'
+  - 'brew install --verbose cpprestsdk influxdb openssl'
 
 before_script:
   - export CXX="g++-5"
