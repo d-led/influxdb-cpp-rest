@@ -1,7 +1,5 @@
 version: 1.0.{build}
-os: Visual Studio 2015 RC
-environment:
-  VisualStudioVersion: 14.0
+image: Visual Studio 2015
 configuration: Release
 platform: x64
 before_build:
@@ -9,3 +7,5 @@ before_build:
 build:
   parallel: false
   verbosity: detailed
+build_script:
+  - cmd: C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe build\influxdb-cpp-rest.sln
