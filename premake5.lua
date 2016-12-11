@@ -48,7 +48,7 @@ function default_links()
 			'crypto',
 			'cpprest',
 			'fmt',
-			'boost_thread',
+			'boost_thread-mt',
 			'boost_system',
 			'boost_chrono',
 			'pthread'
