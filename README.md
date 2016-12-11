@@ -1,6 +1,6 @@
 # influxdb-cpp-rest
 
-[![Build status](https://ci.appveyor.com/api/projects/status/68w68vq3nai4794g/branch/master?svg=true)](https://ci.appveyor.com/project/d-led/influxdb-cpp-rest/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/68w68vq3nai4794g/branch/master?svg=true)](https://ci.appveyor.com/project/d-led/influxdb-cpp-rest/branch/master) [![Build Status](https://travis-ci.org/d-led/influxdb-cpp-rest.svg?branch=master)](https://travis-ci.org/d-led/influxdb-cpp-rest)
 
 A naive C++(14) [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk).
 
