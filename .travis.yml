@@ -4,18 +4,18 @@ compiler:
   - gcc
   # - clang
 
-addons:
- apt:
-  sources:
-   - boost-latest
-   - ubuntu-toolchain-r-test
-  packages:
-   - g++-5
-   - libboost1.55-all-dev
-   - libssl-dev
+# addons:
+ # apt:
+  # sources:
+   # - boost-latest
+   # - ubuntu-toolchain-r-test
+  # packages:
+   # - g++-5
+   # - libboost1.55-all-dev
+   # - libssl-dev
 
-cache:
- - apt
+# cache:
+ # - apt
 
 install:
   - 'echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"'
@@ -27,5 +27,5 @@ before_script:
   - export CXX="g++-5"
 
 script:
-  - "ls ~/.linuxbrew/Cellar"
+  - "ls ~/.linuxbrew/Cellar/*"
   # - "make -C build/linux/gmake config=release_x64"
