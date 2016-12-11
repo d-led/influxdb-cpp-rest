@@ -77,9 +77,9 @@ make_console_app('demo', {
 
 use_standard('c++14')
 
-links { 'influxdb-cpp-rest' }
-
 default_links()
+
+links { 'influxdb-cpp-rest' }
 
 --------------------------------------------------------------------
 make_console_app('test-influxdb-cpp-rest', {
@@ -92,8 +92,9 @@ includedirs {
 
 use_standard('c++14')
 
+default_links()
+
 links { 'influxdb-cpp-rest' }
 
-default_links()
 
 --osx: influxd -config /usr/local/etc/influxdb.conf
