@@ -26,7 +26,8 @@ filter 'system:linux' -- conan install .
 		cpprestsdk_root..'/include' --same as macosx, via linuxbrew: brew install gcc cmake cpprestsdk
 	}
 	libdirs {
-		cpprestsdk_root..'/lib'
+		cpprestsdk_root..'/lib',
+		'~/.linuxbrew/lib64',
 	}
 filter {}
 

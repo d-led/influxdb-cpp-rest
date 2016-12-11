@@ -24,7 +24,7 @@ ifeq ($(config),debug_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m32
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -51,7 +51,7 @@ ifeq ($(config),debug_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m64
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -78,7 +78,7 @@ ifeq ($(config),release_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -s -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m32
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -105,7 +105,7 @@ ifeq ($(config),release_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -s -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m64
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
