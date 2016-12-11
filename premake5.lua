@@ -44,14 +44,16 @@ function default_links()
 		}
 	filter 'system:linux'
 		links {
-			'cpprest',
+			'fmt',
 			'ssl',
 			'crypto',
+			'boost_random',
 			'boost_chrono',
-			'boost_system',
 			'boost_thread-mt',
-			'fmt',
-			'dl',
+			'boost_system-mt',
+			'boost_regex',
+			'boost_filesystem',
+			'cpprest',
 			'pthread',
 		}
 	filter {}
