@@ -8,11 +8,11 @@ includedirs {
 	'src/influxdb-cpp-rest'
 }
 
-filter 'system:linux'
-		defines {
-			'_GLIBCXX_USE_CXX11_ABI=0',
-		}
-filter {}
+-- filter 'system:linux'
+-- 		defines {
+-- 			'_GLIBCXX_USE_CXX11_ABI=0',
+-- 		}
+-- filter {}
 
 --linuxbrew
 local cpprestsdk_root = '~/.linuxbrew/Cellar/cpprestsdk/2.9.1'
@@ -49,9 +49,6 @@ function default_links()
 			'boost_chrono',
 		}
 	filter 'system:linux'
-		defines {
-			'_GLIBCXX_USE_CXX11_ABI=0',
-		}
 		links {
 			'fmt',
 			'ssl',
