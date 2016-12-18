@@ -26,3 +26,18 @@ struct connected_test {
     void wait_for_db(std::string const& name);
     void wait_for_no_db(std::string const & name);
 };
+
+// https://github.com/d-led/cpp_declarative_times
+struct execute {
+    const unsigned long long count;
+
+    template<typename CallableWithIndex>
+    void operator() (CallableWithIndex what) {
+        for (auto i = 0; i < count; i++)
+            what(i);
+    }
+};
+
+inline execute operator"" _times(unsigned long long count) {
+    return execute{ count };
+}
