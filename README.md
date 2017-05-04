@@ -44,7 +44,7 @@ for (int i = 0; i < 123456; i++) {
 ```cpp
 influxdb::api::simple_db simpledb("http://localhost:8086", "my_db");
 auto query = std::string("select count(*) from my_db..my_measurements";
-auto json_response = raw_db.get(query).find(std::to_string(count));
+auto json_response = raw_db.get(query);
 ```
 
 &darr;
