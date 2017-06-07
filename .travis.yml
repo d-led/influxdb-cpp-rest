@@ -20,7 +20,7 @@ cache:
 
 install:
   - echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
-  - export PATH="$HOME/.linuxbrew/bin:$PATH"
+  - export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
   - export CXX="g++-5"
   - brew update
   - brew install patchelf zlib binutils linux-headers glibc xz gmp mpfr libmpc isl gcc bzip2 boost makedepend openssl pkg-config curl libidn cmake
