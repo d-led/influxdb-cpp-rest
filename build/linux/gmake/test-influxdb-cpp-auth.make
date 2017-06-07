@@ -16,7 +16,7 @@ ifeq ($(config),debug_x32)
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x32/Debug/test-influxdb-cpp-auth
   DEFINES += -D_DEBUG -D_GLIBCXX_USE_CXX11_ABI=0
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -m32 -std=c++14
@@ -24,7 +24,7 @@ ifeq ($(config),debug_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m32
   LINKCMD = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -43,7 +43,7 @@ ifeq ($(config),debug_x64)
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x64/Debug/test-influxdb-cpp-auth
   DEFINES += -D_DEBUG -D_GLIBCXX_USE_CXX11_ABI=0
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -m64 -std=c++14
@@ -51,7 +51,7 @@ ifeq ($(config),debug_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m64
   LINKCMD = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -70,7 +70,7 @@ ifeq ($(config),release_x32)
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x32/Release/test-influxdb-cpp-auth
   DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -std=c++14
@@ -78,7 +78,7 @@ ifeq ($(config),release_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m32
   LINKCMD = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -97,7 +97,7 @@ ifeq ($(config),release_x64)
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x64/Release/test-influxdb-cpp-auth
   DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++14
@@ -105,7 +105,7 @@ ifeq ($(config),release_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L../../../~/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m64
   LINKCMD = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef

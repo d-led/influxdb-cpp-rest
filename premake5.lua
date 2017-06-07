@@ -15,7 +15,7 @@ filter 'system:linux'
 filter {}
 
 --linuxbrew
-local cpprestsdk_root = '~/.linuxbrew/Cellar/cpprestsdk/2.9.1'
+local cpprestsdk_root = '/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1'
 
 filter 'system:macosx'
 	includedirs {
