@@ -13,10 +13,10 @@ endif
 ifeq ($(config),debug_x32)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x32/Debug
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/macosx/gmake/x32/Debug/test-influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
+  OBJDIR = ../../../obj/macosx/gmake/x32/Debug/test-influxdb-cpp-auth
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -g -std=c++14
@@ -40,10 +40,10 @@ endif
 ifeq ($(config),debug_x64)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x64/Debug
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/macosx/gmake/x64/Debug/test-influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
+  OBJDIR = ../../../obj/macosx/gmake/x64/Debug/test-influxdb-cpp-auth
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++14
@@ -67,10 +67,10 @@ endif
 ifeq ($(config),release_x32)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x32/Release
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/macosx/gmake/x32/Release/test-influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
+  OBJDIR = ../../../obj/macosx/gmake/x32/Release/test-influxdb-cpp-auth
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -std=c++14
@@ -94,10 +94,10 @@ endif
 ifeq ($(config),release_x64)
   RESCOMP = windres
   TARGETDIR = ../../../bin/macosx/gmake/x64/Release
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/macosx/gmake/x64/Release/test-influxdb-cpp-rest
+  TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
+  OBJDIR = ../../../obj/macosx/gmake/x64/Release/test-influxdb-cpp-auth
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++14
@@ -119,11 +119,8 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/auth_test.o \
 	$(OBJDIR)/fixtures.o \
-	$(OBJDIR)/sanitizer_test.o \
-	$(OBJDIR)/simple_api_test.o \
-	$(OBJDIR)/test_main.o \
-	$(OBJDIR)/utf8_client_test.o \
 
 RESOURCES := \
 
@@ -138,7 +135,7 @@ ifeq (/bin,$(findstring /bin,$(SHELL)))
 endif
 
 $(TARGET): $(GCH) $(OBJECTS) $(LDDEPS) $(RESOURCES) ${CUSTOMFILES}
-	@echo Linking test-influxdb-cpp-rest
+	@echo Linking test-influxdb-cpp-auth
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -159,7 +156,7 @@ else
 endif
 
 clean:
-	@echo Cleaning test-influxdb-cpp-rest
+	@echo Cleaning test-influxdb-cpp-auth
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -181,19 +178,10 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
 endif
 
+$(OBJDIR)/auth_test.o: ../../../src/auth_test/auth_test.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/fixtures.o: ../../../src/test/fixtures.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/sanitizer_test.o: ../../../src/test/sanitizer_test.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/simple_api_test.o: ../../../src/test/simple_api_test.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/test_main.o: ../../../src/test/test_main.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/utf8_client_test.o: ../../../src/test/utf8_client_test.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

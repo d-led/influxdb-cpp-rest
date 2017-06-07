@@ -15,27 +15,31 @@ ifeq ($(config),debug_x32)
   influxdb_cpp_rest_config = debug_x32
   demo_config = debug_x32
   test_influxdb_cpp_rest_config = debug_x32
+  test_influxdb_cpp_auth_config = debug_x32
 endif
 ifeq ($(config),debug_x64)
   fmt_config = debug_x64
   influxdb_cpp_rest_config = debug_x64
   demo_config = debug_x64
   test_influxdb_cpp_rest_config = debug_x64
+  test_influxdb_cpp_auth_config = debug_x64
 endif
 ifeq ($(config),release_x32)
   fmt_config = release_x32
   influxdb_cpp_rest_config = release_x32
   demo_config = release_x32
   test_influxdb_cpp_rest_config = release_x32
+  test_influxdb_cpp_auth_config = release_x32
 endif
 ifeq ($(config),release_x64)
   fmt_config = release_x64
   influxdb_cpp_rest_config = release_x64
   demo_config = release_x64
   test_influxdb_cpp_rest_config = release_x64
+  test_influxdb_cpp_auth_config = release_x64
 endif
 
-PROJECTS := fmt influxdb-cpp-rest demo test-influxdb-cpp-rest
+PROJECTS := fmt influxdb-cpp-rest demo test-influxdb-cpp-rest test-influxdb-cpp-auth
 
 .PHONY: all clean help $(PROJECTS) 
 
@@ -65,11 +69,18 @@ ifneq (,$(test_influxdb_cpp_rest_config))
 	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-rest.make config=$(test_influxdb_cpp_rest_config)
 endif
 
+test-influxdb-cpp-auth: influxdb-cpp-rest fmt
+ifneq (,$(test_influxdb_cpp_auth_config))
+	@echo "==== Building test-influxdb-cpp-auth ($(test_influxdb_cpp_auth_config)) ===="
+	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-auth.make config=$(test_influxdb_cpp_auth_config)
+endif
+
 clean:
 	@${MAKE} --no-print-directory -C . -f fmt.make clean
 	@${MAKE} --no-print-directory -C . -f influxdb-cpp-rest.make clean
 	@${MAKE} --no-print-directory -C . -f demo.make clean
 	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-rest.make clean
+	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-auth.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -87,5 +98,6 @@ help:
 	@echo "   influxdb-cpp-rest"
 	@echo "   demo"
 	@echo "   test-influxdb-cpp-rest"
+	@echo "   test-influxdb-cpp-auth"
 	@echo ""
 	@echo "For more information, see http://industriousone.com/premake/quick-start"

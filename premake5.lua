@@ -108,5 +108,25 @@ links { 'influxdb-cpp-rest' }
 
 default_links()
 
+--osx: influxd -config ./src/auth_test/influxdb.conf
+
+--------------------------------------------------------------------
+make_console_app('test-influxdb-cpp-auth', {
+	'src/auth_test/**.*',
+	'src/test/fixtures.*',
+})
+
+includedirs {
+	'deps/catch/single_include',
+	'src/test',
+}
+
+use_standard('c++14')
+
+links { 'influxdb-cpp-rest' }
+
+default_links()
+
+
 
 --osx: influxd -config /usr/local/etc/influxdb.conf

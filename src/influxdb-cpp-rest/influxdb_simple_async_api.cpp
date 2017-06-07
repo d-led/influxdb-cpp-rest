@@ -117,6 +117,12 @@ void influxdb::async_api::simple_db::insert(influxdb::api::line const & lines)
     if (!subscriber.is_subscribed()) {
         return;
     }
-    
+
     subscriber.on_next(lines);
+}
+
+
+void influxdb::async_api::simple_db::with_authentication(std::string const& username, std::string const& password)
+{
+    pimpl->db.with_authentication(username, password);
 }

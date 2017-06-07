@@ -62,3 +62,8 @@ void influxdb::raw::db_utf8::insert_async(std::string const & lines)
 {
     pimpl->db_utf16.insert_async(lines);
 }
+
+void influxdb::raw::db_utf8::with_authentication(std::string const& username, std::string const& password)
+{
+    pimpl->db_utf16.with_authentication(username, password);
+}

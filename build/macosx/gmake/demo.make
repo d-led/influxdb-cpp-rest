@@ -24,7 +24,7 @@ ifeq ($(config),debug_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -51,7 +51,7 @@ ifeq ($(config),debug_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -78,7 +78,7 @@ ifeq ($(config),release_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m32 -Wl,-x
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32 -Wl,-x
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -105,7 +105,7 @@ ifeq ($(config),release_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m64 -Wl,-x
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64 -Wl,-x
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef

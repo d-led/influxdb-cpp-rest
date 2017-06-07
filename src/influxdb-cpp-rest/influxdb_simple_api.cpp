@@ -46,3 +46,8 @@ void influxdb::api::simple_db::insert(line const & lines)
 {
     pimpl->db.insert(lines.get());
 }
+
+void influxdb::api::simple_db::with_authentication(std::string const& username, std::string const& password)
+{
+    pimpl->db.with_authentication(username, password);
+}

@@ -18,6 +18,9 @@ namespace influxdb {
             http_client client;
             uri uri_with_db;
 
+            std::string username;
+            std::string password;
+
         public:
             db(string_t const& url, string_t const& name);
 
@@ -32,6 +35,9 @@ namespace influxdb {
 
             /// post measurements and do not wait
             void insert_async(std::string const& lines);
+
+            /// set username & password for basic authentication
+            void with_authentication(std::string const& username, std::string const& password);
         };
     }
 }

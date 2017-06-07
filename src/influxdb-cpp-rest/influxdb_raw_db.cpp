@@ -7,6 +7,7 @@
 #include "influxdb_raw_db.h"
 
 #include <cpprest/streams.h>
+#include <cpprest/http_client.h>
 
 using namespace utility;
 using namespace web;
@@ -21,11 +22,31 @@ namespace {
 #endif
     }
 
-    inline http_request request_from(uri const& uri_with_db, std::string const& lines) {
+    inline http_request request_from(
+            uri const& uri_with_db,
+            std::string const& lines,
+            std::string const& username,
+            std::string const& password,
+            web::http::method m = methods::POST
+    ) {
         http_request request;
 
         request.set_request_uri(uri_with_db);
-        request.set_method(methods::POST);
+        request.set_method(m);
+
+        if (!username.empty()) {
+            auto auth = username + ":" + password;
+            std::vector<unsigned char> bytes(auth.begin(), auth.end());
+            request
+                .headers()
+                .add(
+                    header_names::authorization,
+                    U("Basic ") +
+                    conversions::to_base64(bytes)
+                )
+            ;
+        }
+
         request.set_body(lines);
 
         return request;
@@ -49,7 +70,9 @@ void influxdb::raw::db::post(string_t const & query)
     builder.append_query(U("q"), query);
 
     // synchronous for now
-    auto response = client.request(methods::POST, builder.to_string()).get();
+    auto response = client.request(
+        request_from(builder.to_string(),U(""), username, password)
+    ).get();
 
     if (response.status_code() != status_codes::OK) {
         throw_response(response);
@@ -63,7 +86,9 @@ string_t influxdb::raw::db::get(string_t const & query)
     builder.append_query(U("q"), query);
 
     // synchronous for now
-    auto response = client.request(methods::POST, builder.to_string()).get();
+    auto response = client.request(
+        request_from(builder.to_string(),U(""), username, password)
+    ).get();
     if (response.status_code() == status_codes::OK)
     {
         return response.extract_string().get();
@@ -77,7 +102,7 @@ string_t influxdb::raw::db::get(string_t const & query)
 
 void influxdb::raw::db::insert(std::string const & lines)
 {
-    auto response = client.request(request_from(uri_with_db, lines)).get();
+    auto response = client.request(request_from(uri_with_db, lines, username, password)).get();
     if (!(response.status_code() == status_codes::OK || response.status_code() == status_codes::NoContent)) {
         throw_response(response);
     }
@@ -85,5 +110,11 @@ void influxdb::raw::db::insert(std::string const & lines)
 
 void influxdb::raw::db::insert_async(std::string const & lines)
 {
-    client.request(request_from(uri_with_db, lines));
+    client.request(request_from(uri_with_db, lines, username, password));
+}
+
+void influxdb::raw::db::with_authentication(std::string const& username, std::string const& password)
+{
+    this->username = username;
+    this->password = password;
 }

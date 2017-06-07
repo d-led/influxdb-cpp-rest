@@ -29,6 +29,9 @@ namespace influxdb {
 
             /// post measurements without waiting for an answer
             void insert_async(std::string const& lines);
+
+            /// set username & password for basic authentication
+            void with_authentication(std::string const& username, std::string const& password);
         };
     }
 }

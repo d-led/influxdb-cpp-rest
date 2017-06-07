@@ -24,7 +24,7 @@ ifeq ($(config),debug_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
   LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -51,7 +51,7 @@ ifeq ($(config),debug_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
   LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -78,7 +78,7 @@ ifeq ($(config),release_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m32 -Wl,-x
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32 -Wl,-x
   LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -105,7 +105,7 @@ ifeq ($(config),release_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/openssl/lib -m64 -Wl,-x
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64 -Wl,-x
   LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
   define PREBUILDCMDS
   endef
