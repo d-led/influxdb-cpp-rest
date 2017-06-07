@@ -80,6 +80,7 @@ void prepare()
     influxdb::api::simple_db api(url, db_name);
     api.with_authentication(username, password);
     api.drop();
+    std::this_thread::sleep_for(std::chrono::milliseconds(101));
     api.create();
     std::this_thread::sleep_for(std::chrono::milliseconds(404));
 }
