@@ -45,7 +45,7 @@ namespace influxdb {
                 >::type* = nullptr
             >
                 key_value_pairs& add(std::string const& key, V const& value) {
-                influxdb::utility::throw_on_invalid_identifier(key);
+                ::influxdb::utility::throw_on_invalid_identifier(key);
 
                 add_comma_if_necessary();
 
@@ -61,7 +61,7 @@ namespace influxdb {
                 >::type* = nullptr
             >
                 key_value_pairs& add(std::string const& key, V const& value) {
-                influxdb::utility::throw_on_invalid_identifier(key);
+                ::influxdb::utility::throw_on_invalid_identifier(key);
 
                 add_comma_if_necessary();
 
@@ -71,7 +71,7 @@ namespace influxdb {
             }
 
             key_value_pairs& add(std::string const& key, std::string const& value) {
-                influxdb::utility::throw_on_invalid_identifier(key);
+                ::influxdb::utility::throw_on_invalid_identifier(key);
 
                 add_comma_if_necessary();
 
@@ -113,7 +113,7 @@ namespace influxdb {
 
             template<typename TMap>
             inline line(std::string const& measurement, TMap const& tags, TMap const& values) {
-                influxdb::utility::throw_on_invalid_identifier(measurement);
+                ::influxdb::utility::throw_on_invalid_identifier(measurement);
 
                 res << measurement;
                 if (!tags.empty()) {
