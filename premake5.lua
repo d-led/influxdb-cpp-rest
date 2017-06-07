@@ -10,12 +10,13 @@ includedirs {
 
 filter 'system:linux'
 		defines {
-			'_GLIBCXX_USE_CXX11_ABI=0',
+			-- '_GLIBCXX_USE_CXX11_ABI=0',
 		}
 filter {}
 
 --linuxbrew
-local cpprestsdk_root = '/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1'
+local cpprestsdk_root_linux = '/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1'
+local cpprestsdk_root_mac = '~/.linuxbrew/Cellar/cpprestsdk/2.9.1'
 
 filter 'system:macosx'
 	includedirs {
@@ -29,11 +30,11 @@ filter 'system:macosx'
 	}
 filter 'system:linux' -- conan install .
 	includedirs {
-		cpprestsdk_root..'/include' --same as macosx, via linuxbrew: brew install gcc cmake cpprestsdk
+		cpprestsdk_root_linux..'/include' --via linuxbrew: brew install gcc cmake cpprestsdk
 	}
 	libdirs {
-		cpprestsdk_root..'/lib',
-		'~/.linuxbrew/lib64',
+		cpprestsdk_root_linux..'/lib',
+		'/home/linuxbrew/.linuxbrew/lib64',
 	}
 filter {}
 

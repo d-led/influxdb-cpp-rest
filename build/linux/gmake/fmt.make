@@ -15,7 +15,7 @@ ifeq ($(config),debug_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Debug
   TARGET = $(TARGETDIR)/libfmt.a
   OBJDIR = ../../../obj/linux/gmake/x32/Debug/fmt
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG
+  DEFINES += -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -24,7 +24,7 @@ ifeq ($(config),debug_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m32
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -42,7 +42,7 @@ ifeq ($(config),debug_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Debug
   TARGET = $(TARGETDIR)/libfmt.a
   OBJDIR = ../../../obj/linux/gmake/x64/Debug/fmt
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG
+  DEFINES += -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -51,7 +51,7 @@ ifeq ($(config),debug_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m64
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -69,7 +69,7 @@ ifeq ($(config),release_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Release
   TARGET = $(TARGETDIR)/libfmt.a
   OBJDIR = ../../../obj/linux/gmake/x32/Release/fmt
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
+  DEFINES +=
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -78,7 +78,7 @@ ifeq ($(config),release_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -s -m32
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
@@ -96,7 +96,7 @@ ifeq ($(config),release_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Release
   TARGET = $(TARGETDIR)/libfmt.a
   OBJDIR = ../../../obj/linux/gmake/x64/Release/fmt
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
+  DEFINES +=
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -105,7 +105,7 @@ ifeq ($(config),release_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
   LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L../../../~/.linuxbrew/lib64 -s -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -s -m64
   LINKCMD = $(AR) -rcs $(TARGET) $(OBJECTS)
   define PREBUILDCMDS
   endef
