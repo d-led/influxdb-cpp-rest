@@ -71,7 +71,7 @@ void influxdb::raw::db::post(string_t const & query)
 
     // synchronous for now
     auto response = client.request(
-        request_from(builder.to_string(),U(""), username, password)
+        request_from(builder.to_string(), "", username, password)
     ).get();
 
     if (response.status_code() != status_codes::OK) {
@@ -87,7 +87,7 @@ string_t influxdb::raw::db::get(string_t const & query)
 
     // synchronous for now
     auto response = client.request(
-        request_from(builder.to_string(),U(""), username, password)
+        request_from(builder.to_string(), "", username, password)
     ).get();
     if (response.status_code() == status_codes::OK)
     {
