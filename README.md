@@ -53,6 +53,16 @@ auto json_response = raw_db.get(query);
 {"results":[{"series":[{"name":"asynctest","columns":["time","count_value"],"values":[["...Z",123456]]}]}]}
 ```
 
+## Authentication
+
+Basic authentication can be used with all API variants:
+
+```cpp
+influxdb::raw::db_utf8 raw_db("http://localhost:8086", "my_db");
+raw_db.with_authentication(username, password);
+auto query = ...
+```
+
 ## Build & Test
 
 The library should be easy to build, given `RxCpp` and `cpprestsdk` can be found. The Visual Studio 2015 solution is self-contained. A locally running, authentication-free instance of InfluxDB is required to run the test.
