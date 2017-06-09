@@ -10,6 +10,8 @@ build_script:
 
     "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe" build\influxdb-cpp-rest.sln /property:Configuration=Release /property:Platform=x64
 
-    wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_windows_amd64.zip
+    appveyor DownloadFile https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_windows_amd64.zip
+
+    7z e influxdb-1.2.4_windows_amd64.zip
 
     src\script\test.bat build\x64\Release
