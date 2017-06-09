@@ -7,6 +7,7 @@ task :default do
     :add_path => 'src/influxdb-cpp-rest',
     :add_path => 'src/demo',
     :add_path => 'src/test',
+    :add_path => 'src/auth_test',
     :output_dir => '.'
   }
 

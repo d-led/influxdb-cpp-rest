@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <chrono>
 #include <type_traits>
 #include "input_sanitizer.h"
 #include <fmt/ostream.h>
@@ -95,6 +96,15 @@ namespace influxdb {
             }
         };
 
+        /// https://docs.influxdata.com/influxdb/v1.2/write_protocols/line_protocol_tutorial/#timestamp
+        struct default_timestamp {
+            inline size_t now() const {
+                return std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::system_clock::now().time_since_epoch()
+                ).count();
+            }
+        };
+
         /// simplest, probably slow implementation
         class line {
             fmt::MemoryWriter res;
@@ -123,6 +133,12 @@ namespace influxdb {
                 if (!values.empty()) {
                     res << " " << values.get();
                 }
+            }
+
+            template<typename TMap,typename TTimestamp>
+            inline line(std::string const& measurement, TMap const& tags, TMap const& values, TTimestamp const& timestamp):
+            line(measurement, tags, values) {
+                res << " " << timestamp.now();
             }
 
         public:

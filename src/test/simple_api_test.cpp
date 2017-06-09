@@ -19,6 +19,7 @@
 using influxdb::api::simple_db;
 using influxdb::api::key_value_pairs;
 using influxdb::api::line;
+using influxdb::api::default_timestamp;
 
 struct simple_connected_test : connected_test {
     simple_db db;
@@ -114,6 +115,42 @@ SCENARIO_METHOD(simple_connected_test, "more than 1000 inserts per second") {
             }
         }
     }
+}
+
+TEST_CASE("Default time stamp is plausible") {
+    auto timestamps = default_timestamp();
+    auto t1 = timestamps.now();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    CHECK(timestamps.now() - t1 > 0);
+}
+
+
+TEST_CASE("Adding a timestamp to a line") {
+    struct dummy_timestamp {
+        std::string stamp;
+        std::string now() const {
+            return stamp;
+        }
+    };
+
+    auto without = line("test",
+                        key_value_pairs("kvp1", 42),
+                        key_value_pairs("kvp2", "hi!")
+                    );
+
+    auto dummy = dummy_timestamp { "12345" };
+
+    auto with = line("test",
+                        key_value_pairs("kvp1", 42),
+                        key_value_pairs("kvp2", "hi!"),
+                        dummy
+                    );
+
+    auto without_timestamp = without.get();
+    auto with_timestamp = with.get();
+    CHECK(with_timestamp.find(without_timestamp) == 0);
+    // same content in the beginning
+    CHECK(with_timestamp.substr(without_timestamp.length()) == " " + dummy.now());
 }
 
 

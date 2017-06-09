@@ -39,6 +39,21 @@ for (int i = 0; i < 123456; i++) {
 }
 ```
 
+## Timestamps
+
+Timestamps can be added as the last parameter to the `line` constructor, and only need to return
+a serializable value on `TTimestamp::now()`. There is a default `std::chrono`-based implementation:
+
+```cpp
+    line(
+      "my_measurements",
+      key_value_pairs("my_count", i % MAX_VALUES_PER_TAG),
+      key_value_pairs("value", "hi!"),
+      default_timestamp()
+//    ^^^^^^^^^^^^^^^^^^^
+    )
+```
+
 ## Query
 
 ```cpp
@@ -55,7 +70,7 @@ auto json_response = raw_db.get(query);
 
 ## Authentication
 
-Basic authentication can be used with all API variants:
+Basic authentication can be used with all API variants
 
 ```cpp
 influxdb::raw::db_utf8 raw_db("http://localhost:8086", "my_db");
