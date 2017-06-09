@@ -28,10 +28,9 @@ install:
   - brew install --verbose cpprestsdk
   - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
   - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
-  - ./influxdb-1.2.4-1/usr/bin/influxd &
   # - 'brew install influxdb'
 
 script:
   # - "ls ~/.linuxbrew/Cellar/*"
   - make -C build/linux/gmake config=release_x64
-  - bin/linux/gmake/x64/Release/test-influxdb-cpp-rest
+  -  ./src/script/test.sh bin/linux/gmake/x64
