@@ -33,4 +33,4 @@ install:
 script:
   # - "ls ~/.linuxbrew/Cellar/*"
   - make -C build/linux/gmake config=release_x64
-  -  /bin/bash -c ./src/script/test.sh bin/linux/gmake/x64
+  - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"
