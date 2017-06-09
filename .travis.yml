@@ -13,6 +13,7 @@ addons:
    - ubuntu-toolchain-r-test
   packages:
    - g++-5
+   - wget
    - libboost1.55-all-dev
 
 cache:
@@ -25,8 +26,12 @@ install:
   - brew update
   - brew install patchelf zlib binutils linux-headers glibc xz gmp mpfr libmpc isl gcc bzip2 boost makedepend openssl pkg-config curl libidn cmake
   - brew install --verbose cpprestsdk
+  - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
+  - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
+  - ./influxdb-1.2.4-1/usr/bin/influxd &
   # - 'brew install influxdb'
 
 script:
   # - "ls ~/.linuxbrew/Cellar/*"
   - make -C build/linux/gmake config=release_x64
+  - bin/linux/gmake/x64/Release/test-influxdb-cpp-rest
