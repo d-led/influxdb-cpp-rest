@@ -305,3 +305,6 @@ $RECYCLE.BIN/
 tmp/
 .influxdb
 influxdb-*
+influx_*
+influx.*
+influxd*
