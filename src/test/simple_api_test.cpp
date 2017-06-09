@@ -58,6 +58,44 @@ TEST_CASE("tags and values should be formatted according to the line protocol") 
 }
 
 
+struct dummy_timestamp {
+    std::string stamp;
+    std::string now() const {
+        return stamp;
+    }
+};
+
+
+TEST_CASE("default time stamp is plausible") {
+    auto timestamps = default_timestamp();
+    auto t1 = timestamps.now();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    CHECK(timestamps.now() - t1 > 0);
+}
+
+
+TEST_CASE("adding a timestamp to a line") {
+    auto without = line("test",
+        key_value_pairs("kvp1", 42),
+        key_value_pairs("kvp2", "hi!")
+    );
+
+    auto dummy = dummy_timestamp{ "12345" };
+
+    auto with = line("test",
+        key_value_pairs("kvp1", 42),
+        key_value_pairs("kvp2", "hi!"),
+        dummy
+    );
+
+    auto without_timestamp = without.get();
+    auto with_timestamp = with.get();
+    CHECK(with_timestamp.find(without_timestamp) == 0);
+    // same content in the beginning
+    CHECK(with_timestamp.substr(without_timestamp.length()) == " " + dummy.now());
+}
+
+
 TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api", "[connected]") {
     db.insert(line("test", key_value_pairs("mytag", 424242L), key_value_pairs("value", "hello world!")));
 
@@ -67,6 +105,24 @@ TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api",
     CHECK(res.contains("424242i"));
     CHECK(res.contains("mytag"));
     CHECK(res.contains("hello world!"));
+}
+
+
+TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api with timestamps", "[connected]") {
+    auto dummy = dummy_timestamp{ "63169445000000000" }; //1972-01-02
+    db.insert(line("test_timestamp", key_value_pairs("a1", "b2"), key_value_pairs("c3", "d4"), dummy));
+    dummy.stamp = "97553045000000000"; //1973-02-03
+    db.insert(line("test_timestamp", key_value_pairs("e1", "f2"), key_value_pairs("g3", "h4"), dummy));
+    
+    wait_for([] {return false; }, 3);
+
+    auto res = result("test_timestamp");
+    CHECK(res.contains("1972-01-02"));
+    CHECK(res.contains("1973-02-03"));
+    CHECK(res.contains("a1"));
+    CHECK(res.contains("d4"));
+    CHECK(res.contains("e1"));
+    CHECK(res.contains("h4"));
 }
 
 
@@ -116,43 +172,6 @@ SCENARIO_METHOD(simple_connected_test, "more than 1000 inserts per second") {
         }
     }
 }
-
-TEST_CASE("Default time stamp is plausible") {
-    auto timestamps = default_timestamp();
-    auto t1 = timestamps.now();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    CHECK(timestamps.now() - t1 > 0);
-}
-
-
-TEST_CASE("Adding a timestamp to a line") {
-    struct dummy_timestamp {
-        std::string stamp;
-        std::string now() const {
-            return stamp;
-        }
-    };
-
-    auto without = line("test",
-                        key_value_pairs("kvp1", 42),
-                        key_value_pairs("kvp2", "hi!")
-                    );
-
-    auto dummy = dummy_timestamp { "12345" };
-
-    auto with = line("test",
-                        key_value_pairs("kvp1", 42),
-                        key_value_pairs("kvp2", "hi!"),
-                        dummy
-                    );
-
-    auto without_timestamp = without.get();
-    auto with_timestamp = with.get();
-    CHECK(with_timestamp.find(without_timestamp) == 0);
-    // same content in the beginning
-    CHECK(with_timestamp.substr(without_timestamp.length()) == " " + dummy.now());
-}
-
 
 simple_connected_test::simple_connected_test() :
     db("http://localhost:8086", db_name)
