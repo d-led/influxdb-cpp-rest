@@ -51,7 +51,7 @@ struct influxdb::async_api::simple_db::impl {
             });
 
             listener = incoming_requests
-                .window_with_time_or_count(window_max_ms, window_max_lines, rxcpp::synchronize_new_thread())
+                .window_with_time_or_count(window_max_ms, (int)window_max_lines, rxcpp::synchronize_new_thread())
                 .subscribe(
                     [this](rxcpp::observable<std::string> window) {
                         window.scan(
