@@ -91,3 +91,8 @@ The easiest way to install it on MacOS X and Linux turned out to be via [Homebre
 Once the install `brew install cpprestsdk` succeeds, build: `make -C build/<platform>/gmake config=release_x64` and run the test.
 
 If the build fails due to failed dependencies, check [premake5.lua](premake5.lua) for the build config, and regenerate makefiles if necessary via `premake/premake5<os-specific> gmake`
+
+## Thanks to
+
+- @kirkshoop for indispensable help with [RxCpp](https://github.com/Reactive-Extensions/RxCpp)
+- @nikkov for pointing out the missing essential features
