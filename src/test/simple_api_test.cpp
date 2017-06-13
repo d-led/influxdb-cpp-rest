@@ -108,6 +108,33 @@ TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api",
 }
 
 
+TEST_CASE_METHOD(simple_connected_test, "inserting multiple lines in one call") {
+    auto l = line
+        ("test1", key_value_pairs("a1", "b1"), key_value_pairs("a2", "b2"), dummy_timestamp { "63169445000000000" })
+        ("test2", key_value_pairs("a3", "b3"), key_value_pairs("a4", "b5"))
+        ("test2", key_value_pairs("a6", "b6"), key_value_pairs("a7", "b7"))
+        ;
+
+    CHECK(l.get().find("63169445000000000") != std::string::npos);
+    CHECK(l.get().find("b5") != std::string::npos);
+    CHECK(l.get().find("b2") != std::string::npos);
+    CHECK(l.get().find("a7") != std::string::npos);
+    CHECK(l.get().find("\n") != std::string::npos);
+
+    db.insert(l);
+
+    wait_for([] {return false; }, 3);
+
+    auto res1 = result("test1");
+    CHECK(res1.contains("a1"));
+    CHECK(res1.contains("b2"));
+
+    auto res2 = result("test2");
+    CHECK(res2.contains("a6"));
+    CHECK(res2.contains("b7"));
+}
+
+
 TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api with timestamps", "[connected]") {
     auto dummy = dummy_timestamp{ "63169445000000000" }; //1972-01-02
     db.insert(line("test_timestamp", key_value_pairs("a1", "b2"), key_value_pairs("c3", "d4"), dummy));

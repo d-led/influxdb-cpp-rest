@@ -141,6 +141,17 @@ namespace influxdb {
                 res << " " << timestamp.now();
             }
 
+            template<typename TMap>
+            inline line& operator()(std::string const& measurement, TMap const& tags, TMap const& values) {
+                res << "\n" << line(measurement, tags, values).get();
+                return *this;
+            }
+
+            template<typename TMap, typename TTimestamp>
+            inline line& operator()(std::string const& measurement, TMap const& tags, TMap const& values, TTimestamp const& timestamp) {
+                res << "\n" << line(measurement, tags, values,timestamp).get();
+                return *this;
+            }
         public:
             inline std::string get() const {
                 return res.str();
