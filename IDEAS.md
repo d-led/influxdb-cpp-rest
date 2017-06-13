@@ -1,3 +1,6 @@
 - [ ] Safe C wrapper (i.e. as a dynamic lib)
 - [ ] async error callback
 - [ ] disable SSL certificate checking
+- [ ] #2 Add a Go-based client backend via cgo
+ - [official go client](https://github.com/influxdata/influxdb/tree/master/client)
+ - [building shared libraries in go](https://www.darkcoding.net/software/building-shared-libraries-in-go-part-1/)
