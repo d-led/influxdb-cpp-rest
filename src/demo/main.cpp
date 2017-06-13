@@ -37,6 +37,14 @@ int main(int argc, char* argv[])
         //             "values":[["2016-12-09T20:24:18.8239801Z",42],["2016-12-09T20:24:18.9026688Z",41]]}]}]}
 
         api.drop();
+
+        // multiple lines formatted for one synchronous call:
+        // multiple,v1=1i
+        // multiple,v2=2i
+        std::cout << line
+            ("multiple", key_value_pairs("v1", 1), key_value_pairs())
+            ("multiple", key_value_pairs("v2", 2), key_value_pairs())
+        .get() << std::endl;
     }
     catch (std::exception const& e)
     {

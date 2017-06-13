@@ -54,6 +54,17 @@ a serializable value on `TTimestamp::now()`. There is a default `std::chrono`-ba
     )
 ```
 
+
+## Multiple lines in synchronous API
+
+Add lines using the `()` operator on the line:
+
+```cpp
+  line
+    ("multiple", key_value_pairs("v1", 1), key_value_pairs())
+    ("multiple", key_value_pairs("v2", 2), key_value_pairs())
+```
+
 ## Query
 
 ```cpp
