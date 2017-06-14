@@ -140,7 +140,7 @@ TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api w
     db.insert(line("test_timestamp", key_value_pairs("a1", "b2"), key_value_pairs("c3", "d4"), dummy));
     dummy.stamp = "97553045000000000"; //1973-02-03
     db.insert(line("test_timestamp", key_value_pairs("e1", "f2"), key_value_pairs("g3", "h4"), dummy));
-    
+
     wait_for([] {return false; }, 3);
 
     auto res = result("test_timestamp");
@@ -157,10 +157,10 @@ SCENARIO_METHOD(simple_connected_test, "more than 1000 inserts per second") {
     GIVEN("A connection to the db") {
         influxdb::async_api::simple_db asyncdb("http://localhost:8086", db_name);
         using Clock = std::chrono::high_resolution_clock;
-        auto many_times = 123456_times;
+        auto many_times = 111000_times;
 
         //https://www.influxdata.com/influxdb-1-1-released-with-up-to-60-performance-increase-and-new-query-functionality/
-        const int MAX_VALUES_PER_TAG = 100000;
+        const int MAX_VALUES_PER_TAG = 50000; //actually, 100000
 
         WHEN("I send a large number of unique entries") {
             auto t1 = Clock::now();
@@ -183,7 +183,7 @@ SCENARIO_METHOD(simple_connected_test, "more than 1000 inserts per second") {
                 AND_THEN("All entries arrive at the database") {
                     // wait for asynchronous fill
                     auto query = std::string("select count(*) from ") + db_name + "..asynctest";
-                    wait_for([this, query, many_times] { return raw_db.get(query).find(std::to_string(many_times.count)) != std::string::npos; }, 100);
+                    wait_for([this, query, many_times] { return raw_db.get(query).find(std::to_string(many_times.count)) != std::string::npos; }, 200);
                     bool all_entries_arrived = raw_db.get(query).find(std::to_string(many_times.count)) != std::string::npos;
 
                     CHECK(all_entries_arrived);
