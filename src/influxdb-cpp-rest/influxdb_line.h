@@ -125,6 +125,11 @@ namespace influxdb {
                 res << raw;
             }
 
+            template<typename TTimestamp>
+            explicit line(std::string const& raw, TTimestamp const& timestamp) {
+                res << raw << " " << timestamp.now();
+            }
+
             template<typename TMap>
             inline line(std::string const& measurement, TMap const& tags, TMap const& values) {
                 ::influxdb::utility::throw_on_invalid_identifier(measurement);

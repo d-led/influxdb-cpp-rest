@@ -43,7 +43,7 @@ struct async_c_test
 TEST_CASE_METHOD(async_c_test, "post values from C asynchronously") {
     SECTION("insert some lines") {
         influx_c_rest_async_insert(asyncdb.get(), "test,kvp1=42i kvp2=\"hi!\"");
-        influx_c_rest_async_insert(asyncdb.get(), "test,kvp1=33i kvp2=\"ho!\"");
+        influx_c_rest_async_insert_default_timestamp(asyncdb.get(), "test,kvp1=33i kvp2=\"ho!\"");
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         SECTION("query") {

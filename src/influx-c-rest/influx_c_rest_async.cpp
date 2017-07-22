@@ -19,6 +19,7 @@ extern "C" {
 
     struct _influx_c_rest_async_t {
         std::unique_ptr<influxdb::async_api::simple_db> asyncdb;
+        influxdb::api::default_timestamp timestamp;
     };
 
     extern "C" INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new(const char* url, const char* name) {
@@ -85,4 +86,10 @@ extern "C" {
         self->asyncdb->insert(influxdb::api::line(std::string(line)));
     }
 
+    extern "C" INFLUX_C_REST void influx_c_rest_async_insert_default_timestamp(influx_c_rest_async_t * self, const char* line) {
+        assert(self);
+        assert(self->asyncdb.get());
+        assert(line);
+        self->asyncdb->insert(influxdb::api::line(std::string(line), self->timestamp));
+    }
 }

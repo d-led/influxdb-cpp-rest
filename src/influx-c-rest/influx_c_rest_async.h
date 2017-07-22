@@ -19,4 +19,5 @@ extern "C" {
     INFLUX_C_REST int influx_c_rest_async_drop(influx_c_rest_async_t * self);
     INFLUX_C_REST int influx_c_rest_async_create(influx_c_rest_async_t * self);
     INFLUX_C_REST void influx_c_rest_async_insert(influx_c_rest_async_t * self, const char* line);
+    INFLUX_C_REST void influx_c_rest_async_insert_default_timestamp(influx_c_rest_async_t * self, const char* line);
 }
