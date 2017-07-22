@@ -14,6 +14,7 @@ extern "C" {
 
     /* lifetime */
     INFLUX_C_REST influx_c_rest_query_t *influx_c_rest_query_new(const char* url, const char* name);
+    INFLUX_C_REST influx_c_rest_query_t *influx_c_rest_query_new_auth(const char* url, const char* name, const char* username, const char* password);
     INFLUX_C_REST void influx_c_rest_query_destroy(influx_c_rest_query_t * self);
     INFLUX_C_REST void influx_c_rest_query_result_destroy(influx_c_rest_result_t result);
 

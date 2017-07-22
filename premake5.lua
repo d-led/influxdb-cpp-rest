@@ -161,7 +161,10 @@ includedirs {
 
 use_standard('c++14')
 
-links { 'influxdb-cpp-rest' }
+links {
+	'influxdb-cpp-rest',
+	'influx-c-rest'
+}
 
 default_links()
 

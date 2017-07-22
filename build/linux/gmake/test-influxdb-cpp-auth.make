@@ -22,9 +22,9 @@ ifeq ($(config),debug_x32)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
-  LDDEPS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m32
+  LIBS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libinflux-c-rest.so ../../../bin/linux/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
+  LDDEPS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libinflux-c-rest.so ../../../bin/linux/gmake/x32/Debug/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -Wl,-rpath,'$$ORIGIN' -m32
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -49,9 +49,9 @@ ifeq ($(config),debug_x64)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
-  LDDEPS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m64
+  LIBS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libinflux-c-rest.so ../../../bin/linux/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
+  LDDEPS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libinflux-c-rest.so ../../../bin/linux/gmake/x64/Debug/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -Wl,-rpath,'$$ORIGIN' -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -76,9 +76,9 @@ ifeq ($(config),release_x32)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
-  LDDEPS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m32 -s
+  LIBS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libinflux-c-rest.so ../../../bin/linux/gmake/x32/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
+  LDDEPS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libinflux-c-rest.so ../../../bin/linux/gmake/x32/Release/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -Wl,-rpath,'$$ORIGIN' -m32 -s
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -103,9 +103,9 @@ ifeq ($(config),release_x64)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
-  LDDEPS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m64 -s
+  LIBS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libinflux-c-rest.so ../../../bin/linux/gmake/x64/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
+  LDDEPS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libinflux-c-rest.so ../../../bin/linux/gmake/x64/Release/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -Wl,-rpath,'$$ORIGIN' -m64 -s
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef

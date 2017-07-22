@@ -38,6 +38,16 @@ extern "C" {
         }
     }
 
+    extern "C" INFLUX_C_REST influx_c_rest_query_t *influx_c_rest_query_new_auth(const char* url, const char* name, const char* username, const char* password) {
+        assert(username);
+        assert(password);
+        auto res = influx_c_rest_query_new(url, name);
+        if (res) {
+            res->raw_db->with_authentication(username, password);
+        }
+        return res;
+    }
+
     extern "C" INFLUX_C_REST void influx_c_rest_query_destroy(influx_c_rest_query_t * self) {
         assert(self);
         delete self;

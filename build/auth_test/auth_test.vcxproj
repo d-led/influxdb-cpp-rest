@@ -161,6 +161,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\influx-c-rest\influx-c-rest.vcxproj">
+      <Project>{b552a500-360a-4b48-910e-9cdae0e453e8}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\influxdb-cpp-rest\influxdb-cpp-rest.vcxproj">
       <Project>{7b5de2e0-6c2b-4a6e-a347-a7bfcc833848}</Project>
     </ProjectReference>

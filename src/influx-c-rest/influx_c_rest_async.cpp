@@ -39,6 +39,16 @@ extern "C" {
         }
     }
 
+    extern "C" INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new_auth(const char* url, const char* name, const char* username, const char* password) {
+        assert(username);
+        assert(password);
+        auto res = influx_c_rest_async_new(url, name);
+        if (res) {
+            res->asyncdb->with_authentication(username, password);
+        }
+        return res;
+    }
+
     extern "C" INFLUX_C_REST int influx_c_rest_async_drop(influx_c_rest_async_t * self) {
         assert(self);
         assert(self->asyncdb.get());

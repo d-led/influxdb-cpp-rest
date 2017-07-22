@@ -12,6 +12,7 @@ extern "C" {
 
     /* lifetime */
     INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new(const char* url, const char* name);
+    INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new_auth(const char* url, const char* name, const char* username, const char* password);
     INFLUX_C_REST void influx_c_rest_async_destroy(influx_c_rest_async_t * self);
 
     /* behavior */
