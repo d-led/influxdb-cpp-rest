@@ -13,10 +13,10 @@ endif
 ifeq ($(config),debug_x32)
   RESCOMP = windres
   TARGETDIR = ../../../bin/linux/gmake/x32/Debug
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/linux/gmake/x32/Debug/test-influxdb-cpp-rest
-  DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include
+  TARGET = $(TARGETDIR)/libinflux-c-rest.so
+  OBJDIR = ../../../obj/linux/gmake/x32/Debug/influx-c-rest
+  DEFINES += -D_DEBUG -DBUILDING_INFLUX_C_REST
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
@@ -24,7 +24,7 @@ ifeq ($(config),debug_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m32 -shared -Wl,-soname=libinflux-c-rest.so
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -40,10 +40,10 @@ endif
 ifeq ($(config),debug_x64)
   RESCOMP = windres
   TARGETDIR = ../../../bin/linux/gmake/x64/Debug
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/linux/gmake/x64/Debug/test-influxdb-cpp-rest
-  DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include
+  TARGET = $(TARGETDIR)/libinflux-c-rest.so
+  OBJDIR = ../../../obj/linux/gmake/x64/Debug/influx-c-rest
+  DEFINES += -D_DEBUG -DBUILDING_INFLUX_C_REST
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
@@ -51,7 +51,7 @@ ifeq ($(config),debug_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m64 -shared -Wl,-soname=libinflux-c-rest.so
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -67,10 +67,10 @@ endif
 ifeq ($(config),release_x32)
   RESCOMP = windres
   TARGETDIR = ../../../bin/linux/gmake/x32/Release
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/linux/gmake/x32/Release/test-influxdb-cpp-rest
-  DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include
+  TARGET = $(TARGETDIR)/libinflux-c-rest.so
+  OBJDIR = ../../../obj/linux/gmake/x32/Release/influx-c-rest
+  DEFINES += -DBUILDING_INFLUX_C_REST
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
@@ -78,7 +78,7 @@ ifeq ($(config),release_x32)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x32/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m32 -s
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m32 -shared -Wl,-soname=libinflux-c-rest.so -s
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -94,10 +94,10 @@ endif
 ifeq ($(config),release_x64)
   RESCOMP = windres
   TARGETDIR = ../../../bin/linux/gmake/x64/Release
-  TARGET = $(TARGETDIR)/test-influxdb-cpp-rest
-  OBJDIR = ../../../obj/linux/gmake/x64/Release/test-influxdb-cpp-rest
-  DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include -I../../../deps/catch/single_include
+  TARGET = $(TARGETDIR)/libinflux-c-rest.so
+  OBJDIR = ../../../obj/linux/gmake/x64/Release/influx-c-rest
+  DEFINES += -DBUILDING_INFLUX_C_REST
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
@@ -105,7 +105,7 @@ ifeq ($(config),release_x64)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libfmt.a -lssl -lcrypto -lboost_random -lboost_chrono -lboost_thread-mt -lboost_system-mt -lboost_regex -lboost_filesystem -lcpprest -lpthread
   LDDEPS += ../../../bin/linux/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/linux/gmake/x64/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m64 -s
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1/lib -L/home/linuxbrew/.linuxbrew/lib64 -m64 -shared -Wl,-soname=libinflux-c-rest.so -s
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -119,11 +119,8 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/fixtures.o \
-	$(OBJDIR)/sanitizer_test.o \
-	$(OBJDIR)/simple_api_test.o \
-	$(OBJDIR)/test_main.o \
-	$(OBJDIR)/utf8_client_test.o \
+	$(OBJDIR)/influx_c_rest_async.o \
+	$(OBJDIR)/influx_c_rest_query.o \
 
 RESOURCES := \
 
@@ -138,7 +135,7 @@ ifeq (/bin,$(findstring /bin,$(SHELL)))
 endif
 
 $(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking test-influxdb-cpp-rest
+	@echo Linking influx-c-rest
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -159,7 +156,7 @@ else
 endif
 
 clean:
-	@echo Cleaning test-influxdb-cpp-rest
+	@echo Cleaning influx-c-rest
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -181,19 +178,10 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
 endif
 
-$(OBJDIR)/fixtures.o: ../../../src/test/fixtures.cpp
+$(OBJDIR)/influx_c_rest_async.o: ../../../src/influx-c-rest/influx_c_rest_async.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/sanitizer_test.o: ../../../src/test/sanitizer_test.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/simple_api_test.o: ../../../src/test/simple_api_test.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/test_main.o: ../../../src/test/test_main.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/utf8_client_test.o: ../../../src/test/utf8_client_test.cpp
+$(OBJDIR)/influx_c_rest_query.o: ../../../src/influx-c-rest/influx_c_rest_query.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

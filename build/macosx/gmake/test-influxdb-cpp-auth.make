@@ -11,20 +11,28 @@ endif
 .PHONY: clean prebuild prelink
 
 ifeq ($(config),debug_x32)
-  RESCOMP = windres
+  ifeq ($(origin CC), default)
+    CC = clang
+  endif
+  ifeq ($(origin CXX), default)
+    CXX = clang++
+  endif
+  ifeq ($(origin AR), default)
+    AR = ar
+  endif
   TARGETDIR = ../../../bin/macosx/gmake/x32/Debug
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/macosx/gmake/x32/Debug/test-influxdb-cpp-auth
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -g -std=c++14
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
+  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -38,20 +46,28 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 endif
 
 ifeq ($(config),debug_x64)
-  RESCOMP = windres
+  ifeq ($(origin CC), default)
+    CC = clang
+  endif
+  ifeq ($(origin CXX), default)
+    CXX = clang++
+  endif
+  ifeq ($(origin AR), default)
+    AR = ar
+  endif
   TARGETDIR = ../../../bin/macosx/gmake/x64/Debug
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/macosx/gmake/x64/Debug/test-influxdb-cpp-auth
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++14
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
+  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -65,20 +81,28 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 endif
 
 ifeq ($(config),release_x32)
-  RESCOMP = windres
+  ifeq ($(origin CC), default)
+    CC = clang
+  endif
+  ifeq ($(origin CXX), default)
+    CXX = clang++
+  endif
+  ifeq ($(origin AR), default)
+    AR = ar
+  endif
   TARGETDIR = ../../../bin/macosx/gmake/x32/Release
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/macosx/gmake/x32/Release/test-influxdb-cpp-auth
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -std=c++14
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
+  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32 -Wl,-x
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -92,20 +116,28 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 endif
 
 ifeq ($(config),release_x64)
-  RESCOMP = windres
+  ifeq ($(origin CC), default)
+    CC = clang
+  endif
+  ifeq ($(origin CXX), default)
+    CXX = clang++
+  endif
+  ifeq ($(origin AR), default)
+    AR = ar
+  endif
   TARGETDIR = ../../../bin/macosx/gmake/x64/Release
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/macosx/gmake/x64/Release/test-influxdb-cpp-auth
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++14
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
+  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
   LDDEPS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64 -Wl,-x
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -134,7 +166,7 @@ ifeq (/bin,$(findstring /bin,$(SHELL)))
   SHELLTYPE := posix
 endif
 
-$(TARGET): $(GCH) $(OBJECTS) $(LDDEPS) $(RESOURCES) ${CUSTOMFILES}
+$(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES)
 	@echo Linking test-influxdb-cpp-auth
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)

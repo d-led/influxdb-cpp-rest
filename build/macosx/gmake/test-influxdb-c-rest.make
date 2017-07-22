@@ -21,19 +21,19 @@ ifeq ($(config),debug_x32)
     AR = ar
   endif
   TARGETDIR = ../../../bin/macosx/gmake/x32/Debug
-  TARGET = $(TARGETDIR)/libfmt.a
-  OBJDIR = ../../../obj/macosx/gmake/x32/Debug/fmt
+  TARGET = $(TARGETDIR)/test-influxdb-c-rest
+  OBJDIR = ../../../obj/macosx/gmake/x32/Debug/test-influxdb-c-rest
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS +=
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
-  LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
+  LIBS += ../../../bin/macosx/gmake/x32/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x32/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Debug/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m32
+  LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -56,19 +56,19 @@ ifeq ($(config),debug_x64)
     AR = ar
   endif
   TARGETDIR = ../../../bin/macosx/gmake/x64/Debug
-  TARGET = $(TARGETDIR)/libfmt.a
-  OBJDIR = ../../../obj/macosx/gmake/x64/Debug/fmt
+  TARGET = $(TARGETDIR)/test-influxdb-c-rest
+  OBJDIR = ../../../obj/macosx/gmake/x64/Debug/test-influxdb-c-rest
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS +=
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
-  LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
+  LIBS += ../../../bin/macosx/gmake/x64/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x64/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Debug/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m64
+  LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -91,19 +91,19 @@ ifeq ($(config),release_x32)
     AR = ar
   endif
   TARGETDIR = ../../../bin/macosx/gmake/x32/Release
-  TARGET = $(TARGETDIR)/libfmt.a
-  OBJDIR = ../../../obj/macosx/gmake/x32/Release/fmt
+  TARGET = $(TARGETDIR)/test-influxdb-c-rest
+  OBJDIR = ../../../obj/macosx/gmake/x32/Release/test-influxdb-c-rest
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS +=
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
-  LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
+  LIBS += ../../../bin/macosx/gmake/x32/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x32/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Release/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m32
+  LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -126,19 +126,19 @@ ifeq ($(config),release_x64)
     AR = ar
   endif
   TARGETDIR = ../../../bin/macosx/gmake/x64/Release
-  TARGET = $(TARGETDIR)/libfmt.a
-  OBJDIR = ../../../obj/macosx/gmake/x64/Release/fmt
+  TARGET = $(TARGETDIR)/test-influxdb-c-rest
+  OBJDIR = ../../../obj/macosx/gmake/x64/Release/test-influxdb-c-rest
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include
+  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I/usr/local/include -I/usr/local/opt/openssl/include -I../../../deps/catch/single_include
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS +=
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
-  LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
+  LIBS += ../../../bin/macosx/gmake/x64/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x64/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Release/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m64
+  LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -151,10 +151,8 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/format.o \
-	$(OBJDIR)/ostream.o \
-	$(OBJDIR)/posix.o \
-	$(OBJDIR)/printf.o \
+	$(OBJDIR)/async_c_test.o \
+	$(OBJDIR)/test_main.o \
 
 RESOURCES := \
 
@@ -169,7 +167,7 @@ ifeq (/bin,$(findstring /bin,$(SHELL)))
 endif
 
 $(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking fmt
+	@echo Linking test-influxdb-c-rest
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -190,7 +188,7 @@ else
 endif
 
 clean:
-	@echo Cleaning fmt
+	@echo Cleaning test-influxdb-c-rest
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -212,16 +210,10 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
 endif
 
-$(OBJDIR)/format.o: ../../../deps/fmt/fmt/format.cc
+$(OBJDIR)/async_c_test.o: ../../../src/test-shared/async_c_test.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/ostream.o: ../../../deps/fmt/fmt/ostream.cc
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/posix.o: ../../../deps/fmt/fmt/posix.cc
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/printf.o: ../../../deps/fmt/fmt/printf.cc
+$(OBJDIR)/test_main.o: ../../../src/test-shared/test_main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

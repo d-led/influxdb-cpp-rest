@@ -2,10 +2,13 @@ include 'premake'
 
 make_solution 'influxdb-cpp-rest'
 
+pic "On"
+
 includedirs {
 	'deps/fmt',
 	'deps/rxcpp/Rx/v2/src/rxcpp',
-	'src/influxdb-cpp-rest'
+	'src/influxdb-cpp-rest',
+	'src/influxdb-c-rest',
 }
 
 filter 'system:linux'
@@ -83,6 +86,23 @@ make_static_lib('influxdb-cpp-rest', {
 
 use_standard('c++14')
 
+
+--------------------------------------------------------------------
+make_shared_lib('influx-c-rest', {
+	'src/influx-c-rest/**.*'
+})
+
+defines {
+	'BUILDING_INFLUX_C_REST'
+}
+
+use_standard('c++14')
+
+links { 'influxdb-cpp-rest' }
+
+default_links()
+
+
 --------------------------------------------------------------------
 make_console_app('demo', {
 	'src/demo/**.*'
@@ -93,6 +113,23 @@ use_standard('c++14')
 links { 'influxdb-cpp-rest' }
 
 default_links()
+
+
+--------------------------------------------------------------------
+make_console_app('test-influxdb-c-rest', {
+	'src/test-shared/**.*'
+})
+
+includedirs {
+	'deps/catch/single_include'
+}
+
+use_standard('c++14')
+
+links { 'influx-c-rest' }
+
+default_links()
+
 
 --------------------------------------------------------------------
 make_console_app('test-influxdb-cpp-rest', {
