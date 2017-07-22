@@ -87,7 +87,7 @@ ifneq (,$(test_influxdb_cpp_rest_config))
 	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-rest.make config=$(test_influxdb_cpp_rest_config)
 endif
 
-test-influxdb-cpp-auth: influxdb-cpp-rest fmt
+test-influxdb-cpp-auth: influxdb-cpp-rest influx-c-rest fmt
 ifneq (,$(test_influxdb_cpp_auth_config))
 	@echo "==== Building test-influxdb-cpp-auth ($(test_influxdb_cpp_auth_config)) ===="
 	@${MAKE} --no-print-directory -C . -f test-influxdb-cpp-auth.make config=$(test_influxdb_cpp_auth_config)

@@ -30,9 +30,9 @@ ifeq ($(config),debug_x32)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
-  LDDEPS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
+  LIBS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x32/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Debug/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m32
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -65,9 +65,9 @@ ifeq ($(config),debug_x64)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
-  LDDEPS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
+  LIBS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Debug/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x64/Debug/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Debug/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Debug/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -100,9 +100,9 @@ ifeq ($(config),release_x32)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
-  LDDEPS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m32
+  LIBS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x32/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x32/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x32/Release/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m32
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -135,9 +135,9 @@ ifeq ($(config),release_x64)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
-  LDDEPS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libfmt.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -m64
+  LIBS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Release/libfmt.a -lssl -lcrypto -lcpprest -lboost_thread-mt -lboost_system-mt -lboost_chrono
+  LDDEPS += ../../../bin/macosx/gmake/x64/Release/libinfluxdb-cpp-rest.a ../../../bin/macosx/gmake/x64/Release/libinflux-c-rest.dylib ../../../bin/macosx/gmake/x64/Release/libfmt.a
+  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib -L/usr/local/opt/icu4c/lib -L/usr/local/opt/openssl/lib -Wl,-rpath,'@loader_path/.' -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
   define PREBUILDCMDS
   endef
