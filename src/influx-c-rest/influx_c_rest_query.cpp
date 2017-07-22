@@ -21,7 +21,7 @@ extern "C" {
         std::unique_ptr<influxdb::raw::db_utf8> raw_db;
     };
 
-    INFLUX_C_REST influx_c_rest_query_t *influx_c_rest_query_new(const char* url, const char* name) {
+    extern "C" INFLUX_C_REST influx_c_rest_query_t *influx_c_rest_query_new(const char* url, const char* name) {
         assert(url);
         assert(name);
 
@@ -38,17 +38,17 @@ extern "C" {
         }
     }
 
-    INFLUX_C_REST void influx_c_rest_query_destroy(influx_c_rest_query_t * self) {
+    extern "C" INFLUX_C_REST void influx_c_rest_query_destroy(influx_c_rest_query_t * self) {
         assert(self);
         delete self;
     }
 
-    INFLUX_C_REST void influx_c_rest_query_result_destroy(influx_c_rest_result_t result) {
+    extern "C" INFLUX_C_REST void influx_c_rest_query_result_destroy(influx_c_rest_result_t result) {
         assert(result);
         free(result);
     }
 
-    INFLUX_C_REST influx_c_rest_result_t influx_c_rest_query_get(influx_c_rest_query_t * self, const char* query) {
+    extern "C" INFLUX_C_REST influx_c_rest_result_t influx_c_rest_query_get(influx_c_rest_query_t * self, const char* query) {
         assert(self);
         assert(self->raw_db);
         assert(query);

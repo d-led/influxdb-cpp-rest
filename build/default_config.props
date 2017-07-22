@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\influxdb-cpp-rest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\influxdb-cpp-rest;$(SolutionDir)src\influx-c-rest</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
