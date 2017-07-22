@@ -304,7 +304,3 @@ $RECYCLE.BIN/
 .vagrant/
 tmp/
 .influxdb
-influxdb-*
-influx_*
-influx.*
-influxd*

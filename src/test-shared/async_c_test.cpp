@@ -7,13 +7,10 @@
 #include <catch.hpp>
 #include "../influx-c-rest/influx_c_rest_async.h"
 #include "../influx-c-rest/influx_c_rest_query.h"
-#include "../influxdb-cpp-rest/influxdb_line.h"
 
 #include <memory>
 #include <chrono>
 #include <thread>
-
-using namespace influxdb::api;
 
 struct async_c_test
 {
@@ -29,8 +26,10 @@ struct async_c_test
         REQUIRE(asyncdb.get());
 
         influx_c_rest_async_drop(asyncdb.get());
+        // todo: wait loops
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         CHECK(influx_c_rest_async_create(asyncdb.get()) == 0);
-
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
         query = std::shared_ptr<influx_c_rest_query_t>(
             influx_c_rest_query_new("http://localhost:8086","c_test"),
@@ -46,5 +45,20 @@ TEST_CASE_METHOD(async_c_test, "post values from C asynchronously") {
         influx_c_rest_async_insert(asyncdb.get(), "test,kvp1=42i kvp2=\"hi!\"");
         influx_c_rest_async_insert(asyncdb.get(), "test,kvp1=33i kvp2=\"ho!\"");
         std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        SECTION("query") {
+            auto res = std::shared_ptr<influx_c_rest_result_vt>(
+                influx_c_rest_query_get(query.get(),"select * from c_test..test"),
+                influx_c_rest_query_result_destroy
+            );
+            REQUIRE(res.get());
+
+            auto s = std::string(res.get());
+
+            CHECK(s.find("42i")!=std::string::npos);
+            CHECK(s.find("33i")!=std::string::npos);
+            CHECK(s.find("hi!")!=std::string::npos);
+            CHECK(s.find("ho!")!=std::string::npos);
+        }
     }
 }
