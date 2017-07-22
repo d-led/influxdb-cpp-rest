@@ -21,7 +21,7 @@ extern "C" {
         std::unique_ptr<influxdb::async_api::simple_db> asyncdb;
     };
 
-    INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new(const char* url, const char* name) {
+    extern "C" INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new(const char* url, const char* name) {
         assert(url);
         assert(name);
 
@@ -39,7 +39,7 @@ extern "C" {
         }
     }
 
-    INFLUX_C_REST int influx_c_rest_async_drop(influx_c_rest_async_t * self) {
+    extern "C" INFLUX_C_REST int influx_c_rest_async_drop(influx_c_rest_async_t * self) {
         assert(self);
         assert(self->asyncdb.get());
         try {
@@ -51,7 +51,7 @@ extern "C" {
         }
     }
 
-    INFLUX_C_REST int influx_c_rest_async_create(influx_c_rest_async_t * self) {
+    extern "C" INFLUX_C_REST int influx_c_rest_async_create(influx_c_rest_async_t * self) {
         assert(self);
         assert(self->asyncdb.get());
         try {
@@ -63,12 +63,12 @@ extern "C" {
         }
     }
 
-    INFLUX_C_REST void influx_c_rest_async_destroy(influx_c_rest_async_t * self) {
+    extern "C" INFLUX_C_REST void influx_c_rest_async_destroy(influx_c_rest_async_t * self) {
         assert(self);
         delete self;
     }
 
-    INFLUX_C_REST void influx_c_rest_async_insert(influx_c_rest_async_t * self, const char* line) {
+    extern "C" INFLUX_C_REST void influx_c_rest_async_insert(influx_c_rest_async_t * self, const char* line) {
         assert(self);
         assert(self->asyncdb.get());
         assert(line);
