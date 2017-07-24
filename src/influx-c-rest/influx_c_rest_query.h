@@ -6,7 +6,9 @@
 
 #include "influx_c_rest_api.h"
 
+#if defined(__cplusplus)
 extern "C" {
+#endif
 
     typedef struct _influx_c_rest_query_t influx_c_rest_query_t;
     typedef char* influx_c_rest_result_t;
@@ -20,4 +22,7 @@ extern "C" {
 
     /* behavior */
     INFLUX_C_REST influx_c_rest_result_t influx_c_rest_query_get(influx_c_rest_query_t * self, const char* query);
+
+#if defined(__cplusplus)
 }
+#endif

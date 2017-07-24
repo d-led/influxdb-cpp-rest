@@ -6,7 +6,9 @@
 
 #include "influx_c_rest_api.h"
 
+#if defined(__cplusplus)
 extern "C" {
+#endif
 
     typedef struct _influx_c_rest_async_t influx_c_rest_async_t;
 
@@ -20,4 +22,7 @@ extern "C" {
     INFLUX_C_REST int influx_c_rest_async_create(influx_c_rest_async_t * self);
     INFLUX_C_REST void influx_c_rest_async_insert(influx_c_rest_async_t * self, const char* line);
     INFLUX_C_REST void influx_c_rest_async_insert_default_timestamp(influx_c_rest_async_t * self, const char* line);
+
+#if defined(__cplusplus)
 }
+#endif
