@@ -30,6 +30,12 @@ namespace influxdb {
                 res << other.get();
             }
 
+            key_value_pairs& operator=(key_value_pairs const& other) {
+                res << other.get();
+                return *this;
+            }
+
+
             key_value_pairs(key_value_pairs && other) {
                 res = std::move(other.res);
             }
@@ -112,6 +118,11 @@ namespace influxdb {
         public:
             line() {};
             ~line() {};
+
+            line& operator=(line const& other) {
+                res << other.get();
+                return *this;
+            }
 
             line(line const& other) {
                 res << other.get();

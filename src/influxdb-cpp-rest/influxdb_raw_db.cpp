@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,7 +29,7 @@ namespace {
             std::string const& lines,
             std::string const& username,
             std::string const& password,
-            web::http::method m = methods::POST
+            web::http::method const& m = methods::POST
     ) {
         http_request request;
 

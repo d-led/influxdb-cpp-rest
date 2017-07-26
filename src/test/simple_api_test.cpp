@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -115,11 +117,12 @@ TEST_CASE_METHOD(simple_connected_test, "inserting multiple lines in one call") 
         ("test2", key_value_pairs("a6", "b6"), key_value_pairs("a7", "b7"))
         ;
 
-    CHECK(l.get().find("63169445000000000") != std::string::npos);
-    CHECK(l.get().find("b5") != std::string::npos);
-    CHECK(l.get().find("b2") != std::string::npos);
-    CHECK(l.get().find("a7") != std::string::npos);
-    CHECK(l.get().find("\n") != std::string::npos);
+    auto ls = l.get();
+    CHECK(ls.find("63169445000000000") != std::string::npos);
+    CHECK(ls.find("b5") != std::string::npos);
+    CHECK(ls.find("b2") != std::string::npos);
+    CHECK(ls.find("a7") != std::string::npos);
+    CHECK(ls.find('\n') != std::string::npos);
 
     db.insert(l);
 
@@ -189,8 +192,10 @@ SCENARIO_METHOD(simple_connected_test, "more than 1000 inserts per second") {
                     CHECK(all_entries_arrived);
 
                     auto new_t2 = Clock::now();
-                    auto count_per_second = static_cast<double>(many_times.count) / (std::chrono::duration_cast<std::chrono::milliseconds>(new_t2 - t1).count() / 1000.);
-                    std::cout << "actual inserts per second >~: " << count_per_second << std::endl;
+                    std::cout
+                        << "actual inserts per second >~: "
+                        << static_cast<double>(many_times.count) / (std::chrono::duration_cast<std::chrono::milliseconds>(new_t2 - t1).count() / 1000.)
+                        << std::endl;
 
                     if (!all_entries_arrived)
                         std::cout << "Response: " << raw_db.get(query) << std::endl;

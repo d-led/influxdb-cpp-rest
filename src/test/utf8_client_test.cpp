@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,13 +16,16 @@ TEST_CASE_METHOD(connected_test, "creating a database", "[connected]") {
 
 
 TEST_CASE_METHOD(connected_test, "posting simple values", "[connected]") {
-    CHECK(raw_db.get("select * from testdb..test").find("hello") == std::string::npos);
+    auto testdb_test_entries = [this]() {
+        return raw_db.get("select * from testdb..test");
+    };
+    CHECK(testdb_test_entries().find("hello") == std::string::npos);
 
     raw_db.insert("test value=\"hello\"");
 
     wait_for([] {return false; }, 3);
 
-    CHECK(raw_db.get("select * from testdb..test").find("hello") != std::string::npos);
+    CHECK(testdb_test_entries().find("hello") != std::string::npos);
 }
 
 TEST_CASE_METHOD(connected_test, "line protocol violation results in an exception", "[connected]") {
