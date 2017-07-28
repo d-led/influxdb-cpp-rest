@@ -51,12 +51,10 @@ extern "C" {
     }
 
     extern "C" INFLUX_C_REST void influx_c_rest_query_destroy(influx_c_rest_query_t * self) {
-        assert(self);
         delete self;
     }
 
     extern "C" INFLUX_C_REST void influx_c_rest_query_result_destroy(influx_c_rest_result_t result) {
-        assert(result);
         free(result);
     }
 

@@ -77,7 +77,6 @@ extern "C" {
     }
 
     extern "C" INFLUX_C_REST void influx_c_rest_async_destroy(influx_c_rest_async_t * self) {
-        assert(self);
         delete self;
     }
 
