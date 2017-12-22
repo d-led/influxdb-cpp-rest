@@ -25,3 +25,18 @@ TEST_CASE("combinations of letters/numbers/_/- allowed") {
 TEST_CASE("throwing on invalid identifier") {
     CHECK_THROWS(throw_on_invalid_identifier(" "));
 }
+
+TEST_CASE("quoted identifiers can contain any character and quoted double quotes") {
+    CHECK(valid_identifier("\"bla\""));
+    CHECK(valid_identifier("\"bla blup\""));
+    CHECK(valid_identifier("\"bla-blup\""));
+    CHECK(!valid_identifier("\"bla\"blup\""));
+    CHECK(valid_identifier("\"bla\\\"blup\""));
+}
+
+TEST_CASE("quoted identifiers must begin and end in double quotes") {
+    CHECK(!valid_identifier(" \"bla\""));
+    CHECK(!valid_identifier("blup\"bla\""));
+    CHECK(!valid_identifier("\"bla\"blup"));
+    CHECK(!valid_identifier("\"bla\" "));
+}
