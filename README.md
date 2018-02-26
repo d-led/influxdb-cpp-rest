@@ -26,6 +26,8 @@ db.insert(
 
 ## Asynchronous insertion
 
+The asynchronous API inserts the points on an active object with automatic batching, thus increasing throughput.
+
 ```cpp
 influxdb::async_api::simple_db asyncdb("http://localhost:8086", "my_db");
 
@@ -58,6 +60,7 @@ a serializable value on `TTimestamp::now()`. There is a default `std::chrono`-ba
     )
 ```
 
+`MAX_VALUES_PER_TAG` for demo purposes here, as there [is such a maximum](https://docs.influxdata.com/influxdb/v1.4/administration/config#max-values-per-tag-100000) and it has to be observed by the clients.
 
 ## Multiple lines in synchronous API
 
