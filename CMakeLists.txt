@@ -2,27 +2,36 @@ cmake_minimum_required (VERSION 3.9)
 
 project (influxdb-cpp-rest CXX)
 
-# we need this for tests
-# add_subdirectory(deps/catch)
+option(BUILD_TESTS "build and run tests" OFF)
+option(BUILD_EXTERNAL_DEPS "build and run tests" OF)
 
-# Prepare "Catch" library
-# set(CATCH_INCLUDE_DIR deps/catch/single_include)
-# add_library(Catch INTERFACE)
-# target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+if(BUILD_TESTS)
+    # we need this for tests
+    # add_subdirectory(deps/catch)
 
-# todo: remove comments below
-# add_subdirectory(deps/fmt)
-# add_subdirectory(deps/rxcpp)
-# target_include_directories(RxCpp INTERFACE deps/rxcpp/Rx/v2/src/rxcpp)
+    # Prepare "Catch" library
+    # set(CATCH_INCLUDE_DIR deps/catch/single_include)
+    # add_library(Catch INTERFACE)
+    # target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+endif()
 
-include_directories(deps/rxcpp/Rx/v2/src/rxcpp)
+if(BUILD_EXTERNAL_DEPS)
+    add_subdirectory(deps/fmt)
+    include_directories(deps/rxcpp/Rx/v2/src/) # fix it with find_package
+else()
+#    find_package(fmt REQUIRED) # uncomment when supported
+endif()
 
-# Uncomment when cpprestsdk has support for cmake find_package()
-# find_package(cpprestsdk REQUIRED)
+find_package(cpprestsdk REQUIRED)
 
 file(GLOB_RECURSE influx_source_files src/influxdb-cpp-rest/*.cpp)
-
 add_library(influxdb-cpp-rest STATIC ${influx_source_files})
-target_link_libraries(influxdb-cpp-rest CONAN_PKG::cpprestsdk fmt)
 
-target_include_directories(influxdb-cpp-rest INTERFACE "${THIRD_PARTY_MODULE_PATH}/influxdb-cpp-rest/src/influxdb-cpp-rest")
+#target_link_libraries(influxdb-cpp-rest cpprestsdk::cpprest fmt dl) # there is some problem with linking... including dl
+target_link_libraries(influxdb-cpp-rest CONAN_PKG::cpprestsdk CONAN_PKG::fmt CONAN_PKG::rxcpp)
+
+if(WIN32)
+    target_link_libraries(influxdb-cpp-rest bcrypt winhttp)
+endif()
+
+target_include_directories(influxdb-cpp-rest INTERFACE "src/influxdb-cpp-rest")
