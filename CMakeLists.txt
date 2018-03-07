@@ -25,7 +25,7 @@ endif()
 find_package(cpprestsdk REQUIRED)
 
 file(GLOB_RECURSE influx_source_files src/influxdb-cpp-rest/*.cpp)
-add_library(influxdb-cpp-rest STATIC ${influx_source_files})
+add_library(influxdb-cpp-rest ${influx_source_files})
 
 #target_link_libraries(influxdb-cpp-rest cpprestsdk::cpprest fmt dl) # there is some problem with linking... including dl
 target_link_libraries(influxdb-cpp-rest CONAN_PKG::cpprestsdk CONAN_PKG::fmt CONAN_PKG::rxcpp)
