@@ -1,4 +1,3 @@
-- [ ] Safe C wrapper (i.e. as a dynamic lib)
 - [ ] async error callback
 - [ ] disable SSL certificate checking
 - [ ] #2 Add a Go-based client backend via cgo
