@@ -22,7 +22,9 @@ else()
 #    find_package(fmt REQUIRED) # uncomment when supported
 endif()
 
+if(!WIN32)
 find_package(cpprestsdk REQUIRED)
+endif()
 
 file(GLOB_RECURSE influx_source_files src/influxdb-cpp-rest/*.cpp)
 add_library(influxdb-cpp-rest ${influx_source_files})
