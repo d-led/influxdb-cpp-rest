@@ -4,6 +4,7 @@
 [submodule "deps/fmt"]
 	path = deps/fmt
 	url = https://github.com/fmtlib/fmt.git
+    branch = 135ab5cf71ed731fc9fa0653051e7d4884a3652f
 [submodule "premake"]
 	path = premake
 	url = https://github.com/d-led/premake-meta-cpp.git
