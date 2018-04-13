@@ -1,4 +1,6 @@
 - [ ] async error callback
+- [ ] http retries
+- [ ] add backlog querying functionality to the async client
 - [ ] disable SSL certificate checking
 - [ ] #2 Add a Go-based client backend via cgo
  - [official go client](https://github.com/influxdata/influxdb/tree/master/client)
