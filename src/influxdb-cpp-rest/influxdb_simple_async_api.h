@@ -8,6 +8,17 @@
 #include <string>
 #include <memory>
 
+namespace std
+{
+    // rxcpp has a std::unexpected usage on rx-util.hpp, line 686
+    // std::unexpected was removed on c++17
+    // keeping this here until rxcpp removes that call
+    inline void unexpected()
+    {
+        std::terminate();
+    }
+}
+
 namespace influxdb {
     namespace api {
         class line;
