@@ -24,7 +24,8 @@ install:
   - export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
   - export CXX="g++-5"
   - brew update
-  - brew install patchelf zlib binutils linux-headers glibc xz gmp mpfr libmpc isl gcc bzip2 boost makedepend openssl pkg-config curl libidn cmake
+  - brew install patchelf zlib binutils linux-headers glibc xz gmp mpfr libmpc isl gcc bzip2 boost makedepend openssl pkg-config curl libidn cmake || true
+  - brew postinstall gcc || true
   - brew install --verbose cpprestsdk
   - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
   - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
