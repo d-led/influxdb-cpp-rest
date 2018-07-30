@@ -1,5 +1,9 @@
 include 'premake'
 
+if os.get() == 'linux' then
+	require 'conanpremake'
+end
+
 make_solution 'influxdb-cpp-rest'
 
 pic "On"
@@ -31,9 +35,6 @@ filter 'system:macosx'
 		'/usr/local/opt/openssl/lib',
 	}
 filter 'system:linux' -- conan install .
-	includedirs {
-		cpprestsdk_root_linux..'/include' --via linuxbrew: brew install gcc cmake cpprestsdk
-	}
 	libdirs { conan_libdirs }
 	links { conan_libs }
 filter {}

@@ -40,7 +40,7 @@ ifeq ($(config),debug_x32)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -75,7 +75,7 @@ ifeq ($(config),debug_x64)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -110,7 +110,7 @@ ifeq ($(config),release_x32)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -145,7 +145,7 @@ ifeq ($(config),release_x64)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -168,24 +168,13 @@ endif
 
 $(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES)
 	@echo Linking test-influxdb-c-rest
-	$(SILENT) $(LINKCMD)
-	$(POSTBUILDCMDS)
-
-$(TARGETDIR):
-	@echo Creating $(TARGETDIR)
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) mkdir -p $(TARGETDIR)
 else
 	$(SILENT) mkdir $(subst /,\\,$(TARGETDIR))
 endif
-
-$(OBJDIR):
-	@echo Creating $(OBJDIR)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
+	$(SILENT) $(LINKCMD)
+	$(POSTBUILDCMDS)
 
 clean:
 	@echo Cleaning test-influxdb-c-rest
@@ -207,14 +196,29 @@ ifneq (,$(PCH))
 $(OBJECTS): $(GCH) $(PCH)
 $(GCH): $(PCH)
 	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
 endif
 
 $(OBJDIR)/async_c_test.o: ../../../src/test-shared/async_c_test.cpp
 	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/test_main.o: ../../../src/test-shared/test_main.cpp
 	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
