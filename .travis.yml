@@ -24,7 +24,7 @@ install:
   - sudo pip install conan
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - git clone https://github.com/memsharded/conan-premake.git
-  - cd conan-premake && conan build . && conan install . && conan export . memsharded/testing
+  - cd conan-premake && conan install . && conan build . && conan export . memsharded/testing
   - conan install . --build PremakeGen --build=missing
   - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
   - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
