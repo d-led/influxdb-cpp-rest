@@ -30,6 +30,7 @@ install:
   - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
 
 script:
+  - cd ${TRAVIS_BUILD_DIR}
   - chmod +x premake/premake5-64 && ./premake/premake5-64 gmake
   - CXX="g++-5" make -C build/linux/gmake config=release_x64
   - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"
