@@ -1,9 +1,5 @@
 include 'premake'
 
--- if os.get() == 'linux' then
--- 	require 'conanpremake'
--- end
-
 make_solution 'influxdb-cpp-rest'
 
 pic "On"
@@ -35,8 +31,7 @@ filter 'system:macosx'
 		'/usr/local/opt/openssl/lib',
 	}
 filter 'system:linux' -- conan install .
-	-- libdirs { conan_libdirs }
-	-- links { conan_libs }
+	--
 filter {}
 
 function default_links()
@@ -60,8 +55,8 @@ function default_links()
 			'crypto',
 			'boost_random',
 			'boost_chrono',
-			'boost_thread-mt',
-			'boost_system-mt',
+			'boost_thread',
+			'boost_system',
 			'boost_regex',
 			'boost_filesystem',
 			'cpprest',
