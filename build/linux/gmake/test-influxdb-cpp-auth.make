@@ -15,7 +15,7 @@ ifeq ($(config),debug_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Debug
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x32/Debug/test-influxdb-cpp-auth
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG
+  DEFINES += -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -42,7 +42,7 @@ ifeq ($(config),debug_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Debug
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x64/Debug/test-influxdb-cpp-auth
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG
+  DEFINES += -D_DEBUG
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -69,7 +69,7 @@ ifeq ($(config),release_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Release
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x32/Release/test-influxdb-cpp-auth
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
+  DEFINES +=
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -96,7 +96,7 @@ ifeq ($(config),release_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Release
   TARGET = $(TARGETDIR)/test-influxdb-cpp-auth
   OBJDIR = ../../../obj/linux/gmake/x64/Release/test-influxdb-cpp-auth
-  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0
+  DEFINES +=
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest -I../../../deps/catch/single_include -I../../../src/test
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
