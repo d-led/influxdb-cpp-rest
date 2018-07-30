@@ -25,12 +25,12 @@ install:
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - git clone https://github.com/memsharded/conan-premake.git
   - cd conan-premake && conan install . && conan build . && conan export . memsharded/testing
-  - conan install . --build PremakeGen --build=missing
   - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
   - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
+  - conan install . --build PremakeGen --build=missing
   - chmod +x premake/premake5-64 && ./premake/premake5-64 gmake
   - CXX="g++-5" make -C build/linux/gmake config=release_x64
   - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"
