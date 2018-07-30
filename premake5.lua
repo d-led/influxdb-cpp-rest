@@ -13,7 +13,7 @@ includedirs {
 
 filter 'system:linux'
 		defines {
-			-- '_GLIBCXX_USE_CXX11_ABI=0',
+			'_GLIBCXX_USE_CXX11_ABI=0',
 		}
 filter {}
 

@@ -15,7 +15,7 @@ ifeq ($(config),debug_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Debug
   TARGET = $(TARGETDIR)/libinflux-c-rest.so
   OBJDIR = ../../../obj/linux/gmake/x32/Debug/influx-c-rest
-  DEFINES += -D_DEBUG -DBUILDING_INFLUX_C_REST
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG -DBUILDING_INFLUX_C_REST
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -42,7 +42,7 @@ ifeq ($(config),debug_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Debug
   TARGET = $(TARGETDIR)/libinflux-c-rest.so
   OBJDIR = ../../../obj/linux/gmake/x64/Debug/influx-c-rest
-  DEFINES += -D_DEBUG -DBUILDING_INFLUX_C_REST
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -D_DEBUG -DBUILDING_INFLUX_C_REST
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -69,7 +69,7 @@ ifeq ($(config),release_x32)
   TARGETDIR = ../../../bin/linux/gmake/x32/Release
   TARGET = $(TARGETDIR)/libinflux-c-rest.so
   OBJDIR = ../../../obj/linux/gmake/x32/Release/influx-c-rest
-  DEFINES += -DBUILDING_INFLUX_C_REST
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -DBUILDING_INFLUX_C_REST
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
@@ -96,7 +96,7 @@ ifeq ($(config),release_x64)
   TARGETDIR = ../../../bin/linux/gmake/x64/Release
   TARGET = $(TARGETDIR)/libinflux-c-rest.so
   OBJDIR = ../../../obj/linux/gmake/x64/Release/influx-c-rest
-  DEFINES += -DBUILDING_INFLUX_C_REST
+  DEFINES += -D_GLIBCXX_USE_CXX11_ABI=0 -DBUILDING_INFLUX_C_REST
   INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
