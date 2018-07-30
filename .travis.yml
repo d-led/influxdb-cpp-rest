@@ -1,3 +1,4 @@
+dist: trusty
 sudo: required
 
 language: cpp
@@ -11,29 +12,31 @@ addons:
   sources:
    - boost-latest
    - ubuntu-toolchain-r-test
+   - sourceline: deb http://us.archive.ubuntu.com/ubuntu/ xenial main universe
   packages:
    - g++-5
    - wget
    - libboost1.55-all-dev
-   - python-pip
+   # - python-pip
    - wget
+   - libcpprest-dev
 
 cache:
  - apt
 
 install:
-  - sudo pip install conan
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - git clone https://github.com/memsharded/conan-premake.git
-  - cd conan-premake && conan install . && conan build . && conan export . memsharded/testing
+  # - sudo pip install conan
+  # - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  # - git clone https://github.com/memsharded/conan-premake.git
+  # - cd conan-premake && conan install . && conan build . && conan export . memsharded/testing
   - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
   - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
-  - wget http://curl.haxx.se/ca/cacert.pem
-  - wget -O /tmp/xz-5.2.3.tar.gz https://tukaani.org/xz/xz-5.2.3.tar.gz
-  - CURL_CA_BUNDLE=$(pwd)/cacert.pem conan install . --build PremakeGen --build lzma --build=missing --verify=False
+  # - wget http://curl.haxx.se/ca/cacert.pem
+  # - wget -O /tmp/xz-5.2.3.tar.gz https://tukaani.org/xz/xz-5.2.3.tar.gz
+  # - CURL_CA_BUNDLE=$(pwd)/cacert.pem conan install . --build PremakeGen --build lzma --build=missing --verify=False
   - chmod +x premake/premake5-64 && ./premake/premake5-64 gmake
   - CXX="g++-5" make -C build/linux/gmake config=release_x64
   - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"
