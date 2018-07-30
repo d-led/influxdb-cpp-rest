@@ -32,7 +32,7 @@ install:
 script:
   - cd ${TRAVIS_BUILD_DIR}
   - wget http://curl.haxx.se/ca/cacert.pem
-  - CURL_CA_BUNDLE=$(pwd)/cacert.pem conan install . --build PremakeGen --build=missing --verify=False
+  - CURL_CA_BUNDLE=$(pwd)/cacert.pem conan install . --build PremakeGen --build lzma --build=missing --verify=False
   - chmod +x premake/premake5-64 && ./premake/premake5-64 gmake
   - CXX="g++-5" make -C build/linux/gmake config=release_x64
   - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"
