@@ -21,7 +21,7 @@ cache:
  - apt
 
 install:
-  - pip install conan
+  - sudo pip install --upgrade pip && sudo pip install conan
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - git clone https://github.com/memsharded/conan-premake.git
   - cd conan-premake && conan export . memsharded/testing
