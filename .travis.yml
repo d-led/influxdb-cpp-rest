@@ -32,6 +32,7 @@ install:
 script:
   - cd ${TRAVIS_BUILD_DIR}
   - wget http://curl.haxx.se/ca/cacert.pem
+  - wget -O /tmp/xz-5.2.3.tar.gz https://tukaani.org/xz/xz-5.2.3.tar.gz
   - CURL_CA_BUNDLE=$(pwd)/cacert.pem conan install . --build PremakeGen --build lzma --build=missing --verify=False
   - chmod +x premake/premake5-64 && ./premake/premake5-64 gmake
   - CXX="g++-5" make -C build/linux/gmake config=release_x64
