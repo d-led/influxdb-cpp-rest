@@ -14,7 +14,7 @@ addons:
    - ubuntu-toolchain-r-test
    - sourceline: deb http://us.archive.ubuntu.com/ubuntu/ xenial main universe
   packages:
-   - g++
+   - g++-6
    - libboost-all-dev
    - wget
    - libcpprest-dev
@@ -28,5 +28,5 @@ install:
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
-  - make -C build/linux/gmake config=release_x64
+  - CXX=g++-6 make -C build/linux/gmake config=release_x64
   - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"
