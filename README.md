@@ -77,7 +77,7 @@ Add lines using the `()` operator on the line:
 
 ```cpp
 influxdb::raw::db_utf8 raw_db("http://localhost:8086", "my_db");
-auto query = std::string("select count(*) from my_db..my_measurements";
+auto query = std::string("select count(*) from my_db..my_measurements");
 auto json_response = raw_db.get(query);
 ```
 
