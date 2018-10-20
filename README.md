@@ -77,7 +77,7 @@ Add lines using the `()` operator on the line:
 
 ```cpp
 influxdb::raw::db_utf8 raw_db("http://localhost:8086", "my_db");
-auto query = std::string("select count(*) from my_db..my_measurements";
+auto query = std::string("select count(*) from my_db..my_measurements");
 auto json_response = raw_db.get(query);
 ```
 
@@ -102,9 +102,9 @@ auto query = ...
 - Synchronous C++ API will throw exceptions on HTTP errors
 - Asynchronous APIs will drop inserts on HTTP errors and print to `stderr`
 - C api tries to catch CPP exceptions and
- - print exceptions to `stderr`
- - return non-zero `int` or `nullptr` where sensible
-- Open issue: #18
+  - print exceptions to `stderr`
+  - return non-zero `int` or `nullptr` where sensible
+- Open issue: [#18](https://github.com/d-led/influxdb-cpp-rest/issues/18)
 
 ## Build & Test
 
