@@ -102,9 +102,9 @@ auto query = ...
 - Synchronous C++ API will throw exceptions on HTTP errors
 - Asynchronous APIs will drop inserts on HTTP errors and print to `stderr`
 - C api tries to catch CPP exceptions and
- - print exceptions to `stderr`
- - return non-zero `int` or `nullptr` where sensible
-- Open issue: #18
+  - print exceptions to `stderr`
+  - return non-zero `int` or `nullptr` where sensible
+- Open issue: [#18](https://github.com/d-led/influxdb-cpp-rest/issues/18)
 
 ## Build & Test
 
