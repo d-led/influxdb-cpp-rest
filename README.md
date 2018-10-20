@@ -97,6 +97,15 @@ raw_db.with_authentication(username, password);
 auto query = ...
 ```
 
+## Error Handling
+
+- Synchronous C++ API will throw exceptions on HTTP errors
+- Asynchronous APIs will drop inserts on HTTP errors and print to `stderr`
+- C api tries to catch CPP exceptions and
+ - print exceptions to `stderr`
+ - return non-zero `int` or `nullptr` where sensible
+- Open issue: #18
+
 ## Build & Test
 
 The library should be easy to build, given `RxCpp` and `cpprestsdk` can be found. The Visual Studio 2015 solution is self-contained. A locally running, authentication-free instance of InfluxDB is required to run the test.
