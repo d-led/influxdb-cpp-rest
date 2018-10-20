@@ -3,7 +3,11 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/influx-c-rest",
+                "${workspaceFolder}/src/influxdb-cpp-rest",
+                "${workspaceFolder}/deps/catch/single_include",
+                "${workspaceFolder}/deps/fmt"
             ],
             "defines": [],
             "macFrameworkPath": [
