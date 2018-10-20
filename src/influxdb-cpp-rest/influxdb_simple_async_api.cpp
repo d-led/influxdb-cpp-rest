@@ -70,7 +70,7 @@ struct influxdb::async_api::simple_db::impl {
                                 try {
                                     db.insert_async(w->str());
                                 } catch (const std::runtime_error& e) {
-                                    std::cerr << "async_api::insert failed: " << e.what() << " -> Dropping " << w->size() << " bytes" << std::endl;
+                                    throw std::runtime_error(std::string("async_api::insert failed: ") + e.what() + " -> Dropping " + std::to_string(w->size()) + " bytes");
                                 }
                             }
                         },
