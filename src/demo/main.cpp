@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <influxdb_raw_db_utf8.h>
 #include <influxdb_simple_api.h>
 #include <influxdb_line.h>
@@ -6,49 +8,50 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <time.h>
-#include <unistd.h>
-#include <sys/time.h>
 
 using namespace influxdb::api;
-using namespace std;
 
-int main(int argc, char *argv[]) {
-	try {
-		int keyNum = 0;
+int main(int argc, char* argv[])
+{
+    try
+    {
+        const char* url = "http://localhost:8086";
+        influxdb::raw::db_utf8 db(url, "demo");
+        influxdb::api::simple_db api(url, "demo");
+        influxdb::async_api::simple_db async_api(url, "demo");
 
-		influxdb::async_api::simple_db async_api("http://localhost:8086", "bluewhale");
+        api.drop();
+        api.create();
 
-		struct timeval begin;
-		gettimeofday(&begin, NULL);
+        // {"results":[{"series":[{"columns":["name"],"name":"databases","values":[["_internal"],["mydb"]]}]}]}
+        std::cout << db.get("show databases") << std::endl;
 
-		while (1) {
-			struct timeval tv,td;
-			gettimeofday(&tv, NULL);
-			long time = (long long) (tv.tv_sec) * 1000000000 + tv.tv_usec * 1000;
+        async_api.insert(line("test", key_value_pairs(), key_value_pairs("value", 41)));
+        api.insert(line("test", key_value_pairs(), key_value_pairs("value", 42)));
 
-			influxdb::api::key_value_pairs tags;
-			influxdb::api::key_value_pairs fields;
-			string g_app_name = "test";
-			string rankID = "1";
-			std::cout << "key num: " << keyNum << std::endl;
-			tags.add("appName", g_app_name);
-			tags.add("svrID", rankID);
-			fields.add("value", keyNum);
-			async_api.insert(line("t_lr_key", tags, fields));
+        std::this_thread::sleep_for(std::chrono::milliseconds(101));
 
-			gettimeofday(&td, NULL);
-			std::cout << "cost time " << (td.tv_sec - tv.tv_sec) * 1000000 + (td.tv_usec - tv.tv_usec) << std::endl;
+        // {"results":[{"series":[{"columns":["time","value"],"name":"test","values":[["2016-10-28T22:11:22.8110348Z",42]]}]}]}
+        std::cout << db.get("select * from demo..test") << std::endl;
 
-			std::cout << "current time " << (td.tv_sec - begin.tv_sec) / 60 << std::endl << std::endl;
-			keyNum++;
-			sleep(1);
-		}
+        // or if the async call passes through:
+        // {"results":[{"series":[{"name":"test","columns":["time","value"],
+        //             "values":[["2016-12-09T20:24:18.8239801Z",42],["2016-12-09T20:24:18.9026688Z",41]]}]}]}
 
-	}
-	catch (std::exception const &e) {
-		std::cerr << e.what() << std::endl;
-	}
+        api.drop();
 
-	return 0;
+        // multiple lines formatted for one synchronous call:
+        // multiple,v1=1i
+        // multiple,v2=2i
+        std::cout << line
+            ("multiple", key_value_pairs("v1", 1), key_value_pairs())
+            ("multiple", key_value_pairs("v2", 2), key_value_pairs())
+        .get() << std::endl;
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+
+    return 0;
 }
