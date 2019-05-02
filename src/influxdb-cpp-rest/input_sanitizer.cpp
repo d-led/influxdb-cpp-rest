@@ -12,7 +12,7 @@
 
 namespace influxdb {
     namespace utility {
-        constexpr const char* regex = R"((^[a-zA-Z0-9_\-]+$|"(?:[^\\"]|\\.)+"))";
+        constexpr const char* regex = R"((^[a-zA-Z0-9_/\\.\-]+$|"(?:[^\\"]|\\.)+"))";
 
         const std::regex check_identifier(regex);
 
