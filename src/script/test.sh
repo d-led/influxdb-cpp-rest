@@ -11,7 +11,8 @@ $1/test-influxdb-cpp-rest -d yes
 export LD_LIBRARY_PATH=$1
 $1/test-influxdb-c-rest -d yes
 pkill influxd
+sleep 3
 ./influxdb-1.2.4-1/usr/bin/influxd -config src/auth_test/influxdb.conf &
-sleep 1
+sleep 3
 $1/test-influxdb-cpp-auth -d yes
 pkill influxd
