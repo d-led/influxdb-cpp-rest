@@ -23,7 +23,7 @@ local cpprestsdk_root_mac = '~/.linuxbrew/Cellar/cpprestsdk/2.9.1'
 filter 'system:macosx'
 	includedirs {
 		'/usr/local/include', -- brew install boost cpprestsdk openssl
-		'/usr/local/opt/openssl/include',
+		'/usr/local/opt/openssl/include', -- brew link openssl
 	}
 	libdirs {
 		'/usr/local/lib',
