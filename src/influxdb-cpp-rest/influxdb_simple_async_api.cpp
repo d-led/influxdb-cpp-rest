@@ -68,7 +68,7 @@ struct influxdb::async_api::simple_db::impl {
                         .subscribe([this](std::shared_ptr<fmt::memory_buffer> const& w) {
                             if (w->size() > 0u) {
                                 try {
-                                    db.insert_async(w->data());
+                                    db.insert_async(std::string(w->data(),w->size()));
                                 } catch (const std::runtime_error& e) {
                                     throw std::runtime_error(std::string("async_api::insert failed: ") + e.what() + " -> Dropping " + std::to_string(w->size()) + " bytes");
                                 }

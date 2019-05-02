@@ -88,7 +88,7 @@ namespace influxdb {
             }
 
             inline std::string get() const {
-                return res.data();
+                return std::string(res.data(),res.size());
             }
 
             inline bool empty() const {
@@ -174,7 +174,7 @@ namespace influxdb {
             }
         public:
             inline std::string get() const {
-                return res.data();
+                return std::string(res.data(),res.size());
             }
         };
 

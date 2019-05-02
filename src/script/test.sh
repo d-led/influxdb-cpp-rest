@@ -2,8 +2,11 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# first parameter to the test script (directory with the test binaries) is mandatory
+echo "running tests from $1"
+pkill influxd || true
 ./influxdb-1.7.6-1/usr/bin/influxd &
-sleep 1
+sleep 3
 $1/test-influxdb-cpp-rest -d yes
 export LD_LIBRARY_PATH=$1
 $1/test-influxdb-c-rest -d yes
