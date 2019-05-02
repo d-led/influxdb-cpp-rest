@@ -124,7 +124,7 @@ If the build fails due to failed dependencies, check [premake5.lua](premake5.lua
 
 - @kirkshoop for indispensable help with [RxCpp](https://github.com/Reactive-Extensions/RxCpp)
 - @nikkov for pointing out the missing essential features
-- @promgamer for the identifiers PR
+- @promgamer, @garaemon for the identifiers PRs
 
 
 ## License
