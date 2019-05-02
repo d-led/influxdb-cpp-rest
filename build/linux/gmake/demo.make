@@ -16,7 +16,7 @@ ifeq ($(config),debug_x32)
   TARGET = $(TARGETDIR)/demo
   OBJDIR = ../../../obj/linux/gmake/x32/Debug/demo
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
+  INCLUDES += -I../../../deps/fmt/include -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -fPIC -g -std=c++14
@@ -32,7 +32,7 @@ ifeq ($(config),debug_x32)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -43,7 +43,7 @@ ifeq ($(config),debug_x64)
   TARGET = $(TARGETDIR)/demo
   OBJDIR = ../../../obj/linux/gmake/x64/Debug/demo
   DEFINES += -D_DEBUG
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
+  INCLUDES += -I../../../deps/fmt/include -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -fPIC -g -std=c++14
@@ -59,7 +59,7 @@ ifeq ($(config),debug_x64)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -70,7 +70,7 @@ ifeq ($(config),release_x32)
   TARGET = $(TARGETDIR)/demo
   OBJDIR = ../../../obj/linux/gmake/x32/Release/demo
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
+  INCLUDES += -I../../../deps/fmt/include -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -std=c++14
@@ -86,7 +86,7 @@ ifeq ($(config),release_x32)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -97,7 +97,7 @@ ifeq ($(config),release_x64)
   TARGET = $(TARGETDIR)/demo
   OBJDIR = ../../../obj/linux/gmake/x64/Release/demo
   DEFINES +=
-  INCLUDES += -I../../../deps/fmt -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
+  INCLUDES += -I../../../deps/fmt/include -I../../../deps/rxcpp/Rx/v2/src/rxcpp -I../../../src/influxdb-cpp-rest -I../../../src/influxdb-c-rest
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -fPIC -std=c++14
@@ -113,7 +113,7 @@ ifeq ($(config),release_x64)
   endef
   define POSTBUILDCMDS
   endef
-all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
+all: prebuild prelink $(TARGET)
 	@:
 
 endif
@@ -125,18 +125,17 @@ RESOURCES := \
 
 CUSTOMFILES := \
 
-SHELLTYPE := msdos
-ifeq (,$(ComSpec)$(COMSPEC))
-  SHELLTYPE := posix
-endif
-ifeq (/bin,$(findstring /bin,$(SHELL)))
-  SHELLTYPE := posix
+SHELLTYPE := posix
+ifeq (.exe,$(findstring .exe,$(ComSpec)))
+	SHELLTYPE := msdos
 endif
 
-$(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES)
+$(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES) | $(TARGETDIR)
 	@echo Linking demo
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
+
+$(CUSTOMFILES): | $(OBJDIR)
 
 $(TARGETDIR):
 	@echo Creating $(TARGETDIR)
@@ -171,10 +170,12 @@ prelink:
 	$(PRELINKCMDS)
 
 ifneq (,$(PCH))
-$(OBJECTS): $(GCH) $(PCH)
-$(GCH): $(PCH)
+$(OBJECTS): $(GCH) $(PCH) | $(OBJDIR)
+$(GCH): $(PCH) | $(OBJDIR)
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
+else
+$(OBJECTS): | $(OBJDIR)
 endif
 
 $(OBJDIR)/main.o: ../../../src/demo/main.cpp

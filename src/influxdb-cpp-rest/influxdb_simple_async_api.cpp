@@ -16,7 +16,7 @@
 #include <rx.hpp>
 #include <chrono>
 #include <atomic>
-#include <fmt/ostream.h>
+#include <fmt/format.h>
 
 using namespace influxdb::utility;
 
@@ -57,18 +57,18 @@ struct influxdb::async_api::simple_db::impl {
                 .subscribe(
                     [this](rxcpp::observable<std::string> window) {
                         window.scan(
-                            std::make_shared<fmt::MemoryWriter>(),
-                            [this](std::shared_ptr<fmt::MemoryWriter> const& w, std::string const& v) {
-                                *w << v << '\n';
+                            std::make_shared<fmt::memory_buffer>(),
+                            [this](std::shared_ptr<fmt::memory_buffer> const& w, std::string const& v) {
+                                format_to(*w, "{}\n", v);
                                 return w;
                             })
-                        .start_with(std::make_shared<fmt::MemoryWriter>())
+                        .start_with(std::make_shared<fmt::memory_buffer>())
                         .last()
                         .observe_on(rxcpp::synchronize_new_thread())
-                        .subscribe([this](std::shared_ptr<fmt::MemoryWriter> const& w) {
+                        .subscribe([this](std::shared_ptr<fmt::memory_buffer> const& w) {
                             if (w->size() > 0u) {
                                 try {
-                                    db.insert_async(w->str());
+                                    db.insert_async(w->data());
                                 } catch (const std::runtime_error& e) {
                                     throw std::runtime_error(std::string("async_api::insert failed: ") + e.what() + " -> Dropping " + std::to_string(w->size()) + " bytes");
                                 }

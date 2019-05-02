@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-./influxdb-1.2.4-1/usr/bin/influxd &
+./influxdb-1.7.6-1/usr/bin/influxd &
 sleep 1
 $1/test-influxdb-cpp-rest -d yes
 export LD_LIBRARY_PATH=$1

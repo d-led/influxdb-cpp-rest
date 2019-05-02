@@ -307,3 +307,5 @@ tmp/
 conanpremake.lua
 conanbuildinfo.txt
 conaninfo.txt
+/influxdb-*/
+influxdb-*.gz

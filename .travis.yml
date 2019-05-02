@@ -23,10 +23,11 @@ cache:
  - apt
 
 install:
-  - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
-  - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
+  - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.7.6_linux_amd64.tar.gz
+  - tar xvfz influxdb-1.7.6_linux_amd64.tar.gz
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
+  - premake/premake5-64 gmake
   - CXX=g++ make -C build/linux/gmake config=release_x64
   - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"

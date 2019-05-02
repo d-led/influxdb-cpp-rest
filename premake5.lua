@@ -5,7 +5,7 @@ make_solution 'influxdb-cpp-rest'
 pic "On"
 
 includedirs {
-	'deps/fmt',
+	'deps/fmt/include',
 	'deps/rxcpp/Rx/v2/src/rxcpp',
 	'src/influxdb-cpp-rest',
 	'src/influxdb-c-rest',
@@ -67,7 +67,7 @@ end
 
 --------------------------------------------------------------------
 make_static_lib('fmt', {
-	'deps/fmt/fmt/**.*',
+	'deps/fmt/src/**.cc',
 })
 
 use_standard('c++14')
