@@ -13,7 +13,7 @@
 #include "input_sanitizer.h"
 #include "influxdb_line.h"
 
-#include <rx.hpp>
+#include <rxcpp/rx.hpp>
 #include <chrono>
 #include <atomic>
 #include <fmt/format.h>
