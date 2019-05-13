@@ -1,6 +1,7 @@
 # influxdb-cpp-rest
 
 [![Build status](https://ci.appveyor.com/api/projects/status/68w68vq3nai4794g/branch/master?svg=true)](https://ci.appveyor.com/project/d-led/influxdb-cpp-rest/branch/master) [![Build Status](https://travis-ci.org/d-led/influxdb-cpp-rest.svg?branch=master)](https://travis-ci.org/d-led/influxdb-cpp-rest)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fd-led%2Finfluxdb-cpp-rest.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fd-led%2Finfluxdb-cpp-rest?ref=badge_shield)
 
 A naive C++(14) [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk) + a C wrapper of the asynchronous API as a shared library.
 
@@ -25,6 +26,8 @@ db.insert(
 ```
 
 ## Asynchronous insertion
+
+The asynchronous API inserts the points on an active object with automatic batching, thus increasing throughput.
 
 ```cpp
 influxdb::async_api::simple_db asyncdb("http://localhost:8086", "my_db");
@@ -58,6 +61,7 @@ a serializable value on `TTimestamp::now()`. There is a default `std::chrono`-ba
     )
 ```
 
+`MAX_VALUES_PER_TAG` for demo purposes here, as there [is such a maximum](https://docs.influxdata.com/influxdb/v1.4/administration/config#max-values-per-tag-100000) and it has to be observed by the clients.
 
 ## Multiple lines in synchronous API
 
@@ -73,7 +77,7 @@ Add lines using the `()` operator on the line:
 
 ```cpp
 influxdb::raw::db_utf8 raw_db("http://localhost:8086", "my_db");
-auto query = std::string("select count(*) from my_db..my_measurements";
+auto query = std::string("select count(*) from my_db..my_measurements");
 auto json_response = raw_db.get(query);
 ```
 
@@ -93,6 +97,15 @@ raw_db.with_authentication(username, password);
 auto query = ...
 ```
 
+## Error Handling
+
+- Synchronous C++ API will throw exceptions on HTTP errors
+- Asynchronous APIs will drop inserts on HTTP errors and print to `stderr`
+- C api tries to catch CPP exceptions and
+  - print exceptions to `stderr`
+  - return non-zero `int` or `nullptr` where sensible
+- Open issue: [#18](https://github.com/d-led/influxdb-cpp-rest/issues/18)
+
 ## Build & Test
 
 The library should be easy to build, given `RxCpp` and `cpprestsdk` can be found. The Visual Studio 2015 solution is self-contained. A locally running, authentication-free instance of InfluxDB is required to run the test.
@@ -111,4 +124,8 @@ If the build fails due to failed dependencies, check [premake5.lua](premake5.lua
 
 - @kirkshoop for indispensable help with [RxCpp](https://github.com/Reactive-Extensions/RxCpp)
 - @nikkov for pointing out the missing essential features
-- @promgamer for the identifiers PR
+- @promgamer, @garaemon for the identifiers PRs
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fd-led%2Finfluxdb-cpp-rest.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fd-led%2Finfluxdb-cpp-rest?ref=badge_large)

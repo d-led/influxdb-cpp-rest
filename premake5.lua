@@ -5,7 +5,7 @@ make_solution 'influxdb-cpp-rest'
 pic "On"
 
 includedirs {
-	'deps/fmt',
+	'deps/fmt/include',
 	'deps/rxcpp/Rx/v2/src/rxcpp',
 	'src/influxdb-cpp-rest',
 	'src/influxdb-c-rest',
@@ -18,13 +18,12 @@ filter 'system:linux'
 filter {}
 
 --linuxbrew
-local cpprestsdk_root_linux = '/home/linuxbrew/.linuxbrew/Cellar/cpprestsdk/2.9.1'
 local cpprestsdk_root_mac = '~/.linuxbrew/Cellar/cpprestsdk/2.9.1'
 
 filter 'system:macosx'
 	includedirs {
 		'/usr/local/include', -- brew install boost cpprestsdk openssl
-		'/usr/local/opt/openssl/include',
+		'/usr/local/opt/openssl/include', -- brew link openssl
 	}
 	libdirs {
 		'/usr/local/lib',
@@ -32,13 +31,7 @@ filter 'system:macosx'
 		'/usr/local/opt/openssl/lib',
 	}
 filter 'system:linux' -- conan install .
-	includedirs {
-		cpprestsdk_root_linux..'/include' --via linuxbrew: brew install gcc cmake cpprestsdk
-	}
-	libdirs {
-		cpprestsdk_root_linux..'/lib',
-		'/home/linuxbrew/.linuxbrew/lib64',
-	}
+	--
 filter {}
 
 function default_links()
@@ -62,8 +55,8 @@ function default_links()
 			'crypto',
 			'boost_random',
 			'boost_chrono',
-			'boost_thread-mt',
-			'boost_system-mt',
+			'boost_thread',
+			'boost_system',
 			'boost_regex',
 			'boost_filesystem',
 			'cpprest',
@@ -74,7 +67,7 @@ end
 
 --------------------------------------------------------------------
 make_static_lib('fmt', {
-	'deps/fmt/fmt/**.*',
+	'deps/fmt/src/**.cc',
 })
 
 use_standard('c++14')

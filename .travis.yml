@@ -1,3 +1,4 @@
+dist: xenial
 sudo: required
 
 language: cpp
@@ -11,26 +12,22 @@ addons:
   sources:
    - boost-latest
    - ubuntu-toolchain-r-test
+   - sourceline: deb http://us.archive.ubuntu.com/ubuntu/ xenial main universe
   packages:
-   - g++-5
+   - g++
+   - libboost-all-dev
    - wget
-   - libboost1.55-all-dev
+   - libcpprest-dev
 
 cache:
  - apt
 
 install:
-  - echo -ne "\n" | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install)"
-  - export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-  - export CXX="g++-5"
-  - brew update
-  - brew install patchelf zlib binutils linux-headers glibc xz gmp mpfr libmpc isl gcc bzip2 boost makedepend openssl pkg-config curl libidn cmake
-  - brew install --verbose cpprestsdk
-  - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.2.4_linux_amd64.tar.gz
-  - tar xvfz influxdb-1.2.4_linux_amd64.tar.gz
-  # - 'brew install influxdb'
+  - wget https://dl.influxdata.com/influxdb/releases/influxdb-1.7.6_linux_amd64.tar.gz
+  - tar xvfz influxdb-1.7.6_linux_amd64.tar.gz
 
 script:
-  # - "ls ~/.linuxbrew/Cellar/*"
-  - make -C build/linux/gmake config=release_x64
+  - cd ${TRAVIS_BUILD_DIR}
+  - premake/premake5-64 gmake
+  - CXX=g++ make -C build/linux/gmake config=release_x64
   - /bin/bash -c "./src/script/test.sh bin/linux/gmake/x64/Release"

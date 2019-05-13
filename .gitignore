@@ -304,3 +304,8 @@ $RECYCLE.BIN/
 .vagrant/
 tmp/
 .influxdb
+conanpremake.lua
+conanbuildinfo.txt
+conaninfo.txt
+/influxdb-*/
+influxdb-*.gz

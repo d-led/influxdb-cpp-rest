@@ -1,12 +1,6 @@
-[submodule "deps/catch"]
-	path = deps/catch
-	url = https://github.com/philsquared/Catch.git
-[submodule "deps/fmt"]
-	path = deps/fmt
-	url = https://github.com/fmtlib/fmt.git
-[submodule "premake"]
-	path = premake
-	url = https://github.com/d-led/premake-meta-cpp.git
 [submodule "deps/rxcpp"]
 	path = deps/rxcpp
 	url = https://github.com/Reactive-Extensions/RxCpp.git
+[submodule "premake"]
+	path = premake
+	url = https://github.com/d-led/premake-meta-cpp.git
