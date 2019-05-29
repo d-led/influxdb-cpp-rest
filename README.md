@@ -13,9 +13,9 @@ A batching api leans towards thousands inserts per second. Behind the scenes, th
 
 ## Status
 
-Build and test ok on Win10/Ubuntu64/OSX.
-
-Feel free to contribute, as the progress is rather sporadic due to lack of spare time.
+- Build and test ok on Win10/Ubuntu64/OSX.
+- Feel free to contribute, as the progress is rather sporadic due to lack of spare time.
+- tested with InfluxDB v1.2.4, v1.7.5, v1.7.6
 
 ## Synchronous insertion
 

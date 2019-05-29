@@ -48,7 +48,8 @@ namespace influxdb {
             template<
                 class V,
                 typename std::enable_if<
-                    std::is_integral<V>::value
+                    std::is_integral<V>::value &&
+                    (! std::is_same<bool, V>::value)
                 >::type* = nullptr
             >
                 key_value_pairs& add(std::string const& key, V const& value) {
@@ -57,6 +58,23 @@ namespace influxdb {
                 add_comma_if_necessary();
 
                 format_to(res, "{}={}i", key, value);
+
+                return *this;
+            }
+
+            template<
+                class V,
+                typename std::enable_if<
+                    std::is_integral<V>::value &&
+                    ( std::is_same<bool, V>::value)
+                >::type* = nullptr
+            >
+                key_value_pairs& add(std::string const& key, V const& value) {
+                ::influxdb::utility::throw_on_invalid_identifier(key);
+
+                add_comma_if_necessary();
+
+                format_to(res, "{}={}", key, value);
 
                 return *this;
             }

@@ -109,6 +109,19 @@ TEST_CASE_METHOD(simple_connected_test, "inserting values using the simple api",
     CHECK(res.contains("hello world!"));
 }
 
+TEST_CASE_METHOD(simple_connected_test, "inserting boolean values", "[connected]") {
+    db.insert(line("boolean_test", key_value_pairs("mytag", true), key_value_pairs("value", false)));
+    db.insert(line("boolean_test", key_value_pairs("mytag", false), key_value_pairs("value", true)));
+
+    wait_for([] {return false; },3);
+
+    auto res = result("boolean_test");
+    CHECK(res.contains("true"));
+    CHECK(res.contains("false"));
+    // tags are not booleans, thus quoted
+    CHECK(res.contains("\"true\""));
+    CHECK(res.contains("\"false\""));
+}
 
 TEST_CASE_METHOD(simple_connected_test, "inserting multiple lines in one call") {
     auto l = line
