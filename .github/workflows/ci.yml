@@ -56,9 +56,6 @@ jobs:
 
   macos:
     runs-on: macos-15
-    # Note: Docker is not available on any GitHub macOS runners.
-    # Integration tests run only on Linux. macOS job verifies build compiles on macOS.
-    # macos-15 has native C++20 support, so no need for Homebrew LLVM installation.
     
     steps:
     - uses: actions/checkout@v4
@@ -70,6 +67,17 @@ jobs:
         key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.py') }}
         restore-keys: |
           conan-${{ runner.os }}-
+    
+    - name: Cache InfluxDB
+      uses: actions/cache@v4
+      id: cache-influxdb
+      with:
+        path: |
+          influxdb-1.8.10-1
+          influxdb-1.8.10_darwin_amd64.tar.gz
+        key: influxdb-1.8.10-macos-${{ runner.os }}
+        restore-keys: |
+          influxdb-1.8.10-macos-
     
     - name: Install Conan
       run: |
@@ -84,14 +92,54 @@ jobs:
     
     - name: Build project
       run: |
-        chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
+        chmod +x scripts/build.sh scripts/test.sh
         ./scripts/build.sh Release
     
-    - name: Skip integration tests (Docker unavailable on macOS)
+    - name: Download InfluxDB (if not cached)
+      if: steps.cache-influxdb.outputs.cache-hit != 'true'
       run: |
-        echo "⚠️  Docker is not available on GitHub Actions macOS runners"
-        echo "Build completed successfully, but integration tests were skipped."
-        echo "For full test coverage, see the Linux runner which supports Docker natively."
+        INFLUXDB_VERSION=1.8.10
+        INFLUXDB_TAR=influxdb-${INFLUXDB_VERSION}_darwin_amd64.tar.gz
+        INFLUXDB_URL=https://dl.influxdata.com/influxdb/releases/${INFLUXDB_TAR}
+        
+        echo "Downloading InfluxDB ${INFLUXDB_VERSION}..."
+        curl -L -o "${INFLUXDB_TAR}" "${INFLUXDB_URL}"
+        
+        echo "Extracting InfluxDB..."
+        tar -xzf "${INFLUXDB_TAR}"
+        
+        echo "Verifying InfluxDB binary..."
+        if [ ! -f "influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd" ]; then
+            echo "ERROR: InfluxDB binary not found at expected path: influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd"
+            echo "Extracted contents:"
+            ls -la influxdb-${INFLUXDB_VERSION}-1/ || true
+            exit 1
+        fi
+        ls -la influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
+        chmod +x influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
+    
+    - name: Start InfluxDB
+      run: |
+        chmod +x scripts/start-influxdb-native.sh
+        scripts/start-influxdb-native.sh
+    
+    - name: Run tests
+      run: |
+        ./scripts/test.sh
+    
+    - name: Run demo
+      run: |
+        ./scripts/run-demo.sh
+    
+    - name: Stop InfluxDB
+      if: always()
+      run: |
+        echo "Stopping InfluxDB..."
+        if [ -n "$INFLUXDB_PID" ]; then
+            kill $INFLUXDB_PID 2>/dev/null || true
+        fi
+        # Fallback: try to find and kill any remaining influxd processes
+        pkill -f "influxd.*influxdb.conf" 2>/dev/null || true
 
   macos-arm:
     runs-on: macos-latest
@@ -150,7 +198,14 @@ jobs:
         tar -xzf "${INFLUXDB_TAR}"
         
         echo "Verifying InfluxDB binary..."
+        if [ ! -f "influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd" ]; then
+            echo "ERROR: InfluxDB binary not found at expected path: influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd"
+            echo "Extracted contents:"
+            ls -la influxdb-${INFLUXDB_VERSION}-1/ || true
+            exit 1
+        fi
         ls -la influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
+        chmod +x influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
     
     - name: Start InfluxDB
       run: |
