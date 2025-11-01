@@ -5,7 +5,7 @@ from conan.tools.files import copy
 
 class InfluxdbCppRestConan(ConanFile):
     name = "influxdb-cpp-rest"
-    version = "1.0.1"
+    version = "1.0.0"
     license = "MPL-2.0"
     author = "Dmitry Ledentsov"
     url = "https://github.com/d-led/influxdb-cpp-rest"
