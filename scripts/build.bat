@@ -15,14 +15,26 @@ cd "%BUILD_DIR%"
 REM Install dependencies with Conan if not already done
 if not exist "conan_toolchain.cmake" if not exist "generators\conan_toolchain.cmake" (
     echo Installing dependencies with Conan...
-    conan install .. --build=missing --output-folder=. -s build_type=%BUILD_TYPE%
+    conan install .. --build=missing --output-folder=. -s build_type=%BUILD_TYPE% -s compiler.cppstd=20
+    if errorlevel 1 (
+        echo ERROR: Conan install failed
+        exit /b 1
+    )
 )
 
 REM Configure
 cmake .. -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_STANDARD=20
+if errorlevel 1 (
+    echo ERROR: CMake configuration failed
+    exit /b 1
+)
 
 REM Build
 cmake --build . --config %BUILD_TYPE%
+if errorlevel 1 (
+    echo ERROR: CMake build failed
+    exit /b 1
+)
 
 echo Build complete! Binaries are in %BUILD_DIR%\bin\Release
 
