@@ -36,15 +36,22 @@ include_directories(
 # Conan 2.0 generates CMakeDeps and CMakeToolchain via conan install
 if(USE_CONAN)
     # Try multiple possible locations for the toolchain
-    # Conan 2.0 with cmake_layout generates in build/<build_type>/generators/
+    # Conan 2.0 with cmake_layout generates in build/build/generators/ (Visual Studio multi-config)
+    # or build/build/<build_type>/generators/ (single-config generators)
     set(CONAN_TOOLCHAIN_PATHS
         "${CMAKE_BINARY_DIR}/conan_toolchain.cmake"
         "${CMAKE_BINARY_DIR}/generators/conan_toolchain.cmake"
+        "${CMAKE_BINARY_DIR}/build/generators/conan_toolchain.cmake"
+        "${CMAKE_BINARY_DIR}/build/build/generators/conan_toolchain.cmake"
         "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake"
         "${CMAKE_BINARY_DIR}/build/Release/generators/conan_toolchain.cmake"
         "${CMAKE_BINARY_DIR}/build/Debug/generators/conan_toolchain.cmake"
+        "${CMAKE_BINARY_DIR}/build/build/${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake"
+        "${CMAKE_BINARY_DIR}/build/build/Release/generators/conan_toolchain.cmake"
+        "${CMAKE_BINARY_DIR}/build/build/Debug/generators/conan_toolchain.cmake"
         "${CMAKE_SOURCE_DIR}/build/conan_toolchain.cmake"
         "${CMAKE_SOURCE_DIR}/build/generators/conan_toolchain.cmake"
+        "${CMAKE_SOURCE_DIR}/build/build/generators/conan_toolchain.cmake"
         "${CMAKE_SOURCE_DIR}/build/build/${CMAKE_BUILD_TYPE}/generators/conan_toolchain.cmake"
         "${CMAKE_SOURCE_DIR}/build/build/Release/generators/conan_toolchain.cmake"
     )
@@ -72,11 +79,17 @@ if(USE_CONAN)
     else()
         # Set CMAKE_PREFIX_PATH to help find_package find Conan packages
         # Try multiple possible generator locations
+        # For Visual Studio multi-config: build/build/generators/
+        # For single-config: build/build/<build_type>/generators/ or build/generators/
         set(GENERATORS_DIR "")
-        if(EXISTS "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators")
+        if(EXISTS "${CMAKE_BINARY_DIR}/build/build/generators")
+            set(GENERATORS_DIR "${CMAKE_BINARY_DIR}/build/build/generators")
+        elseif(EXISTS "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators")
             set(GENERATORS_DIR "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators")
         elseif(EXISTS "${CMAKE_BINARY_DIR}/build/Release/generators")
             set(GENERATORS_DIR "${CMAKE_BINARY_DIR}/build/Release/generators")
+        elseif(EXISTS "${CMAKE_BINARY_DIR}/build/build/Release/generators")
+            set(GENERATORS_DIR "${CMAKE_BINARY_DIR}/build/build/Release/generators")
         elseif(EXISTS "${CMAKE_BINARY_DIR}/generators")
             set(GENERATORS_DIR "${CMAKE_BINARY_DIR}/generators")
         endif()
