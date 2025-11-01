@@ -39,20 +39,30 @@ if not exist "%INFLUXDB_DIR%\influxd.exe" (
 )
 
 echo Starting InfluxDB...
-start /B "%INFLUXDB_DIR%\influxd.exe" -config influxdb.conf
+start /B "" "%INFLUXDB_DIR%\influxd.exe" -config influxdb.conf
 if errorlevel 1 (
     echo ERROR: Failed to start InfluxDB
     exit /b 1
 )
 
-echo Waiting for InfluxDB to be ready...
-timeout /t 10 /nobreak >nul
+REM Wait a moment for InfluxDB to start
+timeout /t 3 /nobreak >nul
 
-REM Check if InfluxDB is responding
+REM Verify the process is running
+tasklist /FI "IMAGENAME eq influxd.exe" 2>nul | find /I "influxd.exe" >nul
+if errorlevel 1 (
+    echo ERROR: InfluxDB process is not running
+    exit /b 1
+)
+
+echo Waiting for InfluxDB to be ready...
+timeout /t 7 /nobreak >nul
+
+REM Check if InfluxDB is responding using PowerShell with timeout
 set /a max_attempts=30
 set /a attempt=0
 :health_check
-curl -s http://localhost:8086/ping >nul 2>&1
+powershell -Command "try { $r = Invoke-WebRequest -Uri 'http://localhost:8086/ping' -TimeoutSec 1 -UseBasicParsing -ErrorAction Stop; if ($r.StatusCode -eq 204) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
 if errorlevel 1 (
     set /a attempt+=1
     if !attempt! lss %max_attempts% (
