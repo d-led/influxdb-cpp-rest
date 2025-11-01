@@ -241,18 +241,14 @@ if [ -n "${GITHUB_TOKEN:-}" ]; then
 fi
 git push -u origin "${BRANCH_NAME}" || git push origin "${BRANCH_NAME}"
 
-# Create pull request
+# Create pull request using GitHub REST API (works without gh CLI)
 if [ "${SKIP_PR}" != true ]; then
     echo "Creating pull request..."
-    # Authenticate gh CLI if GITHUB_TOKEN is available (for CI)
-    if [ -n "${GITHUB_TOKEN:-}" ]; then
-        echo "${GITHUB_TOKEN}" | gh auth login --with-token 2>/dev/null || true
-    fi
     
-    PR_URL=$(gh pr create \
-        --repo "${CONAN_INDEX_UPSTREAM}" \
-        --title "Add influxdb-cpp-rest/${VERSION}" \
-        --body "This PR adds the influxdb-cpp-rest package version ${VERSION} to Conan Center.
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+        # Use GitHub REST API to create PR
+        PR_BODY=$(cat <<EOF
+This PR adds the influxdb-cpp-rest package version ${VERSION} to Conan Center.
 
 ## Package Details
 - **Name**: influxdb-cpp-rest
@@ -277,22 +273,54 @@ if [ "${SKIP_PR}" != true ]; then
 - C++20 or later
 - GCC 11+, Clang 14+, MSVC 2019+
 
-Automatically created by GitHub Actions workflow on tag push." \
-        2>&1) || {
-        echo "Warning: Failed to create PR. You may need to create it manually."
-        echo "Branch pushed to: ${CONAN_INDEX_FORK}:${BRANCH_NAME}"
-        exit 1
-    }
-
-    echo ""
-    echo "✅ Pull request created: ${PR_URL}"
-    echo ""
-    echo "Next steps:"
-    echo "  1. Monitor the PR for CI results"
-    echo "  2. Address any review comments or CI failures"
-    echo "  3. Once merged, the package will be available on Conan Center"
+Automatically created by GitHub Actions workflow on tag push.
+EOF
+)
+        
+        # Extract owner and repo from CONAN_INDEX_UPSTREAM (format: owner/repo)
+        # Format PR body as JSON (escape newlines and quotes)
+        ESCAPED_BODY=$(echo "${PR_BODY}" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
+        
+        # Extract fork owner from CONAN_INDEX_FORK (format: owner/repo)
+        FORK_OWNER="${CONAN_INDEX_FORK%%/*}"
+        
+        PR_RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${CONAN_INDEX_UPSTREAM}/pulls" \
+            -d "{
+                \"title\": \"Add influxdb-cpp-rest/${VERSION}\",
+                \"body\": \"${ESCAPED_BODY}\",
+                \"head\": \"${FORK_OWNER}:${BRANCH_NAME}\",
+                \"base\": \"master\"
+            }")
+        
+        HTTP_CODE=$(echo "${PR_RESPONSE}" | tail -1)
+        PR_JSON=$(echo "${PR_RESPONSE}" | head -n -1)
+        
+        if [ "${HTTP_CODE}" = "201" ] || [ "${HTTP_CODE}" = "200" ]; then
+            PR_URL=$(echo "${PR_JSON}" | grep -o '"html_url":[^,]*' | cut -d'"' -f4 || echo "")
+            echo ""
+            echo "✅ Pull request created: ${PR_URL}"
+            echo ""
+            echo "Next steps:"
+            echo "  1. Monitor the PR for CI results"
+            echo "  2. Address any review comments or CI failures"
+            echo "  3. Once merged, the package will be available on Conan Center"
+        else
+            echo "Warning: Failed to create PR (HTTP ${HTTP_CODE})"
+            echo "Response: ${PR_JSON}"
+            echo "Branch pushed to: ${CONAN_INDEX_FORK}:${BRANCH_NAME}"
+            echo "Create PR manually at: https://github.com/${CONAN_INDEX_UPSTREAM}/compare/master...${CONAN_INDEX_FORK#*/}:${BRANCH_NAME}"
+            exit 1
+        fi
+    else
+        echo "✅ Branch pushed. Create PR manually:"
+        echo "  https://github.com/${CONAN_INDEX_UPSTREAM}/compare/master...${CONAN_INDEX_FORK#*/}:${BRANCH_NAME}"
+    fi
 else
     echo "✅ Branch pushed. Create PR manually:"
-    echo "  gh pr create --repo ${CONAN_INDEX_UPSTREAM} --title \"Add influxdb-cpp-rest/${VERSION}\""
+    echo "  https://github.com/${CONAN_INDEX_UPSTREAM}/compare/master...${CONAN_INDEX_FORK#*/}:${BRANCH_NAME}"
 fi
 
