@@ -4,11 +4,11 @@ setlocal
 cd /d %~dp0\..
 
 echo Stopping InfluxDB...
-docker compose -f docker-compose.win.yml down
-if errorlevel 1 (
-    echo WARNING: Failed to stop InfluxDB properly
-    exit /b 1
-)
+
+REM Kill influxd.exe process
+taskkill /F /IM influxd.exe >nul 2>&1
+
+REM Wait a bit for the process to fully terminate
+timeout /t 2 /nobreak >nul
 
 echo InfluxDB stopped.
-
