@@ -310,6 +310,7 @@ conanbuildinfo.txt
 conaninfo.txt
 /influxdb-*/
 influxdb-*.gz
+*.pyc
 
 # CMake build directory
 build/
