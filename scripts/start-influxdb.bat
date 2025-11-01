@@ -52,20 +52,31 @@ if errorlevel 1 (
 )
 
 echo Waiting for InfluxDB to be ready...
-ping 127.0.0.1 -n 8 >nul
-
-REM Check if InfluxDB is responding using PowerShell with timeout
-set /a max_attempts=30
+REM Poll with exponential backoff: start with short waits, increase gradually
+set /a max_attempts=60
 set /a attempt=0
+set /a wait_seconds=1
 :health_check
-powershell -Command "try { $r = Invoke-WebRequest -Uri 'http://localhost:8086/ping' -TimeoutSec 1 -UseBasicParsing -ErrorAction Stop; if ($r.StatusCode -eq 204) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
+REM Check if InfluxDB responds with HTTP 204 (No Content) which indicates readiness
+powershell -Command "try { $r = Invoke-WebRequest -Uri 'http://localhost:8086/ping' -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop; if ($r.StatusCode -eq 204) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
 if errorlevel 1 (
     set /a attempt+=1
     if !attempt! lss %max_attempts% (
-        ping 127.0.0.1 -n 2 >nul
+        REM Verify process is still running before continuing
+        tasklist /FI "IMAGENAME eq influxd.exe" 2>nul | find /I "influxd.exe" >nul
+        if errorlevel 1 (
+            echo ERROR: InfluxDB process died unexpectedly
+            exit /b 1
+        )
+        echo Attempt !attempt!/%max_attempts%: InfluxDB not ready yet, waiting !wait_seconds! second^(s^)...
+        ping 127.0.0.1 -n !wait_seconds! >nul
+        REM Exponential backoff: cap at 5 seconds
+        set /a wait_seconds+=1
+        if !wait_seconds! gtr 5 set /a wait_seconds=5
         goto :health_check
     )
-    echo WARNING: InfluxDB may not be fully ready yet
+    echo ERROR: InfluxDB failed to become ready after %max_attempts% attempts
+    exit /b 1
 ) else (
-    echo InfluxDB is ready!
+    echo ✓ InfluxDB is ready after !attempt! polling attempts!
 )
