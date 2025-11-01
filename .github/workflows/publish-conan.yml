@@ -35,7 +35,7 @@ jobs:
       with:
         repository: d-led/conan-center-index
         path: conan-center-index
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.CONAN_INDEX_PAT || secrets.GITHUB_TOKEN }}
         persist-credentials: true
     
     - name: Setup conan-center-index upstream
@@ -52,7 +52,7 @@ jobs:
         CONAN_INDEX_FORK: d-led/conan-center-index
         CONAN_INDEX_UPSTREAM: conan-io/conan-center-index
         CONAN_INDEX_DIR: ${{ github.workspace }}/conan-center-index
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.CONAN_INDEX_PAT || secrets.GITHUB_TOKEN }}
       run: |
         ./scripts/publish-conan-version.sh "${{ steps.version.outputs.version }}"
 

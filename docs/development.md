@@ -165,6 +165,15 @@ The package is published to [Conan Center](https://conan.io/center) via pull req
 1. Fork https://github.com/conan-io/conan-center-index
 2. Clone your fork locally
 3. Set upstream remote: `git remote add upstream https://github.com/conan-io/conan-center-index.git`
+4. **Create a GitHub Personal Access Token (PAT)** with `repo` scope:
+   - Go to https://github.com/settings/tokens
+   - Generate a new token (classic) with `repo` scope
+   - Add it as a repository secret named `CONAN_INDEX_PAT` in your influxdb-cpp-rest repository
+     - Go to Settings → Secrets and variables → Actions → New repository secret
+     - Name: `CONAN_INDEX_PAT`
+     - Value: your PAT token
+
+   **Note:** The workflow will use `GITHUB_TOKEN` if `CONAN_INDEX_PAT` is not set, but `GITHUB_TOKEN` cannot push to forks. A PAT is required for automated publishing.
 
 ### Publishing a New Version
 
