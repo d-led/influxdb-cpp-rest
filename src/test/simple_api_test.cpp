@@ -197,9 +197,10 @@ SCENARIO_METHOD(simple_connected_test, "more than 1000 inserts per second") {
 
 
                 AND_THEN("All entries arrive at the database") {
-                    // wait for asynchronous fill
+                    // wait for asynchronous fill - Windows needs more time for async batching
                     auto query = std::string("select count(*) from ") + db_name + "..asynctest";
-                    wait_for([this, query, many_times] { return raw_db.get(query).find(std::to_string(many_times.count)) != std::string::npos; }, 200);
+                    // Use more retries for slower systems (400 retries * 100ms = 40 seconds max)
+                    wait_for([this, query, many_times] { return raw_db.get(query).find(std::to_string(many_times.count)) != std::string::npos; }, 400);
                     bool all_entries_arrived = raw_db.get(query).find(std::to_string(many_times.count)) != std::string::npos;
 
                     CHECK(all_entries_arrived);

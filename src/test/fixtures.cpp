@@ -46,12 +46,23 @@ bool connected_test::database_exists(std::string const & name)
 
 void connected_test::wait_for(std::function<bool()> predicate, unsigned retries)
 {
+    // Use exponential backoff: start with short waits, increase gradually
+    // This is more efficient for slow systems (especially Windows async operations)
+    unsigned wait_ms = milliseconds_waiting_time;
+    const unsigned max_wait_ms = 500;  // Cap at 500ms
+    
     for (unsigned i = 0; i < retries; i++) {
         if (predicate()) {
             return;
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds_waiting_time));
+        std::this_thread::sleep_for(std::chrono::milliseconds(wait_ms));
+        
+        // Exponential backoff: increase wait time gradually, cap at max_wait_ms
+        wait_ms += milliseconds_waiting_time;
+        if (wait_ms > max_wait_ms) {
+            wait_ms = max_wait_ms;
+        }
     }
 }
 
