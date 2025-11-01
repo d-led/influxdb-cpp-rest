@@ -134,6 +134,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Cache InfluxDB
+      uses: actions/cache@v4
+      with:
+        path: |
+          influxdb-1.8.10-1
+          influxdb-1.8.10_windows_amd64.zip
+        key: influxdb-1.8.10-windows-${{ runner.os }}
+        restore-keys: |
+          influxdb-1.8.10-windows-
+    
     - name: Install Conan
       run: |
         pip install conan
