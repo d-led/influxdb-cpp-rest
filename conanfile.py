@@ -4,7 +4,7 @@ from conan.tools.cmake import CMake, cmake_layout, CMakeDeps, CMakeToolchain
 
 class InfluxdbCppRestConan(ConanFile):
     name = "influxdb-cpp-rest"
-    version = "1.0.0"
+    version = "1.0.1"
     license = "MPL-2.0"
     author = "Dmitry Ledentsov"
     url = "https://github.com/d-led/influxdb-cpp-rest"
