@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Script to push the latest version tag to remote
-# Usage: ./scripts/push-latest-version.sh [remote] [--dry-run]
+# Usage: ./scripts/push-latest-version.sh [remote] [--dry-run] [-y|--yes]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -10,10 +10,14 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # Parse arguments
 REMOTE="origin"
 DRY_RUN=false
+YES=false
 for arg in "$@"; do
     case "$arg" in
         --dry-run)
             DRY_RUN=true
+            ;;
+        -y|--yes)
+            YES=true
             ;;
         *)
             if [ "$REMOTE" = "origin" ] && [[ ! "$arg" =~ ^-- ]]; then
@@ -106,10 +110,14 @@ main() {
             echo "[DRY RUN] Tag ${LATEST_TAG} already exists on ${REMOTE}"
         else
             echo "Tag ${LATEST_TAG} already exists on ${REMOTE}"
-            read -p "Push anyway? (y/N) " -n 1 -r
-            echo
-            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-                exit 0
+            if [ "$YES" = true ]; then
+                echo "Continuing anyway (--yes flag set)"
+            else
+                read -p "Push anyway? (y/N) " -n 1 -r
+                echo
+                if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                    exit 0
+                fi
             fi
         fi
     else
@@ -127,14 +135,16 @@ main() {
         exit 0
     fi
     
-    # Confirm before pushing
-    echo ""
-    echo "About to push tag ${LATEST_TAG} to ${REMOTE}"
-    read -p "Continue? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Cancelled."
-        exit 0
+    # Confirm before pushing (unless --yes flag is set)
+    if [ "$YES" != true ]; then
+        echo ""
+        echo "About to push tag ${LATEST_TAG} to ${REMOTE}"
+        read -p "Continue? (y/N) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Cancelled."
+            exit 0
+        fi
     fi
     
     # Push the tag

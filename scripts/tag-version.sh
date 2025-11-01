@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Script to bump and tag semantic versions
-# Usage: ./scripts/tag-version.sh [major|minor|patch|rc|release] [--dry-run]
+# Usage: ./scripts/tag-version.sh [major|minor|patch|rc|release] [--dry-run] [--push]
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -13,6 +13,18 @@ CMAKELISTS="${PROJECT_ROOT}/CMakeLists.txt"
 DRY_RUN=false
 if [[ "${@}" =~ --dry-run ]]; then
     DRY_RUN=true
+fi
+
+# Check for push flag (defaults to false)
+PUSH=false
+if [[ "${@}" =~ --push ]]; then
+    PUSH=true
+fi
+
+# Check for yes/auto-confirm flag (defaults to false)
+YES=false
+if [[ "${@}" =~ -y ]] || [[ "${@}" =~ --yes ]]; then
+    YES=true
 fi
 
 # Get current version from conanfile.py
@@ -154,9 +166,17 @@ create_tag() {
             echo "  Warning: Tag ${tag} already exists"
         fi
         
-        # Check for uncommitted changes
-        if ! git diff-index --quiet HEAD --; then
-            echo "  Warning: Uncommitted changes detected"
+        # Check for uncommitted changes (excluding version files)
+        local git_root=$(git rev-parse --show-toplevel)
+        local conanfile_rel="${CONANFILE#${git_root}/}"
+        local cmakelists_rel="${CMAKELISTS#${git_root}/}"
+        local all_changed=$(git diff --name-only HEAD 2>/dev/null || true)
+        local all_staged=$(git diff --name-only --cached 2>/dev/null || true)
+        local other_changes=$(echo "$all_changed" | grep -v -E "^${conanfile_rel}$|^${cmakelists_rel}$" | grep -v '^$' || true)
+        local other_staged=$(echo "$all_staged" | grep -v -E "^${conanfile_rel}$|^${cmakelists_rel}$" | grep -v '^$' || true)
+        
+        if [ -n "$other_changes" ] || [ -n "$other_staged" ]; then
+            echo "  Warning: Uncommitted changes detected (excluding version files)"
             git status --short
         fi
         return
@@ -165,27 +185,98 @@ create_tag() {
     # Check if tag already exists
     if git rev-parse "${tag}" >/dev/null 2>&1; then
         echo "Warning: Tag ${tag} already exists" >&2
-        read -p "Continue anyway? (y/N) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
+        if [ "$YES" != true ]; then
+            read -p "Continue anyway? (y/N) " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                exit 1
+            fi
+        else
+            echo "Continuing anyway (--yes flag set)" >&2
         fi
     fi
     
-    # Check for uncommitted changes
-    if ! git diff-index --quiet HEAD --; then
-        echo "Warning: You have uncommitted changes" >&2
+    # Check for uncommitted changes (excluding version files that will be committed)
+    # Get paths relative to git root
+    local git_root=$(git rev-parse --show-toplevel)
+    local conanfile_rel="${CONANFILE#${git_root}/}"
+    local cmakelists_rel="${CMAKELISTS#${git_root}/}"
+    
+    # Get all changed files
+    local all_changed=$(git diff --name-only HEAD 2>/dev/null || true)
+    local all_staged=$(git diff --name-only --cached 2>/dev/null || true)
+    
+    # Filter out version files
+    local other_changes=$(echo "$all_changed" | grep -v -E "^${conanfile_rel}$|^${cmakelists_rel}$" || true)
+    local other_staged=$(echo "$all_staged" | grep -v -E "^${conanfile_rel}$|^${cmakelists_rel}$" || true)
+    
+    # Remove empty lines
+    other_changes=$(echo "$other_changes" | grep -v '^$' || true)
+    other_staged=$(echo "$other_staged" | grep -v '^$' || true)
+    
+    if [ -n "$other_changes" ] || [ -n "$other_staged" ]; then
+        echo "Warning: You have uncommitted changes (excluding version files)" >&2
         git status --short
-        read -p "Continue with tag anyway? (y/N) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
+        if [ "$YES" != true ]; then
+            read -p "Continue with tag anyway? (y/N) " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                exit 1
+            fi
+        else
+            echo "Continuing anyway (--yes flag set)" >&2
         fi
     fi
     
     # Create tag
     git tag -a "${tag}" -m "Version ${version}"
     echo "Created git tag: ${tag}"
+}
+
+# Commit version changes
+commit_version_changes() {
+    local new_version="$1"
+    local commit_message="Bump version to ${new_version}"
+    
+    if [ "$DRY_RUN" = true ]; then
+        echo "[DRY RUN] Would commit version changes:"
+        echo "  Message: \"${commit_message}\""
+        git status --short
+        return 0
+    fi
+    
+    # Stage the version files
+    if [ -f "${CONANFILE}" ]; then
+        git add "${CONANFILE}"
+    fi
+    if [ -f "${CMAKELISTS}" ]; then
+        git add "${CMAKELISTS}"
+    fi
+    
+    # Check if there are staged changes
+    if ! git diff --staged --quiet; then
+        git commit -m "${commit_message}"
+        echo "✓ Committed version changes"
+        return 0
+    else
+        echo "No changes to commit"
+        return 0
+    fi
+}
+
+# Push git tag
+push_tag() {
+    local version="$1"
+    local tag="v${version}"
+    
+    if [ "$DRY_RUN" = true ]; then
+        echo "[DRY RUN] Would push git tag: ${tag}"
+        return
+    fi
+    
+    # Push the tag
+    git push origin "${tag}"
+    echo "Pushed git tag: ${tag}"
 }
 
 # Main execution
@@ -201,6 +292,12 @@ main() {
         case "$arg" in
             --dry-run)
                 DRY_RUN=true
+                ;;
+            --push)
+                PUSH=true
+                ;;
+            -y|--yes)
+                YES=true
                 ;;
             major|minor|patch)
                 bump_type="$arg"
@@ -231,7 +328,7 @@ main() {
     done
     
     if [ -z "$bump_type" ]; then
-        echo "Usage: $0 [major|minor|patch|rc|release] [rc] [--dry-run]" >&2
+        echo "Usage: $0 [major|minor|patch|rc|release] [rc] [--dry-run] [--push] [-y|--yes]" >&2
         echo "" >&2
         echo "Examples:" >&2
         echo "  $0 major          # 1.2.3 -> 2.0.0" >&2
@@ -245,6 +342,8 @@ main() {
         echo "" >&2
         echo "Options:" >&2
         echo "  --dry-run    Show what would change without making changes" >&2
+        echo "  --push       Push the git tag to remote after creating it" >&2
+        echo "  -y, --yes    Auto-confirm all prompts (skip interactive questions)" >&2
         exit 1
     fi
     
@@ -290,9 +389,15 @@ main() {
     # Update all version files
     update_version_files "$NEW_VERSION"
     
+    # Commit version changes
+    commit_version_changes "$NEW_VERSION"
+    
     if [ "$DRY_RUN" = true ]; then
         echo ""
         create_tag "$NEW_VERSION"
+        if [ "$PUSH" = true ]; then
+            push_tag "$NEW_VERSION"
+        fi
         echo ""
         echo "=== DRY RUN COMPLETE ==="
         echo "Run without --dry-run to apply changes."
@@ -300,17 +405,43 @@ main() {
     fi
     
     # Create git tag
-    read -p "Create git tag v${NEW_VERSION}? (y/N) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [ "$YES" = true ]; then
+        # Auto-confirm, skip prompt
         create_tag "$NEW_VERSION"
-        echo ""
-        echo "✓ Version bumped to ${NEW_VERSION}"
-        echo "✓ Git tag v${NEW_VERSION} created"
-        echo ""
-        echo "To push the tag: git push origin v${NEW_VERSION}"
+        
+        # Push tag if --push flag was set
+        if [ "$PUSH" = true ]; then
+            echo ""
+            push_tag "$NEW_VERSION"
+            echo ""
+            echo "✓ Version bumped to ${NEW_VERSION}"
+            echo "✓ Git tag v${NEW_VERSION} created and pushed"
+        else
+            echo ""
+            echo "✓ Version bumped to ${NEW_VERSION}"
+            echo "✓ Git tag v${NEW_VERSION} created"
+        fi
     else
-        echo "Tag creation cancelled. Version updated in files only."
+        read -p "Create git tag v${NEW_VERSION}? (y/N) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            create_tag "$NEW_VERSION"
+            
+            # Push tag if --push flag was set
+            if [ "$PUSH" = true ]; then
+                echo ""
+                push_tag "$NEW_VERSION"
+                echo ""
+                echo "✓ Version bumped to ${NEW_VERSION}"
+                echo "✓ Git tag v${NEW_VERSION} created and pushed"
+            else
+                echo ""
+                echo "✓ Version bumped to ${NEW_VERSION}"
+                echo "✓ Git tag v${NEW_VERSION} created"
+            fi
+        else
+            echo "Tag creation cancelled. Version updated in files only."
+        fi
     fi
 }
 
