@@ -36,8 +36,8 @@ using namespace std::string_literals;
 
 auto db = simple_db("http://localhost:8086"s, "my_db"s);
 db.insert(
-    line("log"s, 
-         key_value_pairs("my_tag"s, 42L), 
+    line("log"s,
+         key_value_pairs("my_tag"s, 42L),
          key_value_pairs("value"s, "hello world!"s)));
 ```
 
@@ -194,7 +194,6 @@ For detailed development instructions, see [docs/development.md](docs/developmen
 - @kirkshoop for indispensable help with [RxCpp](https://github.com/Reactive-Extensions/RxCpp)
 - @nikkov for pointing out the missing essential features
 - @promgamer, @garaemon for the identifiers PRs
-
 
 ## License
 
