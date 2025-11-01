@@ -107,13 +107,6 @@ bump_version() {
 # Update version in all files
 update_version_files() {
     local new_version="$1"
-    local sed_in_place
-    
-    if [[ "$(uname)" == "Darwin" ]]; then
-        sed_in_place="sed -i ''"
-    else
-        sed_in_place="sed -i"
-    fi
     
     if [ "$DRY_RUN" = true ]; then
         echo "[DRY RUN] Would update versions to: ${new_version}"
@@ -141,13 +134,21 @@ update_version_files() {
     
     # Update conanfile.py
     if [ -f "${CONANFILE}" ]; then
-        $sed_in_place "s/version = \"[^\"]*\"/version = \"${new_version}\"/" "${CONANFILE}"
+        if [[ "$(uname)" == "Darwin" ]]; then
+            sed -i '' "s/version = \"[^\"]*\"/version = \"${new_version}\"/" "${CONANFILE}"
+        else
+            sed -i "s/version = \"[^\"]*\"/version = \"${new_version}\"/" "${CONANFILE}"
+        fi
         echo "✓ Updated ${CONANFILE} to version ${new_version}"
     fi
     
     # Update CMakeLists.txt (project VERSION)
     if [ -f "${CMAKELISTS}" ]; then
-        $sed_in_place -E "s/VERSION [0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?/VERSION ${new_version}/" "${CMAKELISTS}"
+        if [[ "$(uname)" == "Darwin" ]]; then
+            sed -i '' -E "s/VERSION [0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?/VERSION ${new_version}/" "${CMAKELISTS}"
+        else
+            sed -i -E "s/VERSION [0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?/VERSION ${new_version}/" "${CMAKELISTS}"
+        fi
         echo "✓ Updated ${CMAKELISTS} to version ${new_version}"
     fi
 }
@@ -389,10 +390,9 @@ main() {
     # Update all version files
     update_version_files "$NEW_VERSION"
     
-    # Commit version changes
-    commit_version_changes "$NEW_VERSION"
-    
     if [ "$DRY_RUN" = true ]; then
+        echo ""
+        commit_version_changes "$NEW_VERSION"
         echo ""
         create_tag "$NEW_VERSION"
         if [ "$PUSH" = true ]; then
@@ -404,9 +404,13 @@ main() {
         exit 0
     fi
     
-    # Create git tag
+    # Ask for confirmation to commit and tag
     if [ "$YES" = true ]; then
         # Auto-confirm, skip prompt
+        # Commit version changes
+        commit_version_changes "$NEW_VERSION"
+        
+        # Create git tag
         create_tag "$NEW_VERSION"
         
         # Push tag if --push flag was set
@@ -415,16 +419,22 @@ main() {
             push_tag "$NEW_VERSION"
             echo ""
             echo "✓ Version bumped to ${NEW_VERSION}"
+            echo "✓ Changes committed"
             echo "✓ Git tag v${NEW_VERSION} created and pushed"
         else
             echo ""
             echo "✓ Version bumped to ${NEW_VERSION}"
+            echo "✓ Changes committed"
             echo "✓ Git tag v${NEW_VERSION} created"
         fi
     else
-        read -p "Create git tag v${NEW_VERSION}? (y/N) " -n 1 -r
+        read -p "Commit and tag v${NEW_VERSION}? (y/N) " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
+            # Commit version changes
+            commit_version_changes "$NEW_VERSION"
+            
+            # Create git tag
             create_tag "$NEW_VERSION"
             
             # Push tag if --push flag was set
@@ -433,14 +443,16 @@ main() {
                 push_tag "$NEW_VERSION"
                 echo ""
                 echo "✓ Version bumped to ${NEW_VERSION}"
+                echo "✓ Changes committed"
                 echo "✓ Git tag v${NEW_VERSION} created and pushed"
             else
                 echo ""
                 echo "✓ Version bumped to ${NEW_VERSION}"
+                echo "✓ Changes committed"
                 echo "✓ Git tag v${NEW_VERSION} created"
             fi
         else
-            echo "Tag creation cancelled. Version updated in files only."
+            echo "Cancelled. Version updated in files only."
         fi
     fi
 }

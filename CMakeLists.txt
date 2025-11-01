@@ -169,32 +169,65 @@ target_link_libraries(influxdb-cpp-rest
     PUBLIC
         ${CONAN_LIBS}
 )
-# Workaround: Conan OpenSSL CMakeDeps doesn't set include directories
-if(TARGET OpenSSL::SSL)
-    # Read openssl package folder from the data file
-    file(GLOB _OPENSSL_DATA_FILES "${CMAKE_BINARY_DIR}/OpenSSL-*-data.cmake")
-    if(_OPENSSL_DATA_FILES)
-        list(GET _OPENSSL_DATA_FILES 0 _OPENSSL_DATA_FILE)
-        message(STATUS "Found OpenSSL data file: ${_OPENSSL_DATA_FILE}")
-        file(READ "${_OPENSSL_DATA_FILE}" _OPENSSL_DATA_CONTENT)
-        string(REGEX MATCH "set\\(openssl_PACKAGE_FOLDER_RELEASE \"([^\"]+)\"\\)" _MATCH "${_OPENSSL_DATA_CONTENT}")
-        if(_MATCH)
-            string(REGEX REPLACE ".*openssl_PACKAGE_FOLDER_RELEASE \"([^\"]+)\".*" "\\1" OPENSSL_PKG_FOLDER "${_MATCH}")
-            set(OPENSSL_INCLUDE_DIR "${OPENSSL_PKG_FOLDER}/include")
-            message(STATUS "OpenSSL pkg folder: ${OPENSSL_PKG_FOLDER}, include: ${OPENSSL_INCLUDE_DIR}")
-            if(EXISTS "${OPENSSL_INCLUDE_DIR}")
-                set_target_properties(OpenSSL::SSL OpenSSL::Crypto PROPERTIES
-                    INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
-                )
-                message(STATUS "Set OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
-            else()
-                message(WARNING "OpenSSL include dir does not exist: ${OPENSSL_INCLUDE_DIR}")
-            endif()
-        else()
-            message(WARNING "Could not extract OpenSSL package folder from data file")
+# Workaround: Ensure OpenSSL include directories are available
+# Boost (via cpprestsdk) requires OpenSSL headers, but Conan's OpenSSL CMakeDeps 
+# might not properly set INTERFACE_INCLUDE_DIRECTORIES
+if(TARGET OpenSSL::SSL AND USE_CONAN)
+    # Find OpenSSL include directory - try multiple methods
+    set(_OPENSSL_INCLUDE_DIR "")
+    
+    # Method 1: Check CMAKE_PREFIX_PATH (set by Conan generators)
+    foreach(_PREFIX_PATH ${CMAKE_PREFIX_PATH})
+        set(_POSSIBLE_INCLUDE "${_PREFIX_PATH}/include")
+        if(EXISTS "${_POSSIBLE_INCLUDE}/openssl/ssl.h")
+            set(_OPENSSL_INCLUDE_DIR "${_POSSIBLE_INCLUDE}")
+            message(STATUS "Found OpenSSL includes via CMAKE_PREFIX_PATH: ${_OPENSSL_INCLUDE_DIR}")
+            break()
         endif()
+    endforeach()
+    
+    # Method 2: Read from Conan's generator data files
+    if(NOT _OPENSSL_INCLUDE_DIR)
+        file(GLOB _OPENSSL_DATA_FILES 
+            "${CMAKE_BINARY_DIR}/OpenSSL-*-data.cmake"
+            "${CMAKE_BINARY_DIR}/generators/OpenSSL-*-data.cmake"
+            "${CMAKE_BINARY_DIR}/build/Release/generators/OpenSSL-*-data.cmake"
+            "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/generators/OpenSSL-*-data.cmake"
+        )
+        if(_OPENSSL_DATA_FILES)
+            list(GET _OPENSSL_DATA_FILES 0 _OPENSSL_DATA_FILE)
+            file(READ "${_OPENSSL_DATA_FILE}" _OPENSSL_DATA_CONTENT)
+            # Match both lowercase and mixed case variants
+            string(REGEX MATCH "set\\([Oo]pen[Ss][Ss][Ll]_PACKAGE_FOLDER_RELEASE \"([^\"]+)\"\\)" _MATCH "${_OPENSSL_DATA_CONTENT}")
+            if(_MATCH)
+                string(REGEX REPLACE ".*PACKAGE_FOLDER_RELEASE \"([^\"]+)\".*" "\\1" _OPENSSL_PKG_FOLDER "${_MATCH}")
+                set(_OPENSSL_INCLUDE_DIR "${_OPENSSL_PKG_FOLDER}/include")
+                message(STATUS "Found OpenSSL includes via data file: ${_OPENSSL_INCLUDE_DIR}")
+            endif()
+        endif()
+    endif()
+    
+    # Method 3: Use find_path to search in known locations
+    if(NOT _OPENSSL_INCLUDE_DIR)
+        find_path(_OPENSSL_INCLUDE_DIR 
+            NAMES openssl/ssl.h
+            PATHS ${CMAKE_PREFIX_PATH}
+            PATH_SUFFIXES include
+            NO_DEFAULT_PATH
+        )
+        if(_OPENSSL_INCLUDE_DIR)
+            message(STATUS "Found OpenSSL includes via find_path: ${_OPENSSL_INCLUDE_DIR}")
+        endif()
+    endif()
+    
+    # Add the include directory directly to our target
+    # This is critical because Boost's ASIO SSL tries to include openssl headers directly
+    if(_OPENSSL_INCLUDE_DIR AND EXISTS "${_OPENSSL_INCLUDE_DIR}")
+        target_include_directories(influxdb-cpp-rest PRIVATE "${_OPENSSL_INCLUDE_DIR}")
+        message(STATUS "Added OpenSSL include directory to influxdb-cpp-rest: ${_OPENSSL_INCLUDE_DIR}")
     else()
-        message(WARNING "Could not find OpenSSL data file")
+        message(WARNING "Could not find OpenSSL include directory - compilation may fail")
+        message(WARNING "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
     endif()
 endif()
 
@@ -343,33 +376,35 @@ if(BUILD_TESTING)
     endif()
 endif()
 
-# Enable testing
-enable_testing()
+# Enable testing and register tests (only if BUILD_TESTING is ON)
+if(BUILD_TESTING)
+    enable_testing()
 
-# Register tests with CTest
-add_test(NAME test-influxdb-cpp-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influxdb-cpp-rest)
-add_test(NAME test-influx-c-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influx-c-rest)
-add_test(NAME test-influxdb-cpp-auth COMMAND ${CMAKE_BINARY_DIR}/bin/test-influxdb-cpp-auth)
+    # Register tests with CTest
+    add_test(NAME test-influxdb-cpp-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influxdb-cpp-rest)
+    add_test(NAME test-influx-c-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influx-c-rest)
+    add_test(NAME test-influxdb-cpp-auth COMMAND ${CMAKE_BINARY_DIR}/bin/test-influxdb-cpp-auth)
 
-# Set output directories for executables - match influx-c-rest DLL location
-if(CMAKE_CONFIGURATION_TYPES)
-    # Multi-config generator (Visual Studio, Xcode)
-    set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
-        PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
-    )
-else()
-    # Single-config generator
-    if(CMAKE_BUILD_TYPE)
+    # Set output directories for executables - match influx-c-rest DLL location
+    if(CMAKE_CONFIGURATION_TYPES)
+        # Multi-config generator (Visual Studio, Xcode)
         set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
             PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
         )
     else()
-        set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
-            PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-        )
+        # Single-config generator
+        if(CMAKE_BUILD_TYPE)
+            set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+            )
+        else()
+            set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            )
+        endif()
     endif()
 endif()
 
