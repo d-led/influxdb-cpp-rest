@@ -29,8 +29,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Prefer Conan packages over system packages for reproducibility
 # Don't search system directories unless explicitly told to
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
-# Make -isystem happen AFTER our includes
-set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem" CACHE STRING "Flag to force system includes to be treated as system" FORCE)
+# Make -isystem happen AFTER our includes (not for MSVC - it doesn't support -isystem)
+if(NOT MSVC)
+    set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem" CACHE STRING "Flag to force system includes to be treated as system" FORCE)
+endif()
 
 # Build options
 option(BUILD_TESTING "Build tests" ON)
@@ -114,7 +116,6 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
     # These should be in the generators directory
     find_package(Catch2 QUIET)
     find_package(cpprestsdk REQUIRED)
-    find_package(fmt REQUIRED)
     find_package(rxcpp QUIET)
     find_package(OpenSSL REQUIRED)
     
@@ -125,12 +126,11 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
         message(STATUS "Catch2 from Conan not found - tests will fail if it's not available")
     endif()
     
-    if(TARGET fmt::fmt AND TARGET cpprestsdk::cpprestsdk)
+    if(TARGET cpprestsdk::cpprestsdk)
         set(CONAN_LIBS 
             cpprestsdk::cpprestsdk
-            fmt::fmt
         )
-        message(STATUS "Using Conan packages: fmt::fmt, cpprestsdk::cpprestsdk")
+        message(STATUS "Using Conan packages: cpprestsdk::cpprestsdk")
         # Add rxcpp if found from Conan
         if(TARGET RxCpp::RxCpp)
             list(APPEND CONAN_LIBS RxCpp::RxCpp)
@@ -143,9 +143,6 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
         endif()
     else()
         message(FATAL_ERROR "Required Conan packages not found as targets")
-        if(NOT TARGET fmt::fmt)
-            message(FATAL_ERROR "  - fmt::fmt target not found")
-        endif()
         if(NOT TARGET cpprestsdk::cpprestsdk)
             message(FATAL_ERROR "  - cpprestsdk::cpprestsdk target not found")
         endif()
@@ -165,7 +162,7 @@ list(FILTER INFLUXDB_CPP_REST_SOURCES EXCLUDE REGEX ".*\\.h$")
 add_library(influxdb-cpp-rest STATIC
     ${INFLUXDB_CPP_REST_SOURCES}
 )
-    target_include_directories(influxdb-cpp-rest PUBLIC
+target_include_directories(influxdb-cpp-rest PUBLIC
     src/influxdb-cpp-rest
 )
 target_link_libraries(influxdb-cpp-rest
@@ -175,23 +172,29 @@ target_link_libraries(influxdb-cpp-rest
 # Workaround: Conan OpenSSL CMakeDeps doesn't set include directories
 if(TARGET OpenSSL::SSL)
     # Read openssl package folder from the data file
-    file(GLOB _OPENSSL_DATA_FILES "${CMAKE_CURRENT_LIST_DIR}/OpenSSL-*-data.cmake")
+    file(GLOB _OPENSSL_DATA_FILES "${CMAKE_BINARY_DIR}/OpenSSL-*-data.cmake")
     if(_OPENSSL_DATA_FILES)
         list(GET _OPENSSL_DATA_FILES 0 _OPENSSL_DATA_FILE)
-    endif()
-    if(_OPENSSL_DATA_FILE)
+        message(STATUS "Found OpenSSL data file: ${_OPENSSL_DATA_FILE}")
         file(READ "${_OPENSSL_DATA_FILE}" _OPENSSL_DATA_CONTENT)
         string(REGEX MATCH "set\\(openssl_PACKAGE_FOLDER_RELEASE \"([^\"]+)\"\\)" _MATCH "${_OPENSSL_DATA_CONTENT}")
         if(_MATCH)
             string(REGEX REPLACE ".*openssl_PACKAGE_FOLDER_RELEASE \"([^\"]+)\".*" "\\1" OPENSSL_PKG_FOLDER "${_MATCH}")
             set(OPENSSL_INCLUDE_DIR "${OPENSSL_PKG_FOLDER}/include")
+            message(STATUS "OpenSSL pkg folder: ${OPENSSL_PKG_FOLDER}, include: ${OPENSSL_INCLUDE_DIR}")
             if(EXISTS "${OPENSSL_INCLUDE_DIR}")
                 set_target_properties(OpenSSL::SSL OpenSSL::Crypto PROPERTIES
                     INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
                 )
                 message(STATUS "Set OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
+            else()
+                message(WARNING "OpenSSL include dir does not exist: ${OPENSSL_INCLUDE_DIR}")
             endif()
+        else()
+            message(WARNING "Could not extract OpenSSL package folder from data file")
         endif()
+    else()
+        message(WARNING "Could not find OpenSSL data file")
     endif()
 endif()
 

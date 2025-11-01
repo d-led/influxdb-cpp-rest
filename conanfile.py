@@ -26,7 +26,6 @@ class InfluxdbCppRestConan(ConanFile):
 
     def requirements(self):
         self.requires("cpprestsdk/2.10.19")  # Latest stable version
-        self.requires("fmt/12.1.0")  # Latest stable version with C++20 support
         self.requires("rxcpp/4.1.1")  # Latest stable version
     
     def build_requirements(self):
