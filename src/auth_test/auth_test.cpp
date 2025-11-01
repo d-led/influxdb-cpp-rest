@@ -87,7 +87,7 @@ TEST_CASE_METHOD(authentication_test, "authentication smoke test")
     }
 }
 
-TEST_CASE_METHOD(authentication_test, "C api authentication smoke test DISABLED_until_auth_setup", "[.]")
+TEST_CASE_METHOD(authentication_test, "C api authentication smoke test", "[.]")
 {
     SECTION("query")
     {
@@ -129,7 +129,7 @@ TEST_CASE_METHOD(authentication_test, "C api authentication smoke test DISABLED_
     }
 }
 
-TEST_CASE_METHOD(authentication_test, "wrong credentials")
+TEST_CASE_METHOD(authentication_test, "wrong credentials DISABLED_auth_not_configured", "[.]")
 {
     db.with_authentication("wrong", "credentials");
     CHECK_THROWS(db.get("show databases"));
