@@ -319,9 +319,9 @@ endif()
 enable_testing()
 
 # Register tests with CTest
-add_test(NAME test-influxdb-cpp-rest COMMAND test-influxdb-cpp-rest)
-add_test(NAME test-influx-c-rest COMMAND test-influx-c-rest)
-add_test(NAME test-influxdb-cpp-auth COMMAND test-influxdb-cpp-auth)
+add_test(NAME test-influxdb-cpp-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influxdb-cpp-rest)
+add_test(NAME test-influx-c-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influx-c-rest)
+add_test(NAME test-influxdb-cpp-auth COMMAND ${CMAKE_BINARY_DIR}/bin/test-influxdb-cpp-auth)
 
 # Set output directories for executables
 set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth

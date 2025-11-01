@@ -11,13 +11,13 @@
 #include "fixtures.h"
 
 TEST_CASE_METHOD(connected_test, "creating a database", "[connected]") {
-    CHECK(database_exists("testdb"));
+    CHECK(database_exists(db_name));
 }
 
 
 TEST_CASE_METHOD(connected_test, "posting simple values", "[connected]") {
     auto testdb_test_entries = [this]() {
-        return raw_db.get("select * from testdb..test");
+        return raw_db.get("select * from " + db_name + "..test");
     };
     CHECK(testdb_test_entries().find("hello") == std::string::npos);
 

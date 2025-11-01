@@ -12,10 +12,14 @@
 #include <random>
 
 struct connected_test {
+    std::string db_name;
     influxdb::raw::db_utf8 raw_db;
     const int milliseconds_waiting_time = 100;
-    std::string db_name;
 
+private:
+    static std::string generate_random_db_name();
+
+public:
     // drop and create test db
     connected_test();
 

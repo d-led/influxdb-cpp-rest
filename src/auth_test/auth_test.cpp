@@ -20,9 +20,21 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <random>
 
 const char* url = "http://localhost:8086";
-const char* db_name = "auth_test";
+std::string db_name;
+
+// Generate random database name at startup
+static struct db_name_initializer {
+    db_name_initializer() {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 999999);
+        db_name = "auth_test_" + std::to_string(dis(gen));
+    }
+} db_name_init;
+
 const std::string username = "admin";
 const std::string password = "auth";
 
@@ -45,14 +57,14 @@ struct authentication_test {
         db.with_authentication(username, password);
 
         asyncdb = std::shared_ptr<influx_c_rest_async_t>(
-            influx_c_rest_async_new_auth(url, db_name, username.c_str(), password.c_str()),
+            influx_c_rest_async_new_auth(url, db_name.c_str(), username.c_str(), password.c_str()),
             influx_c_rest_async_destroy
         );
 
         REQUIRE(asyncdb.get());
 
         query = std::shared_ptr<influx_c_rest_query_t>(
-            influx_c_rest_query_new_auth(url, db_name, username.c_str(), password.c_str()),
+            influx_c_rest_query_new_auth(url, db_name.c_str(), username.c_str(), password.c_str()),
             influx_c_rest_query_destroy
             );
 
