@@ -220,6 +220,34 @@ if(USE_CONAN)
 endif()
 target_compile_definitions(influx-c-rest PRIVATE BUILDING_INFLUX_C_REST)
 
+# Put DLL in bin directory (matching test executable location) so tests can find it
+# This ensures test-influx-c-rest and test-influxdb-cpp-auth can find influx-c-rest.dll
+# On Windows/MSVC (multi-config): bin/Release or bin/Debug via $<CONFIG>
+# On Unix (single-config): bin/Release or bin/Debug via CMAKE_BUILD_TYPE
+if(CMAKE_CONFIGURATION_TYPES)
+    # Multi-config generator (Visual Studio, Xcode) - use generator expression directly
+    set_target_properties(influx-c-rest
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
+    )
+else()
+    # Single-config generator (Unix Makefiles, Ninja) - use CMAKE_BUILD_TYPE if set
+    if(CMAKE_BUILD_TYPE)
+        set_target_properties(influx-c-rest
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+        )
+    else()
+        set_target_properties(influx-c-rest
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        )
+    endif()
+endif()
+
 # Demo application
 if(BUILD_DEMO)
     add_executable(demo
@@ -323,17 +351,50 @@ add_test(NAME test-influxdb-cpp-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influx
 add_test(NAME test-influx-c-rest COMMAND ${CMAKE_BINARY_DIR}/bin/test-influx-c-rest)
 add_test(NAME test-influxdb-cpp-auth COMMAND ${CMAKE_BINARY_DIR}/bin/test-influxdb-cpp-auth)
 
-# Set output directories for executables
-set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
-    PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
+# Set output directories for executables - match influx-c-rest DLL location
+if(CMAKE_CONFIGURATION_TYPES)
+    # Multi-config generator (Visual Studio, Xcode)
+    set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
+    )
+else()
+    # Single-config generator
+    if(CMAKE_BUILD_TYPE)
+        set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+        )
+    else()
+        set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        )
+    endif()
+endif()
 
 if(BUILD_DEMO)
-    set_target_properties(demo
-        PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    )
+    # Demo output directory - match test executables location
+    if(CMAKE_CONFIGURATION_TYPES)
+        # Multi-config generator (Visual Studio, Xcode)
+        set_target_properties(demo
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
+        )
+    else()
+        # Single-config generator
+        if(CMAKE_BUILD_TYPE)
+            set_target_properties(demo
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+            )
+        else()
+            set_target_properties(demo
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            )
+        endif()
+    endif()
 endif()
 
 # Installation

@@ -13,7 +13,9 @@ set BIN_DIR_ALT=%BUILD_DIR%\bin
 echo Running tests...
 echo Searching in: %BIN_DIR% and %BIN_DIR_ALT%
 
-set PATH=%BIN_DIR%;%BIN_DIR_ALT%;%BUILD_DIR%;%PATH%
+REM Add build directories to PATH so DLLs can be found
+REM influx-c-rest.dll is needed by test-influx-c-rest and test-influxdb-cpp-auth
+set PATH=%BIN_DIR%;%BIN_DIR_ALT%;%BUILD_DIR%;%BUILD_DIR%\Release;%BUILD_DIR%\bin\Release;%PATH%
 
 REM Test executables
 set TEST_FILES=test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
