@@ -31,7 +31,14 @@ public:
     void wait_for(std::function<bool()> predicate, unsigned retries = 10);
     void wait_for_db(std::string const& name);
     void wait_for_no_db(std::string const & name);
+    
+    // Wait for async inserts to complete by polling the count query
+    // Returns true if all entries arrived, false if timeout
+    bool wait_for_async_inserts(unsigned long long expected_count, std::string const& table_name);
 };
+
+// Extract count from InfluxDB JSON query response
+unsigned long long extract_count_from_influxdb_response(std::string const& response);
 
 // https://github.com/d-led/cpp_declarative_times
 struct execute {
