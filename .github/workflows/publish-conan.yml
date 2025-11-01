@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
     
     steps:
@@ -36,6 +36,7 @@ jobs:
         repository: d-led/conan-center-index
         path: conan-center-index
         token: ${{ secrets.GITHUB_TOKEN }}
+        persist-credentials: true
     
     - name: Setup conan-center-index upstream
       working-directory: conan-center-index

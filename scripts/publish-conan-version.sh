@@ -235,9 +235,15 @@ git commit -m "Add influxdb-cpp-rest/${VERSION}
 
 # Push branch
 echo "Pushing branch..."
+# In CI, credentials should be persisted from checkout action
+# If GITHUB_TOKEN is available and remote doesn't have credentials, update it
 if [ -n "${GITHUB_TOKEN:-}" ]; then
-    # Use token for CI environment
-    git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${CONAN_INDEX_FORK}.git"
+    # Check if remote already has credentials (from persist-credentials)
+    CURRENT_URL=$(git remote get-url origin)
+    if [[ ! "$CURRENT_URL" =~ @github\.com ]]; then
+        # Remote URL doesn't have credentials, add token
+        git remote set-url origin "https://${GITHUB_TOKEN}@github.com/${CONAN_INDEX_FORK}.git"
+    fi
 fi
 git push -u origin "${BRANCH_NAME}" || git push origin "${BRANCH_NAME}"
 
