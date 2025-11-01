@@ -1,19 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
 
-# Set proper sysroot for macOS - Conan toolchain sets it to "macosx" which doesn't work with Unix Makefiles
-# Get the actual SDK path before the toolchain overrides it with FORCE
-if(APPLE AND NOT DEFINED CMAKE_OSX_SYSROOT)
-    execute_process(
-        COMMAND xcrun --sdk macosx --show-sdk-path
-        OUTPUT_VARIABLE MACOS_SDK_PATH
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET
-    )
-    if(MACOS_SDK_PATH)
-        set(CMAKE_OSX_SYSROOT "${MACOS_SDK_PATH}" CACHE STRING "macOS SDK Path" FORCE)
-    endif()
-endif()
-
 project(
     influxdb-cpp-rest
     VERSION 1.0.0
@@ -105,6 +91,20 @@ if(USE_CONAN)
                 get_filename_path(GEN_DIR "${GENERATOR_DIRS}")
                 list(APPEND CMAKE_PREFIX_PATH "${GEN_DIR}")
                 message(STATUS "Found generators directory: ${GEN_DIR}")
+            endif()
+        endif()
+        
+        # Fix macOS sysroot after toolchain inclusion - Conan toolchain sets it to "macosx" which doesn't work with Unix Makefiles
+        if(APPLE)
+            execute_process(
+                COMMAND xcrun --sdk macosx --show-sdk-path
+                OUTPUT_VARIABLE MACOS_SDK_PATH
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+            )
+            if(MACOS_SDK_PATH)
+                set(CMAKE_OSX_SYSROOT "${MACOS_SDK_PATH}" CACHE STRING "macOS SDK Path" FORCE)
+                message(STATUS "Fixed macOS sysroot to: ${MACOS_SDK_PATH}")
             endif()
         endif()
     endif()

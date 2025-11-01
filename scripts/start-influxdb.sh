@@ -6,8 +6,8 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 cd "${PROJECT_ROOT}"
 
-echo "Starting InfluxDB with docker-compose..."
-docker-compose up -d
+echo "Starting InfluxDB with docker compose..."
+docker compose up -d
 
 echo "Waiting for InfluxDB to be ready..."
 timeout=30
@@ -21,5 +21,5 @@ while [ $elapsed -lt $timeout ]; do
     elapsed=$((elapsed + 1))
 done
 
-echo "Warning: InfluxDB may not be fully ready yet. Check with: docker-compose ps"
+echo "Warning: InfluxDB may not be fully ready yet. Check with: docker compose ps"
 

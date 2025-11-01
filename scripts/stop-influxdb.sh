@@ -7,7 +7,7 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${PROJECT_ROOT}"
 
 echo "Stopping InfluxDB..."
-docker-compose down
+docker compose down
 
 echo "InfluxDB stopped."
 
