@@ -54,9 +54,15 @@ jobs:
     runs-on: macos-13
     # Note: macos-13 is Intel-based and will be deprecated Dec 2025. Docker is not available on any GitHub macOS runners.
     # Integration tests run only on Linux. macOS job verifies build compiles on macOS.
+    # We install newer LLVM/Clang via Homebrew for better C++20 support.
     
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Install Homebrew LLVM (newer Clang for C++20 support)
+      run: |
+        brew install llvm
+        echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
     
     - name: Cache Conan
       uses: actions/cache@v4
@@ -73,12 +79,25 @@ jobs:
     - name: Configure Conan for C++20
       run: |
         conan profile detect --force
+        # Use Homebrew's llvm clang
+        brew_llvm=$(brew --prefix llvm)
+        sed -i '' "s|compiler=.*|compiler=clang|" ~/.conan2/profiles/default || true
+        sed -i '' "s|compiler\.version=.*|compiler.version=17|" ~/.conan2/profiles/default || true
+        sed -i '' "s|compiler\.libcxx=.*|compiler.libcxx=libc++|" ~/.conan2/profiles/default || true
         # Override to C++20 (not gnu20 to match CMAKE_CXX_EXTENSIONS=OFF)
         sed -i '' 's/compiler\.cppstd=.*/compiler.cppstd=20/' ~/.conan2/profiles/default || true
         echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
+        # Set compiler paths
+        echo "CC=${brew_llvm}/bin/clang" >> ~/.conan2/profiles/default
+        echo "CXX=${brew_llvm}/bin/clang++" >> ~/.conan2/profiles/default
     
     - name: Build project
       run: |
+        # Ensure we're using Homebrew's clang
+        brew_llvm=$(brew --prefix llvm)
+        export CC="${brew_llvm}/bin/clang"
+        export CXX="${brew_llvm}/bin/clang++"
+        export PATH="${brew_llvm}/bin:${PATH}"
         chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
         ./scripts/build.sh Release
     
@@ -145,13 +164,12 @@ jobs:
         tar -xzf "${INFLUXDB_TAR}"
         
         echo "Verifying InfluxDB binary..."
-        ls -la influxdb-${INFLUXDB_VERSION}-1/influxd
+        ls -la influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
     
     - name: Start InfluxDB
       run: |
-        cd influxdb-1.8.10-1
         echo "Starting InfluxDB in background..."
-        ./influxd -config ../influxdb.conf &
+        ./influxdb-1.8.10-1/usr/bin/influxd -config influxdb.conf &
         INFLUXDB_PID=$!
         echo "INFLUXDB_PID=${INFLUXDB_PID}" >> $GITHUB_ENV
         

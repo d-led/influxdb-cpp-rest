@@ -67,7 +67,7 @@ if %FOUND_TESTS% equ 0 (
     echo All tests passed!
     exit /b 0
 ) else (
-    echo %FAILED_TESTS% test(s) failed.
+    echo %FAILED_TESTS% test^(s^) failed.
     exit /b 1
 )
 
