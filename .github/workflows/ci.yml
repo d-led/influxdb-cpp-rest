@@ -64,6 +64,28 @@ jobs:
         chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
         ./scripts/build.sh Release
       
+    - name: Install Docker (via Colima)
+      run: |
+        # Install Docker CLI and Colima (headless Docker for macOS)
+        brew install docker colima docker-compose
+        # Start Colima
+        colima start
+        # Wait for Docker to be ready
+        timeout=60
+        elapsed=0
+        while [ $elapsed -lt $timeout ]; do
+          if docker info > /dev/null 2>&1; then
+            echo "Docker is ready!"
+            break
+          fi
+          sleep 2
+          elapsed=$((elapsed + 2))
+        done
+        if ! docker info > /dev/null 2>&1; then
+          echo "Error: Docker failed to start"
+          exit 1
+        fi
+      
     - name: Start InfluxDB
       run: |
         ./scripts/start-influxdb.sh
@@ -76,6 +98,11 @@ jobs:
       if: always()
       run: |
         ./scripts/stop-influxdb.sh
+    
+    - name: Stop Colima
+      if: always()
+      run: |
+        colima stop || true
 
   windows:
     runs-on: windows-latest

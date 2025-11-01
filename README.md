@@ -145,8 +145,13 @@ scripts\stop-influxdb.bat         # Windows
 **Using docker compose directly:**
 
 ```bash
+# Linux/macOS
 docker compose up -d              # Start InfluxDB
 docker compose down               # Stop InfluxDB
+
+# Windows
+docker compose -f docker-compose.win.yml up -d    # Start InfluxDB
+docker compose -f docker-compose.win.yml down     # Stop InfluxDB
 ```
 
 For detailed development instructions, see [docs/development.md](docs/development.md).

@@ -67,7 +67,8 @@ scripts\start-influxdb.bat
 **Using docker compose directly:**
 
 ```bash
-docker compose up -d
+docker compose up -d              # Linux/macOS
+docker compose -f docker-compose.win.yml up -d   # Windows
 ```
 
 This starts InfluxDB with:
@@ -119,7 +120,8 @@ scripts\stop-influxdb.bat
 
 Or directly:
 ```bash
-docker compose down
+docker compose down              # Linux/macOS
+docker compose -f docker-compose.win.yml down   # Windows
 ```
 
 ## Build Options
