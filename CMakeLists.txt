@@ -115,14 +115,13 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
     find_package(Catch2 QUIET)
     find_package(cpprestsdk REQUIRED)
     find_package(fmt REQUIRED)
+    find_package(rxcpp QUIET)
     
     # Verify packages were found
-    set(USE_CONAN_CATCH2 FALSE)
     if(TARGET Catch2::Catch2)
-        set(USE_CONAN_CATCH2 TRUE)
         message(STATUS "Found Catch2 from Conan")
     else()
-        message(STATUS "Catch2 from Conan not found, will use bundled version for tests")
+        message(STATUS "Catch2 from Conan not found - tests will fail if it's not available")
     endif()
     
     if(TARGET fmt::fmt AND TARGET cpprestsdk::cpprestsdk)
@@ -130,27 +129,24 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
             cpprestsdk::cpprestsdk
             fmt::fmt
         )
-        set(FMT_TARGET fmt::fmt)
         message(STATUS "Using Conan packages: fmt::fmt, cpprestsdk::cpprestsdk")
+        # Add rxcpp if found from Conan
+        if(TARGET RxCpp::RxCpp)
+            list(APPEND CONAN_LIBS RxCpp::RxCpp)
+            message(STATUS "Found rxcpp from Conan")
+        endif()
     else()
-        message(WARNING "Conan packages not found as targets - falling back to bundled fmt")
+        message(FATAL_ERROR "Required Conan packages not found as targets")
         if(NOT TARGET fmt::fmt)
-            message(WARNING "  - fmt::fmt target not found")
+            message(FATAL_ERROR "  - fmt::fmt target not found")
         endif()
         if(NOT TARGET cpprestsdk::cpprestsdk)
-            message(WARNING "  - cpprestsdk::cpprestsdk target not found")
+            message(FATAL_ERROR "  - cpprestsdk::cpprestsdk target not found")
         endif()
-        set(USE_CONAN OFF)
     endif()
 else()
-    # Fallback to bundled fmt (may not work with C++20)
-    message(WARNING "Using bundled fmt - may not be compatible with C++20")
-    add_library(fmt STATIC
-        deps/fmt/src/format.cc
-        deps/fmt/src/posix.cc
-    )
-    target_include_directories(fmt PUBLIC deps/fmt/include)
-    set(FMT_TARGET fmt)
+    # Fallback - but deps folder is removed, so this will fail
+    message(FATAL_ERROR "USE_CONAN is OFF but bundling is no longer supported. Please enable USE_CONAN.")
 endif()
 
 # Static library: influxdb-cpp-rest
@@ -165,23 +161,11 @@ add_library(influxdb-cpp-rest STATIC
 )
 target_include_directories(influxdb-cpp-rest PUBLIC
     src/influxdb-cpp-rest
-    deps/rxcpp/Rx/v2/src/rxcpp
 )
-if(NOT USE_CONAN)
-    target_include_directories(influxdb-cpp-rest PUBLIC
-        deps/fmt/include
-    )
-endif()
 target_link_libraries(influxdb-cpp-rest
     PUBLIC
-        ${FMT_TARGET}
+        ${CONAN_LIBS}
 )
-if(USE_CONAN)
-    target_link_libraries(influxdb-cpp-rest
-        PUBLIC
-            ${CONAN_LIBS}
-    )
-endif()
 
 # Shared library: influx-c-rest
 file(GLOB_RECURSE INFLUX_C_REST_SOURCES
@@ -238,15 +222,12 @@ if(BUILD_TESTING)
     target_link_libraries(test-influxdb-cpp-rest
         influxdb-cpp-rest
     )
-    if(USE_CONAN_CATCH2 AND TARGET Catch2::Catch2WithMain)
+    if(TARGET Catch2::Catch2WithMain)
         target_link_libraries(test-influxdb-cpp-rest
             Catch2::Catch2WithMain
         )
     else()
-        # Fallback to bundled catch
-        target_include_directories(test-influxdb-cpp-rest PRIVATE
-            deps/catch/single_include
-        )
+        message(FATAL_ERROR "Catch2 is required for tests but was not found. Install via Conan.")
     endif()
     if(USE_CONAN)
         target_link_libraries(test-influxdb-cpp-rest
@@ -264,15 +245,12 @@ if(BUILD_TESTING)
     target_link_libraries(test-influx-c-rest
         influx-c-rest
     )
-    if(USE_CONAN_CATCH2 AND TARGET Catch2::Catch2WithMain)
+    if(TARGET Catch2::Catch2WithMain)
         target_link_libraries(test-influx-c-rest
             Catch2::Catch2WithMain
         )
     else()
-        # Fallback to bundled catch
-        target_include_directories(test-influx-c-rest PRIVATE
-            deps/catch/single_include
-        )
+        message(FATAL_ERROR "Catch2 is required for tests but was not found. Install via Conan.")
     endif()
     if(USE_CONAN)
         target_link_libraries(test-influx-c-rest
@@ -292,15 +270,12 @@ if(BUILD_TESTING)
         influxdb-cpp-rest
         influx-c-rest
     )
-    if(USE_CONAN_CATCH2 AND TARGET Catch2::Catch2WithMain)
+    if(TARGET Catch2::Catch2WithMain)
         target_link_libraries(test-influxdb-cpp-auth
             Catch2::Catch2WithMain
         )
     else()
-        # Fallback to bundled catch
-        target_include_directories(test-influxdb-cpp-auth PRIVATE
-            deps/catch/single_include
-        )
+        message(FATAL_ERROR "Catch2 is required for tests but was not found. Install via Conan.")
     endif()
     if(USE_CONAN)
         target_link_libraries(test-influxdb-cpp-auth

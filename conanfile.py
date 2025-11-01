@@ -26,9 +26,12 @@ class InfluxdbCppRestConan(ConanFile):
 
     def requirements(self):
         self.requires("cpprestsdk/2.10.19")  # Latest stable version
-        self.requires("catch2/3.5.3", override=True)  # Latest stable version
-        self.requires("fmt/11.1.4", override=True)  # Latest stable version with C++20 support
-        self.requires("rxcpp/4.1.1")  # RxCpp library
+        self.requires("fmt/12.1.0")  # Latest stable version with C++20 support
+        self.requires("rxcpp/4.1.1")  # Latest stable version
+    
+    def build_requirements(self):
+        # Only for tests - not linked to the library
+        self.test_requires("catch2/3.11.0")
 
     # Don't use cmake_layout when consuming dependencies - it creates nested build directories
     # def layout(self):
