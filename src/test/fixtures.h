@@ -8,11 +8,13 @@
 #include "../influxdb-cpp-rest/influxdb_raw_db_utf8.h"
 
 #include <functional>
+#include <string>
+#include <random>
 
 struct connected_test {
     influxdb::raw::db_utf8 raw_db;
     const int milliseconds_waiting_time = 100;
-    static constexpr const char* db_name = "testdb";
+    std::string db_name;
 
     // drop and create test db
     connected_test();

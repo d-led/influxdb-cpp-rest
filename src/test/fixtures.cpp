@@ -12,9 +12,15 @@
 #include <chrono>
 #include <thread>
 
-connected_test::connected_test() :
-    raw_db("http://localhost:8086", db_name)
+connected_test::connected_test() 
 {
+    // Generate random database name to ensure tests are idempotent
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 999999);
+    db_name = "testdb_" + std::to_string(dis(gen));
+    
+    raw_db = influxdb::raw::db_utf8("http://localhost:8086", db_name);
     raw_db.post(std::string("drop database ") + db_name);
     wait_for_no_db(db_name);
     raw_db.post(std::string("create database ") + db_name);
