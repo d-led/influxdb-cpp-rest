@@ -1,0 +1,70 @@
+name: Publish to Conan Center
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "Tag: ${GITHUB_REF}, Version: ${VERSION}"
+    
+    - name: Setup Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    
+    - name: Checkout conan-center-index
+      uses: actions/checkout@v4
+      with:
+        repository: d-led/conan-center-index
+        path: conan-center-index
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup conan-center-index upstream
+      working-directory: conan-center-index
+      run: |
+        git remote add upstream https://github.com/conan-io/conan-center-index.git || true
+        git fetch upstream master
+        git checkout master || git checkout -b master
+        git merge upstream/master || true
+    
+    - name: Install GitHub CLI
+      run: |
+        type -p curl >/dev/null || (apt update && apt install curl -y)
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+        && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+        && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+        && apt update \
+        && apt install gh -y
+    
+    - name: Authenticate GitHub CLI
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+    
+    - name: Publish to Conan Center
+      env:
+        GITHUB_REPO: d-led/influxdb-cpp-rest
+        CONAN_INDEX_FORK: d-led/conan-center-index
+        CONAN_INDEX_UPSTREAM: conan-io/conan-center-index
+        CONAN_INDEX_DIR: ${{ github.workspace }}/conan-center-index
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        ./scripts/publish-conan-version.sh "${{ steps.version.outputs.version }}"
+
