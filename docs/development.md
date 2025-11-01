@@ -64,10 +64,10 @@ This installs dependencies:
 scripts\start-influxdb.bat
 ```
 
-**Using docker-compose directly:**
+**Using docker compose directly:**
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This starts InfluxDB with:
@@ -119,7 +119,7 @@ scripts\stop-influxdb.bat
 
 Or directly:
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## Build Options

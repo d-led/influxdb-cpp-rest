@@ -113,7 +113,7 @@ auto query = ...
 - Conan 2.0+
 - C++20 compatible compiler
 - Python 3.x (for Conan)
-- Docker & docker-compose (for running tests)
+- Docker (for running tests)
 
 ### Quick Development Workflow
 
@@ -142,11 +142,11 @@ scripts\test.bat                   # Windows
 scripts\stop-influxdb.bat         # Windows
 ```
 
-**Using docker-compose directly:**
+**Using docker compose directly:**
 
 ```bash
-docker-compose up -d              # Start InfluxDB
-docker-compose down               # Stop InfluxDB
+docker compose up -d              # Start InfluxDB
+docker compose down               # Stop InfluxDB
 ```
 
 For detailed development instructions, see [docs/development.md](docs/development.md).
