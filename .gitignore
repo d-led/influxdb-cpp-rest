@@ -303,9 +303,13 @@ $RECYCLE.BIN/
 *.lnk
 .vagrant/
 tmp/
+# Conan build artifacts
 .influxdb
 conanpremake.lua
 conanbuildinfo.txt
 conaninfo.txt
 /influxdb-*/
 influxdb-*.gz
+
+# CMake build directory
+build/

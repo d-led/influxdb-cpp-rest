@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Conan
+      run: |
+        pip install conan
+        
+    - name: Configure Conan for C++20
+      run: |
+        conan profile detect --force
+        # Override to C++20 (not gnu20 to match CMAKE_CXX_EXTENSIONS=OFF)
+        sed -i 's/compiler\.cppstd=.*/compiler.cppstd=20/' ~/.conan2/profiles/default || true
+        echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
+    
+    - name: Build project
+      run: |
+        chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
+        ./scripts/build.sh Release
+      
+    - name: Start InfluxDB
+      run: |
+        ./scripts/start-influxdb.sh
+        
+    - name: Run tests
+      run: |
+        ./scripts/test.sh
+        
+    - name: Stop InfluxDB
+      if: always()
+      run: |
+        ./scripts/stop-influxdb.sh
+
+  macos:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Conan
+      run: |
+        pip install conan
+        
+    - name: Configure Conan for C++20
+      run: |
+        conan profile detect --force
+        # Override to C++20 (not gnu20 to match CMAKE_CXX_EXTENSIONS=OFF)
+        sed -i '' 's/compiler\.cppstd=.*/compiler.cppstd=20/' ~/.conan2/profiles/default || true
+        echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
+    
+    - name: Build project
+      run: |
+        chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
+        ./scripts/build.sh Release
+      
+    - name: Start InfluxDB
+      run: |
+        ./scripts/start-influxdb.sh
+        
+    - name: Run tests
+      run: |
+        ./scripts/test.sh
+        
+    - name: Stop InfluxDB
+      if: always()
+      run: |
+        ./scripts/stop-influxdb.sh
+
+  windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Conan
+      run: |
+        pip install conan
+        
+    - name: Configure Conan for C++20
+      shell: bash
+      run: |
+        conan profile detect --force
+        # Override to C++20 for MSVC (uses simple "20" not "gnu20")
+        sed -i 's/compiler\.cppstd=.*/compiler.cppstd=20/' ~/.conan2/profiles/default || true
+        echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
+    
+    - name: Build project
+      run: |
+        scripts\build.bat Release
+      
+    - name: Start InfluxDB
+      run: |
+        scripts\start-influxdb.bat
+        
+    - name: Run tests
+      run: |
+        scripts\test.bat
+        
+    - name: Stop InfluxDB
+      if: always()
+      run: |
+        scripts\stop-influxdb.bat

@@ -1,11 +1,8 @@
 # influxdb-cpp-rest
 
-Status: archive as the build & dependenies are out of date
+[![CI](https://github.com/d-led/influxdb-cpp-rest/workflows/CI/badge.svg)](https://github.com/d-led/influxdb-cpp-rest/actions)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/68w68vq3nai4794g/branch/master?svg=true)](https://ci.appveyor.com/project/d-led/influxdb-cpp-rest/branch/master) [![Build Status](https://travis-ci.org/d-led/influxdb-cpp-rest.svg?branch=master)](https://travis-ci.org/d-led/influxdb-cpp-rest)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fd-led%2Finfluxdb-cpp-rest.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fd-led%2Finfluxdb-cpp-rest?ref=badge_shield)
-
-A naive C++(14) [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk) + a C wrapper of the asynchronous API as a shared library.
+A modern C++20 [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk) + a C wrapper of the asynchronous API as a shared library.
 
 See [the demo source](src/demo/main.cpp) for the current api example.
 
@@ -15,9 +12,9 @@ A batching api leans towards thousands inserts per second. Behind the scenes, th
 
 ## Status
 
-- Build and test ok on Win10/Ubuntu64/OSX.
-- Feel free to contribute, as the progress is rather sporadic due to lack of spare time.
-- tested with InfluxDB v1.2.4, v1.7.5, v1.7.6
+- Modern C++20 build system with CMake and Conan
+- CI/CD with GitHub Actions (Linux, macOS, Windows)
+- Tested with InfluxDB v1.8+
 
 ## Synchronous insertion
 
@@ -110,17 +107,49 @@ auto query = ...
 
 ## Build & Test
 
-The library should be easy to build, given `RxCpp` and `cpprestsdk` can be found. The Visual Studio 2015 solution is self-contained. A locally running, authentication-free instance of InfluxDB is required to run the test.
+### Prerequisites
 
-### Dependencies on Linux and OS X
+- CMake 3.20+
+- Conan 2.0+
+- C++20 compatible compiler
+- Python 3.x (for Conan)
+- Docker & docker-compose (for running tests)
 
-cpprestsdk needs to be built and available, which in turn has platform-specific transient dependencies.
+### Quick Development Workflow
 
-The easiest way to install it on MacOS X and Linux turned out to be via [Homebrew](https://brew.sh) and [Linuxbrew](https://linuxbrew.sh) respectively.
+```bash
+# 1. Install Conan (one-time setup)
+pip install conan
 
-Once the install `brew install cpprestsdk` succeeds, build: `make -C build/<platform>/gmake config=release_x64` and run the test.
+# 2. Build the library
+./scripts/build.sh Release        # Linux/macOS
+# or
+scripts\build.bat Release         # Windows
 
-If the build fails due to failed dependencies, check [premake5.lua](premake5.lua) for the build config, and regenerate makefiles if necessary via `premake/premake5<os-specific> gmake`
+# 3. Start InfluxDB for testing
+./scripts/start-influxdb.sh       # Linux/macOS
+# or
+scripts\start-influxdb.bat         # Windows
+
+# 4. Run tests
+./scripts/test.sh                  # Linux/macOS
+# or
+scripts\test.bat                   # Windows
+
+# 5. Stop InfluxDB when done
+./scripts/stop-influxdb.sh        # Linux/macOS
+# or
+scripts\stop-influxdb.bat         # Windows
+```
+
+**Using docker-compose directly:**
+
+```bash
+docker-compose up -d              # Start InfluxDB
+docker-compose down               # Stop InfluxDB
+```
+
+For detailed development instructions, see [docs/development.md](docs/development.md).
 
 ## Thanks to
 

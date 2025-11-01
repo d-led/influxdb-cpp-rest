@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include "../influxdb-cpp-rest/influxdb_simple_api.h"
 #include "../influxdb-cpp-rest/influxdb_simple_async_api.h"

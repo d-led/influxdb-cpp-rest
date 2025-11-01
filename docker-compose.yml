@@ -1,0 +1,24 @@
+services:
+  influxdb:
+    image: influxdb:1.8-alpine
+    container_name: influxdb
+    platform: linux/amd64
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=testdb
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin123
+      - INFLUXDB_USER=testuser
+      - INFLUXDB_USER_PASSWORD=testpass
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8086/ping || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  influxdb-data:
+

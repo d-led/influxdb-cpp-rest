@@ -7,7 +7,7 @@
 //
 
 #define CATCH_CONFIG_RUNNER
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <influxdb_line.h>
 #include <influxdb_raw_db_utf8.h>

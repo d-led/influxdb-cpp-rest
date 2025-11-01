@@ -1,6 +1,0 @@
-[requires]
-PremakeGen@0.1@memsharded/testing
-cpprestsdk/2.10.2@bincrafters/stable
-
-[generators]
-Premake
