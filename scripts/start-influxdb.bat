@@ -52,8 +52,8 @@ if errorlevel 1 (
 )
 
 echo Waiting for InfluxDB to be ready...
-REM Poll with exponential backoff: start with short waits, increase gradually
-set /a max_attempts=60
+REM Poll with exponential backoff: start with short waits, increase gradually (max 2 minutes total)
+set /a max_attempts=26
 set /a attempt=0
 set /a wait_seconds=1
 :health_check

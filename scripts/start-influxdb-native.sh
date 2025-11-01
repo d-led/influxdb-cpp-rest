@@ -43,8 +43,8 @@ if ! kill -0 ${INFLUXDB_PID} 2>/dev/null; then
     exit 1
 fi
 
-echo "Waiting for InfluxDB to be ready (polling with exponential backoff)..."
-max_attempts=60
+echo "Waiting for InfluxDB to be ready (polling with exponential backoff, max 2 minutes)..."
+max_attempts=26
 attempt=0
 wait_seconds=1
 
