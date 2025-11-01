@@ -39,14 +39,10 @@ if not exist "%INFLUXDB_DIR%\influxd.exe" (
 )
 
 echo Starting InfluxDB...
-start /B "" "%INFLUXDB_DIR%\influxd.exe" -config influxdb.conf
-if errorlevel 1 (
-    echo ERROR: Failed to start InfluxDB
-    exit /b 1
-)
+powershell -Command "Start-Process -FilePath '%INFLUXDB_DIR%\influxd.exe' -ArgumentList '-config','influxdb.conf' -WindowStyle Hidden"
 
 REM Wait a moment for InfluxDB to start
-timeout /t 3 /nobreak >nul
+ping 127.0.0.1 -n 4 >nul
 
 REM Verify the process is running
 tasklist /FI "IMAGENAME eq influxd.exe" 2>nul | find /I "influxd.exe" >nul
@@ -56,7 +52,7 @@ if errorlevel 1 (
 )
 
 echo Waiting for InfluxDB to be ready...
-timeout /t 7 /nobreak >nul
+ping 127.0.0.1 -n 8 >nul
 
 REM Check if InfluxDB is responding using PowerShell with timeout
 set /a max_attempts=30
@@ -66,7 +62,7 @@ powershell -Command "try { $r = Invoke-WebRequest -Uri 'http://localhost:8086/pi
 if errorlevel 1 (
     set /a attempt+=1
     if !attempt! lss %max_attempts% (
-        timeout /t 1 /nobreak >nul
+        ping 127.0.0.1 -n 2 >nul
         goto :health_check
     )
     echo WARNING: InfluxDB may not be fully ready yet
