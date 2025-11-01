@@ -116,6 +116,7 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
     find_package(cpprestsdk REQUIRED)
     find_package(fmt REQUIRED)
     find_package(rxcpp QUIET)
+    find_package(OpenSSL REQUIRED)
     
     # Verify packages were found
     if(TARGET Catch2::Catch2)
@@ -135,9 +136,9 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
             list(APPEND CONAN_LIBS RxCpp::RxCpp)
             message(STATUS "Found rxcpp from Conan")
         endif()
-        # Add openssl explicitly to ensure headers are available
-        if(TARGET openssl::openssl)
-            list(APPEND CONAN_LIBS openssl::openssl)
+        # Add openssl explicitly to ensure headers are available  
+        if(TARGET OpenSSL::SSL)
+            list(APPEND CONAN_LIBS OpenSSL::SSL OpenSSL::Crypto)
             message(STATUS "Found openssl from Conan")
         endif()
     else()
@@ -164,13 +165,35 @@ list(FILTER INFLUXDB_CPP_REST_SOURCES EXCLUDE REGEX ".*\\.h$")
 add_library(influxdb-cpp-rest STATIC
     ${INFLUXDB_CPP_REST_SOURCES}
 )
-target_include_directories(influxdb-cpp-rest PUBLIC
+    target_include_directories(influxdb-cpp-rest PUBLIC
     src/influxdb-cpp-rest
 )
 target_link_libraries(influxdb-cpp-rest
     PUBLIC
         ${CONAN_LIBS}
 )
+# Workaround: Conan OpenSSL CMakeDeps doesn't set include directories
+if(TARGET OpenSSL::SSL)
+    # Read openssl package folder from the data file
+    file(GLOB _OPENSSL_DATA_FILES "${CMAKE_CURRENT_LIST_DIR}/OpenSSL-*-data.cmake")
+    if(_OPENSSL_DATA_FILES)
+        list(GET _OPENSSL_DATA_FILES 0 _OPENSSL_DATA_FILE)
+    endif()
+    if(_OPENSSL_DATA_FILE)
+        file(READ "${_OPENSSL_DATA_FILE}" _OPENSSL_DATA_CONTENT)
+        string(REGEX MATCH "set\\(openssl_PACKAGE_FOLDER_RELEASE \"([^\"]+)\"\\)" _MATCH "${_OPENSSL_DATA_CONTENT}")
+        if(_MATCH)
+            string(REGEX REPLACE ".*openssl_PACKAGE_FOLDER_RELEASE \"([^\"]+)\".*" "\\1" OPENSSL_PKG_FOLDER "${_MATCH}")
+            set(OPENSSL_INCLUDE_DIR "${OPENSSL_PKG_FOLDER}/include")
+            if(EXISTS "${OPENSSL_INCLUDE_DIR}")
+                set_target_properties(OpenSSL::SSL OpenSSL::Crypto PROPERTIES
+                    INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
+                )
+                message(STATUS "Set OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
+            endif()
+        endif()
+    endif()
+endif()
 
 # Shared library: influx-c-rest
 file(GLOB_RECURSE INFLUX_C_REST_SOURCES
