@@ -51,9 +51,9 @@ jobs:
         ./scripts/stop-influxdb.sh
 
   macos:
-    runs-on: macos-latest
-    # Note: Docker does not work on Apple Silicon (macos-latest) due to lack of nested virtualization.
-    # If Docker is needed, consider using macos-13 (Intel) or Linux runners.
+    runs-on: macos-13
+    # Note: macos-13 is Intel-based and will be deprecated Dec 2025. Docker is not available on any GitHub macOS runners.
+    # Integration tests run only on Linux. macOS job verifies build compiles on macOS.
     
     steps:
     - uses: actions/checkout@v4
@@ -81,33 +81,12 @@ jobs:
       run: |
         chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
         ./scripts/build.sh Release
-      
-    - name: Set up Docker on macOS
-      id: docker-setup
-      continue-on-error: true
-      uses: douglascamata/setup-docker-macos-action@v1
     
-    - name: Start InfluxDB
-      if: steps.docker-setup.outcome == 'success'
+    - name: Skip integration tests (Docker unavailable on macOS)
       run: |
-        ./scripts/start-influxdb.sh
-        
-    - name: Run tests
-      if: steps.docker-setup.outcome == 'success'
-      run: |
-        ./scripts/test.sh
-    
-    - name: Skip integration tests (Docker unavailable)
-      if: steps.docker-setup.outcome != 'success'
-      run: |
-        echo "⚠️  Docker unavailable on macOS runner - skipping integration tests"
+        echo "⚠️  Docker is not available on GitHub Actions macOS runners"
         echo "Build completed successfully, but integration tests were skipped."
-        echo "This is a known limitation of Docker on macOS GitHub Actions runners (Apple Silicon)."
-        
-    - name: Stop InfluxDB
-      if: always() && steps.docker-setup.outcome == 'success'
-      run: |
-        ./scripts/stop-influxdb.sh || true
+        echo "For full test coverage, see the Linux runner which supports Docker natively."
 
   windows:
     runs-on: windows-latest
