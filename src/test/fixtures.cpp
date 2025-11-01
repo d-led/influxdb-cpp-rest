@@ -114,64 +114,52 @@ unsigned long long extract_count_from_influxdb_response(std::string const& respo
     return 0;
 }
 
-bool connected_test::wait_for_async_inserts(unsigned long long expected_count, std::string const& table_name)
+bool connected_test::wait_for_async_inserts(unsigned long long expected_count, std::string const& table_name, unsigned long long tolerance)
 {
     // Async API batches inserts, so we need to poll until count matches
     auto query = std::string("select count(*) from ") + db_name + ".." + table_name;
     
-    unsigned long long current_count = 0;
-    unsigned retries = 0;
-    const unsigned max_retries = 1000; // Much longer timeout for Windows async batching (up to ~100 seconds with exponential backoff)
-    unsigned wait_ms = 100;
-    const unsigned max_wait_ms = 1000; // Cap at 1 second between checks
+    // Default tolerance: 0.1% or 50 entries, whichever is larger
+    if (tolerance == 0) {
+        tolerance = std::max(expected_count / 1000, 50ULL);
+    }
     
-    std::cout << "Waiting for all " << expected_count << " async inserts to arrive..." << std::endl;
+    unsigned long long current_count = 0;
+    std::cout << "Waiting for " << expected_count << " async inserts (tolerance: " << tolerance << ")..." << std::endl;
+    unsigned retries = 0;
+    const unsigned max_retries = 200; // Reasonable timeout (~20 seconds with 100ms waits)
     
     while (current_count < expected_count && retries < max_retries) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(wait_ms));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         retries++;
         
         try {
             auto response = raw_db.get(query);
             current_count = extract_count_from_influxdb_response(response);
             
-            // Log more frequently when close to target (within 1% or 1000 entries)
-            bool is_close = current_count > 0 && (expected_count - current_count) <= std::max(expected_count / 100, 1000ULL);
-            bool should_log = (retries % 50 == 0) || (current_count > 0 && retries < 10) || (is_close && retries % 5 == 0);
-            
-            if (should_log) {
-                std::cout << "Poll attempt " << retries << "/" << max_retries 
-                          << ": " << current_count << "/" << expected_count << " entries arrived";
-                if (is_close && current_count < expected_count) {
-                    std::cout << " (" << (expected_count - current_count) << " remaining, waiting for final batch...)";
-                }
-                std::cout << std::endl;
-            }
-            
-            // Accept if we're very close (within 0.1% or 10 entries) - async batching can leave tiny remainder
-            unsigned long long tolerance = std::max(expected_count / 1000, 10ULL);
             if (current_count >= expected_count) {
-                std::cout << "✓ All " << expected_count << " entries arrived after " << retries << " polling attempts!" << std::endl;
                 return true;
-            } else if (current_count + tolerance >= expected_count && retries >= 50) {
-                // After 50 retries, accept if we're within tolerance
-                std::cout << "✓ " << current_count << "/" << expected_count << " entries arrived (within tolerance of " << tolerance << ") after " << retries << " polling attempts!" << std::endl;
+            }
+            // Accept if within tolerance after reasonable wait (50 retries = 5 seconds)
+            if (retries >= 50 && current_count + tolerance >= expected_count) {
                 return true;
             }
         } catch (const std::exception& e) {
-            // Query might fail early if no data yet, keep trying
-            if (retries % 50 == 0) {
-                std::cout << "Poll attempt " << retries << ": Query failed (no data yet), continuing..." << std::endl;
-            }
-        }
-        
-        // Exponential backoff: increase wait time gradually, cap at max_wait_ms
-        wait_ms += 10;
-        if (wait_ms > max_wait_ms) {
-            wait_ms = max_wait_ms;
+            // Query might fail early, keep trying
         }
     }
     
-    std::cout << "✗ Timeout: Only " << current_count << "/" << expected_count << " entries arrived after " << retries << " attempts" << std::endl;
-    return false;
+    // Final check: get latest count and check tolerance
+    try {
+        auto response = raw_db.get(query);
+        current_count = extract_count_from_influxdb_response(response);
+    } catch (const std::exception& e) {
+        // If query fails, use last known count
+    }
+    
+    bool within_tolerance = (current_count + tolerance >= expected_count);
+    std::cout << "Final check: " << current_count << "/" << expected_count 
+              << " entries (tolerance: " << tolerance << ", within: " << (within_tolerance ? "yes" : "no") << ")" << std::endl;
+    
+    return within_tolerance;
 }

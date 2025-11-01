@@ -33,8 +33,9 @@ public:
     void wait_for_no_db(std::string const & name);
     
     // Wait for async inserts to complete by polling the count query
-    // Returns true if all entries arrived, false if timeout
-    bool wait_for_async_inserts(unsigned long long expected_count, std::string const& table_name);
+    // Returns true if all entries arrived or within tolerance, false if timeout
+    // tolerance: accept if within tolerance after reasonable wait (default 0.1% or 50 entries)
+    bool wait_for_async_inserts(unsigned long long expected_count, std::string const& table_name, unsigned long long tolerance = 0);
 };
 
 // Extract count from InfluxDB JSON query response
