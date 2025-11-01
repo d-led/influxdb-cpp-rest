@@ -88,6 +88,104 @@ jobs:
         echo "Build completed successfully, but integration tests were skipped."
         echo "For full test coverage, see the Linux runner which supports Docker natively."
 
+  macos-arm:
+    runs-on: macos-latest
+    # Note: Uses Apple Silicon runner with InfluxDB amd64 binary via Rosetta (similar to Windows approach)
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Cache Conan
+      uses: actions/cache@v4
+      with:
+        path: ~/.conan2
+        key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.py') }}
+        restore-keys: |
+          conan-${{ runner.os }}-
+    
+    - name: Cache InfluxDB
+      uses: actions/cache@v4
+      id: cache-influxdb
+      with:
+        path: |
+          influxdb-1.8.10-1
+          influxdb-1.8.10_darwin_amd64.tar.gz
+        key: influxdb-1.8.10-macos-arm-${{ runner.os }}
+        restore-keys: |
+          influxdb-1.8.10-macos-arm-
+    
+    - name: Install Conan
+      run: |
+        pip install conan
+        
+    - name: Configure Conan for C++20
+      run: |
+        conan profile detect --force
+        # Override to C++20 (not gnu20 to match CMAKE_CXX_EXTENSIONS=OFF)
+        sed -i '' 's/compiler\.cppstd=.*/compiler.cppstd=20/' ~/.conan2/profiles/default || true
+        echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
+    
+    - name: Build project
+      run: |
+        chmod +x scripts/build.sh scripts/test.sh
+        ./scripts/build.sh Release
+    
+    - name: Download InfluxDB (if not cached)
+      if: steps.cache-influxdb.outputs.cache-hit != 'true'
+      run: |
+        INFLUXDB_VERSION=1.8.10
+        # Note: InfluxDB 1.8.10 only has amd64/x86_64 binaries, but will run on Apple Silicon via Rosetta
+        INFLUXDB_TAR=influxdb-${INFLUXDB_VERSION}_darwin_amd64.tar.gz
+        INFLUXDB_URL=https://dl.influxdata.com/influxdb/releases/${INFLUXDB_TAR}
+        
+        echo "Downloading InfluxDB ${INFLUXDB_VERSION} (amd64, runs on Apple Silicon via Rosetta)..."
+        curl -L -o "${INFLUXDB_TAR}" "${INFLUXDB_URL}"
+        
+        echo "Extracting InfluxDB..."
+        tar -xzf "${INFLUXDB_TAR}"
+        
+        echo "Verifying InfluxDB binary..."
+        ls -la influxdb-${INFLUXDB_VERSION}-1/influxd
+    
+    - name: Start InfluxDB
+      run: |
+        cd influxdb-1.8.10-1
+        echo "Starting InfluxDB in background..."
+        ./influxd -config ../influxdb.conf &
+        INFLUXDB_PID=$!
+        echo "INFLUXDB_PID=${INFLUXDB_PID}" >> $GITHUB_ENV
+        
+        echo "Waiting for InfluxDB to be ready..."
+        timeout=30
+        elapsed=0
+        while [ $elapsed -lt $timeout ]; do
+            if curl -s http://localhost:8086/ping > /dev/null 2>&1; then
+                echo "✓ InfluxDB is ready!"
+                break
+            fi
+            sleep 1
+            elapsed=$((elapsed + 1))
+        done
+        
+        if [ $elapsed -eq $timeout ]; then
+            echo "⚠ Warning: InfluxDB may not be fully ready yet"
+        fi
+    
+    - name: Run tests
+      run: |
+        ./scripts/test.sh
+    
+    - name: Stop InfluxDB
+      if: always()
+      run: |
+        echo "Stopping InfluxDB..."
+        if [ -n "$INFLUXDB_PID" ]; then
+            kill $INFLUXDB_PID 2>/dev/null || true
+        fi
+        pkill -f influxd || true
+        sleep 2
+        echo "InfluxDB stopped"
+
   windows:
     runs-on: windows-latest
     
