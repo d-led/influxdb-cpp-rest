@@ -16,7 +16,7 @@ echo Searching in: %BIN_DIR% and %BIN_DIR_ALT%
 set PATH=%BIN_DIR%;%BIN_DIR_ALT%;%BUILD_DIR%;%PATH%
 
 REM Test executables
-set TEST_FILES=test-influxdb-cpp-rest test-influx-c-rest
+set TEST_FILES=test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
 set FOUND_TESTS=0
 set FAILED_TESTS=0
 
