@@ -4,9 +4,21 @@
 
 A modern C++20 [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk) + a C wrapper of the asynchronous API as a shared library.
 
+## C++ Standard Requirements
+
+**This project requires C++20 or later.**
+
+- Minimum compiler versions:
+  - GCC 11+
+  - Clang 14+
+  - MSVC 2019+ (19.29+) with `/std:c++20` or later
+- The project uses C++20
+- All dependencies are C++20 compatible
+- **Note:** The legacy C++03 version is available in the [`v0.0.1-legacy`](https://github.com/d-led/influxdb-cpp-rest/releases/tag/v0.0.1-legacy) tag
+
 See [the demo source](src/demo/main.cpp) for the current api example.
 
-The unbatched aprroach (and without connection reuse) may not be sufficient in some situations, as without batching, about 200 lines/sec can be inserted.
+The unbatched approach (and without connection reuse) may not be sufficient in some situations, as without batching, about 200 lines/sec can be inserted.
 
 A batching api leans towards thousands inserts per second. Behind the scenes, the API uses [RxCpp](https://github.com/Reactive-Extensions/RxCpp) and [cppformat](https://github.com/fmtlib/fmt).
 
@@ -19,9 +31,14 @@ A batching api leans towards thousands inserts per second. Behind the scenes, th
 ## Synchronous insertion
 
 ```cpp
-influxdb::api::simple_db simpledb("http://localhost:8086", "my_db");
+using namespace influxdb::api;
+using namespace std::string_literals;
+
+auto db = simple_db("http://localhost:8086"s, "my_db"s);
 db.insert(
-	line("log", key_value_pairs("my_tag", 42L), key_value_pairs("value", "hello world!")));
+    line("log"s, 
+         key_value_pairs("my_tag"s, 42L), 
+         key_value_pairs("value"s, "hello world!"s)));
 ```
 
 ## Asynchronous insertion
@@ -29,15 +46,20 @@ db.insert(
 The asynchronous API inserts the points on an active object with automatic batching, thus increasing throughput.
 
 ```cpp
-influxdb::async_api::simple_db asyncdb("http://localhost:8086", "my_db");
+using namespace influxdb::api;  // For line, key_value_pairs
+using namespace std::string_literals;
+using async_db = influxdb::async_api::simple_db;  // Type alias to avoid ambiguity
 
-for (int i = 0; i < 123456; i++) {
-  asyncdb.insert(
-    line(
-      "my_measurements",
-      key_value_pairs("my_count", i % MAX_VALUES_PER_TAG),
-      key_value_pairs("value", "hi!")
-    ));
+auto db = async_db("http://localhost:8086"s, "my_db"s);
+
+for (auto i = 0; i < 123456; ++i) {
+    db.insert(
+        line(
+            "my_measurements"s,
+            key_value_pairs("my_count"s, i % MAX_VALUES_PER_TAG),
+            key_value_pairs("value"s, "hi!"s)
+        )
+    );
 }
 ```
 
@@ -51,13 +73,15 @@ Timestamps can be added as the last parameter to the `line` constructor, and onl
 a serializable value on `TTimestamp::now()`. There is a default `std::chrono`-based implementation:
 
 ```cpp
-    line(
-      "my_measurements",
-      key_value_pairs("my_count", i % MAX_VALUES_PER_TAG),
-      key_value_pairs("value", "hi!"),
-      default_timestamp()
-//    ^^^^^^^^^^^^^^^^^^^
-    )
+using namespace influxdb::api;
+using namespace std::string_literals;
+
+line(
+    "my_measurements"s,
+    key_value_pairs("my_count"s, 42),
+    key_value_pairs("value"s, "hi!"s),
+    default_timestamp()  // Optional: uses std::chrono for timestamps
+)
 ```
 
 `MAX_VALUES_PER_TAG` for demo purposes here, as there [is such a maximum](https://docs.influxdata.com/influxdb/v1.4/administration/config#max-values-per-tag-100000) and it has to be observed by the clients.
@@ -67,17 +91,23 @@ a serializable value on `TTimestamp::now()`. There is a default `std::chrono`-ba
 Add lines using the `()` operator on the line:
 
 ```cpp
-  line
-    ("multiple", key_value_pairs("v1", 1), key_value_pairs())
-    ("multiple", key_value_pairs("v2", 2), key_value_pairs())
+using namespace influxdb::api;
+using namespace std::string_literals;
+
+line
+    ("multiple"s, key_value_pairs("v1"s, 1), key_value_pairs())
+    ("multiple"s, key_value_pairs("v2"s, 2), key_value_pairs())
 ```
 
 ## Query
 
 ```cpp
-influxdb::raw::db_utf8 raw_db("http://localhost:8086", "my_db");
-auto query = std::string("select count(*) from my_db..my_measurements");
-auto json_response = raw_db.get(query);
+using namespace influxdb::raw;
+using namespace std::string_literals;
+
+auto db = db_utf8("http://localhost:8086"s, "my_db"s);
+auto query = "select count(*) from my_db..my_measurements"s;
+auto json_response = db.get(query);
 ```
 
 &darr;
@@ -88,12 +118,15 @@ auto json_response = raw_db.get(query);
 
 ## Authentication
 
-Basic authentication can be used with all API variants
+Basic authentication can be used with all API variants:
 
 ```cpp
-influxdb::raw::db_utf8 raw_db("http://localhost:8086", "my_db");
-raw_db.with_authentication(username, password);
-auto query = ...
+using namespace influxdb::raw;
+using namespace std::string_literals;
+
+auto db = db_utf8("http://localhost:8086"s, "my_db"s);
+db.with_authentication("username"s, "password"s);
+auto response = db.get("select * from my_measurements");
 ```
 
 ## Error Handling

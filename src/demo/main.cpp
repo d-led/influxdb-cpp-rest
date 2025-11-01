@@ -8,31 +8,37 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <string>
 
 using namespace influxdb::api;
+using namespace influxdb::raw;
+using namespace std::string_literals;
 
-int main(int argc, char* argv[])
+using async_db = influxdb::async_api::simple_db;
+
+int main(int, char**)
 {
-    try
-    {
-        const char* url = "http://localhost:8086";
-        influxdb::raw::db_utf8 db(url, "demo");
-        influxdb::api::simple_db api(url, "demo");
-        influxdb::async_api::simple_db async_api(url, "demo");
+    try {
+        const auto url = "http://localhost:8086"s;
+        const auto db_name = "demo"s;
+
+        auto db = db_utf8(url, db_name);
+        auto api = simple_db(url, db_name);
+        auto async_api = async_db(url, db_name);
 
         api.drop();
         api.create();
 
         // {"results":[{"series":[{"columns":["name"],"name":"databases","values":[["_internal"],["mydb"]]}]}]}
-        std::cout << db.get("show databases") << std::endl;
+        std::cout << db.get("show databases"s) << '\n';
 
-        async_api.insert(line("test", key_value_pairs(), key_value_pairs("value", 41)));
-        api.insert(line("test", key_value_pairs(), key_value_pairs("value", 42)));
+        async_api.insert(line("test"s, key_value_pairs(), key_value_pairs("value"s, 41)));
+        api.insert(line("test"s, key_value_pairs(), key_value_pairs("value"s, 42)));
 
         std::this_thread::sleep_for(std::chrono::milliseconds(101));
 
         // {"results":[{"series":[{"columns":["time","value"],"name":"test","values":[["2016-10-28T22:11:22.8110348Z",42]]}]}]}
-        std::cout << db.get("select * from demo..test") << std::endl;
+        std::cout << db.get("select * from demo..test"s) << '\n';
 
         // or if the async call passes through:
         // {"results":[{"series":[{"name":"test","columns":["time","value"],
@@ -44,13 +50,13 @@ int main(int argc, char* argv[])
         // multiple,v1=1i
         // multiple,v2=2i
         std::cout << line
-            ("multiple", key_value_pairs("v1", 1), key_value_pairs())
-            ("multiple", key_value_pairs("v2", 2), key_value_pairs())
-        .get() << std::endl;
+            ("multiple"s, key_value_pairs("v1"s, 1), key_value_pairs())
+            ("multiple"s, key_value_pairs("v2"s, 2), key_value_pairs())
+        .get() << '\n';
     }
-    catch (std::exception const& e)
-    {
-        std::cerr << e.what() << std::endl;
+    catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+        return 1;
     }
 
     return 0;

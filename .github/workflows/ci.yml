@@ -44,6 +44,10 @@ jobs:
     - name: Run tests
       run: |
         ./scripts/test.sh
+    
+    - name: Run demo
+      run: |
+        ./scripts/run-demo.sh
         
     - name: Stop InfluxDB
       if: always()
@@ -157,6 +161,10 @@ jobs:
       run: |
         ./scripts/test.sh
     
+    - name: Run demo
+      run: |
+        ./scripts/run-demo.sh
+    
     - name: Stop InfluxDB
       if: always()
       run: |
@@ -215,6 +223,10 @@ jobs:
     - name: Run tests
       run: |
         scripts\test.bat
+    
+    - name: Run demo
+      run: |
+        scripts\run-demo.bat
         
     - name: Stop InfluxDB
       if: always()
