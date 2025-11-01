@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //
 
-#define CATCH_CONFIG_RUNNER
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_session.hpp>
 
 #include <influxdb_line.h>
 #include <influxdb_raw_db_utf8.h>
@@ -19,6 +19,7 @@
 
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 const char* url = "http://localhost:8086";
 const char* db_name = "auth_test";
@@ -86,7 +87,7 @@ TEST_CASE_METHOD(authentication_test, "authentication smoke test")
     }
 }
 
-TEST_CASE_METHOD(authentication_test, "C api authentication smoke test", "[!hide]")
+TEST_CASE_METHOD(authentication_test, "C api authentication smoke test DISABLED_until_auth_setup", "[.]")
 {
     SECTION("query")
     {

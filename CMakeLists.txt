@@ -132,8 +132,8 @@ if(USE_CONAN AND CONAN_TOOLCHAIN_FOUND)
         )
         message(STATUS "Using Conan packages: cpprestsdk::cpprestsdk")
         # Add rxcpp if found from Conan
-        if(TARGET RxCpp::RxCpp)
-            list(APPEND CONAN_LIBS RxCpp::RxCpp)
+        if(TARGET rxcpp::rxcpp)
+            list(APPEND CONAN_LIBS rxcpp::rxcpp)
             message(STATUS "Found rxcpp from Conan")
         endif()
         # Add openssl explicitly to ensure headers are available  
@@ -314,6 +314,14 @@ if(BUILD_TESTING)
         )
     endif()
 endif()
+
+# Enable testing
+enable_testing()
+
+# Register tests with CTest
+add_test(NAME test-influxdb-cpp-rest COMMAND test-influxdb-cpp-rest)
+add_test(NAME test-influx-c-rest COMMAND test-influx-c-rest)
+add_test(NAME test-influxdb-cpp-auth COMMAND test-influxdb-cpp-auth)
 
 # Set output directories for executables
 set_target_properties(test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth
