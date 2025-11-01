@@ -98,25 +98,7 @@ jobs:
     - name: Download InfluxDB (if not cached)
       if: steps.cache-influxdb.outputs.cache-hit != 'true'
       run: |
-        INFLUXDB_VERSION=1.8.10
-        INFLUXDB_TAR=influxdb-${INFLUXDB_VERSION}_darwin_amd64.tar.gz
-        INFLUXDB_URL=https://dl.influxdata.com/influxdb/releases/${INFLUXDB_TAR}
-        
-        echo "Downloading InfluxDB ${INFLUXDB_VERSION}..."
-        curl -L -o "${INFLUXDB_TAR}" "${INFLUXDB_URL}"
-        
-        echo "Extracting InfluxDB..."
-        tar -xzf "${INFLUXDB_TAR}"
-        
-        echo "Verifying InfluxDB binary..."
-        if [ ! -f "influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd" ]; then
-            echo "ERROR: InfluxDB binary not found at expected path: influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd"
-            echo "Extracted contents:"
-            ls -la influxdb-${INFLUXDB_VERSION}-1/ || true
-            exit 1
-        fi
-        ls -la influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
-        chmod +x influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
+        scripts/download-influxdb.sh 1.8.10 darwin_amd64
     
     - name: Start InfluxDB
       run: |
@@ -186,26 +168,8 @@ jobs:
     - name: Download InfluxDB (if not cached)
       if: steps.cache-influxdb.outputs.cache-hit != 'true'
       run: |
-        INFLUXDB_VERSION=1.8.10
         # Note: InfluxDB 1.8.10 only has amd64/x86_64 binaries, but will run on Apple Silicon via Rosetta
-        INFLUXDB_TAR=influxdb-${INFLUXDB_VERSION}_darwin_amd64.tar.gz
-        INFLUXDB_URL=https://dl.influxdata.com/influxdb/releases/${INFLUXDB_TAR}
-        
-        echo "Downloading InfluxDB ${INFLUXDB_VERSION} (amd64, runs on Apple Silicon via Rosetta)..."
-        curl -L -o "${INFLUXDB_TAR}" "${INFLUXDB_URL}"
-        
-        echo "Extracting InfluxDB..."
-        tar -xzf "${INFLUXDB_TAR}"
-        
-        echo "Verifying InfluxDB binary..."
-        if [ ! -f "influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd" ]; then
-            echo "ERROR: InfluxDB binary not found at expected path: influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd"
-            echo "Extracted contents:"
-            ls -la influxdb-${INFLUXDB_VERSION}-1/ || true
-            exit 1
-        fi
-        ls -la influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
-        chmod +x influxdb-${INFLUXDB_VERSION}-1/usr/bin/influxd
+        scripts/download-influxdb.sh 1.8.10 darwin_amd64
     
     - name: Start InfluxDB
       run: |
