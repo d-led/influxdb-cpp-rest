@@ -35,27 +35,22 @@ for %%t in (%TEST_FILES%) do (
         )
         set TEST_FOUND=1
         set /a FOUND_TESTS+=1
-        goto :next_test
-    )
-    
-    REM Try bin directory
-    if exist "%BIN_DIR_ALT%\%%t.exe" (
-        echo Running %%t from %BIN_DIR_ALT%...
-        "%BIN_DIR_ALT%\%%t.exe" -d yes
-        if !errorlevel! equ 0 (
-            echo [OK] %%t passed
+    ) else (
+        REM Try bin directory
+        if exist "%BIN_DIR_ALT%\%%t.exe" (
+            echo Running %%t from %BIN_DIR_ALT%...
+            "%BIN_DIR_ALT%\%%t.exe" -d yes
+            if !errorlevel! equ 0 (
+                echo [OK] %%t passed
+            ) else (
+                echo [FAIL] %%t failed
+                set /a FAILED_TESTS+=1
+            )
+            set TEST_FOUND=1
+            set /a FOUND_TESTS+=1
         ) else (
-            echo [FAIL] %%t failed
-            set /a FAILED_TESTS+=1
+            echo Warning: %%t.exe not found
         )
-        set TEST_FOUND=1
-        set /a FOUND_TESTS+=1
-        goto :next_test
-    )
-    
-    :next_test
-    if !TEST_FOUND! equ 0 (
-        echo Warning: %%t.exe not found
     )
 )
 
