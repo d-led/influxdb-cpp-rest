@@ -39,7 +39,7 @@ if not exist "%INFLUXDB_DIR%\influxd.exe" (
 )
 
 echo Starting InfluxDB...
-powershell -Command "Start-Process -FilePath '%INFLUXDB_DIR%\influxd.exe' -ArgumentList '-config','influxdb.conf' -WindowStyle Hidden"
+start /B "" "%INFLUXDB_DIR%\influxd.exe" -config influxdb.conf
 
 REM Wait a moment for InfluxDB to start
 ping 127.0.0.1 -n 4 >nul
