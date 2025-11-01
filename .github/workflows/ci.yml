@@ -50,19 +50,72 @@ jobs:
       run: |
         ./scripts/stop-influxdb.sh
 
+  # macos-13: Commented out - testing macos-15 instead (has native C++20 support)
+  # macos:
+  #   runs-on: macos-13
+  #   # Note: macos-13 is Intel-based and will be deprecated Dec 2025. Docker is not available on any GitHub macOS runners.
+  #   # Integration tests run only on Linux. macOS job verifies build compiles on macOS.
+  #   # We install newer LLVM/Clang via Homebrew for better C++20 support.
+  #   
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   
+  #   - name: Install Homebrew LLVM (newer Clang for C++20 support)
+  #     run: |
+  #       brew install llvm
+  #       echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+  #   
+  #   - name: Cache Conan
+  #     uses: actions/cache@v4
+  #     with:
+  #       path: ~/.conan2
+  #       key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.py') }}
+  #       restore-keys: |
+  #         conan-${{ runner.os }}-
+  #   
+  #   - name: Install Conan
+  #     run: |
+  #       pip install conan
+  #       
+  #   - name: Configure Conan for C++20
+  #     run: |
+  #       conan profile detect --force
+  #       # Use Homebrew's llvm clang
+  #       brew_llvm=$(brew --prefix llvm)
+  #       sed -i '' "s|compiler=.*|compiler=clang|" ~/.conan2/profiles/default || true
+  #       sed -i '' "s|compiler\.version=.*|compiler.version=17|" ~/.conan2/profiles/default || true
+  #       sed -i '' "s|compiler\.libcxx=.*|compiler.libcxx=libc++|" ~/.conan2/profiles/default || true
+  #       # Override to C++20 (not gnu20 to match CMAKE_CXX_EXTENSIONS=OFF)
+  #       sed -i '' 's/compiler\.cppstd=.*/compiler.cppstd=20/' ~/.conan2/profiles/default || true
+  #       echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
+  #       # Set compiler paths
+  #       echo "CC=${brew_llvm}/bin/clang" >> ~/.conan2/profiles/default
+  #       echo "CXX=${brew_llvm}/bin/clang++" >> ~/.conan2/profiles/default
+  #   
+  #   - name: Build project
+  #     run: |
+  #       # Ensure we're using Homebrew's clang
+  #       brew_llvm=$(brew --prefix llvm)
+  #       export CC="${brew_llvm}/bin/clang"
+  #       export CXX="${brew_llvm}/bin/clang++"
+  #       export PATH="${brew_llvm}/bin:${PATH}"
+  #       chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
+  #       ./scripts/build.sh Release
+  #   
+  #   - name: Skip integration tests (Docker unavailable on macOS)
+  #     run: |
+  #       echo "⚠️  Docker is not available on GitHub Actions macOS runners"
+  #       echo "Build completed successfully, but integration tests were skipped."
+  #       echo "For full test coverage, see the Linux runner which supports Docker natively."
+
   macos:
-    runs-on: macos-13
-    # Note: macos-13 is Intel-based and will be deprecated Dec 2025. Docker is not available on any GitHub macOS runners.
+    runs-on: macos-15
+    # Note: Docker is not available on any GitHub macOS runners.
     # Integration tests run only on Linux. macOS job verifies build compiles on macOS.
-    # We install newer LLVM/Clang via Homebrew for better C++20 support.
+    # macos-15 has native C++20 support, so no need for Homebrew LLVM installation.
     
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Install Homebrew LLVM (newer Clang for C++20 support)
-      run: |
-        brew install llvm
-        echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
     
     - name: Cache Conan
       uses: actions/cache@v4
@@ -79,25 +132,12 @@ jobs:
     - name: Configure Conan for C++20
       run: |
         conan profile detect --force
-        # Use Homebrew's llvm clang
-        brew_llvm=$(brew --prefix llvm)
-        sed -i '' "s|compiler=.*|compiler=clang|" ~/.conan2/profiles/default || true
-        sed -i '' "s|compiler\.version=.*|compiler.version=17|" ~/.conan2/profiles/default || true
-        sed -i '' "s|compiler\.libcxx=.*|compiler.libcxx=libc++|" ~/.conan2/profiles/default || true
         # Override to C++20 (not gnu20 to match CMAKE_CXX_EXTENSIONS=OFF)
         sed -i '' 's/compiler\.cppstd=.*/compiler.cppstd=20/' ~/.conan2/profiles/default || true
         echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
-        # Set compiler paths
-        echo "CC=${brew_llvm}/bin/clang" >> ~/.conan2/profiles/default
-        echo "CXX=${brew_llvm}/bin/clang++" >> ~/.conan2/profiles/default
     
     - name: Build project
       run: |
-        # Ensure we're using Homebrew's clang
-        brew_llvm=$(brew --prefix llvm)
-        export CC="${brew_llvm}/bin/clang"
-        export CXX="${brew_llvm}/bin/clang++"
-        export PATH="${brew_llvm}/bin:${PATH}"
         chmod +x scripts/build.sh scripts/test.sh scripts/start-influxdb.sh scripts/stop-influxdb.sh
         ./scripts/build.sh Release
     
