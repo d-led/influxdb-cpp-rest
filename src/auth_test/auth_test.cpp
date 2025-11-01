@@ -90,7 +90,13 @@ TEST_CASE_METHOD(authentication_test, "authentication smoke test")
                 SECTION("query points")
                 {
                     // {"results":[{"series":[{"columns":["time","value"],"name":"test","values":[["2016-10-28T22:11:22.8110348Z",42]]}]}]}
-                    auto res = db.get(std::string("select * from ") + db_name + "..test");
+                    std::string res;
+                    for (int i = 0; i < 10; ++i) {
+                        res = db.get(std::string("select * from ") + db_name + "..test");
+                        if (res.find("41") != std::string::npos && res.find("42") != std::string::npos)
+                            break;
+                        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    }
                     CHECK(res.find("41") != std::string::npos);
                     CHECK(res.find("42") != std::string::npos);
                 }
