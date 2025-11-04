@@ -53,6 +53,15 @@ jobs:
     - name: Run demo
       run: |
         ./scripts/run-demo.sh
+    
+    - name: Run formatting benchmark
+      run: |
+        CMAKE_ARGS="-DBUILD_BENCHMARK=ON" ./scripts/build.sh
+        ./build/bin/Release/format_benchmark --benchmark_min_time=0.5s
+    
+    - name: Run database insert benchmark
+      run: |
+        ./build/bin/Release/db_insert_benchmark --benchmark_min_time=0.5s
         
     - name: Stop InfluxDB
       if: always()
@@ -120,6 +129,15 @@ jobs:
       run: |
         ./scripts/run-demo.sh
     
+    - name: Run formatting benchmark
+      run: |
+        CMAKE_ARGS="-DBUILD_BENCHMARK=ON" ./scripts/build.sh
+        ./build/bin/Release/format_benchmark --benchmark_min_time=0.5s
+    
+    - name: Run database insert benchmark
+      run: |
+        ./build/bin/Release/db_insert_benchmark --benchmark_min_time=0.5s
+    
     - name: Stop InfluxDB
       if: always()
       run: |
@@ -182,6 +200,15 @@ jobs:
     - name: Run demo
       run: |
         scripts\run-demo.bat
+    
+    - name: Run formatting benchmark
+      run: |
+        scripts\build.bat Release -DBUILD_BENCHMARK=ON
+        build\bin\Release\format_benchmark.exe --benchmark_min_time=0.5s
+    
+    - name: Run database insert benchmark
+      run: |
+        build\bin\Release\db_insert_benchmark.exe --benchmark_min_time=0.5s
         
     - name: Stop InfluxDB
       if: always()

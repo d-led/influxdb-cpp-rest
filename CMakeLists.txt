@@ -23,6 +23,7 @@ endif()
 # Build options
 option(BUILD_TESTING "Build tests" ON)
 option(BUILD_DEMO "Build demo application" ON)
+option(BUILD_BENCHMARK "Build benchmark application" OFF)
 option(USE_CONAN "Use Conan for dependency management" ON)
 
 # Include directories
@@ -438,6 +439,33 @@ if(BUILD_DEMO)
             )
         else()
             set_target_properties(demo
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            )
+        endif()
+    endif()
+endif()
+
+# Benchmark applications
+if(BUILD_BENCHMARK)
+    add_subdirectory(src/benchmark)
+    
+    # Benchmark output directory - match test executables location
+    if(CMAKE_CONFIGURATION_TYPES)
+        # Multi-config generator (Visual Studio, Xcode)
+        set_target_properties(format_benchmark db_insert_benchmark
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
+        )
+    else()
+        # Single-config generator
+        if(CMAKE_BUILD_TYPE)
+            set_target_properties(format_benchmark db_insert_benchmark
+                PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+            )
+        else()
+            set_target_properties(format_benchmark db_insert_benchmark
                 PROPERTIES
                 RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
             )

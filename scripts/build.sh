@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BUILD_TYPE="${1:-Release}"
 BUILD_DIR="${BUILD_DIR:-build}"
+BUILD_TYPE="${BUILD_TYPE:-Release}"
+CMAKE_ARGS="${CMAKE_ARGS:-}"
 
 echo "Building with CMake (${BUILD_TYPE})..."
 
@@ -26,11 +27,18 @@ if [ ! -f "conan_toolchain.cmake" ] && [ ! -f "generators/conan_toolchain.cmake"
     fi
 fi
 
-# Configure
-cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DCMAKE_CXX_STANDARD=20
+# Configure with additional CMake arguments
+cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DCMAKE_CXX_STANDARD=20 ${CMAKE_ARGS}
 
 # Build
-cmake --build . --config "${BUILD_TYPE}"
+# Only use --config for multi-config generators (Visual Studio, Xcode)
+if command -v ninja &> /dev/null || [ -f "Makefile" ]; then
+    # Single-config generator (Unix Makefiles, Ninja)
+    cmake --build .
+else
+    # Multi-config generator (Visual Studio, Xcode)
+    cmake --build . --config "${BUILD_TYPE}"
+fi
 
 echo "Build complete! Binaries are in ${BUILD_DIR}/bin"
 

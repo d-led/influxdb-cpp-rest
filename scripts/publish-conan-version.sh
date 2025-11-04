@@ -178,8 +178,8 @@ class InfluxdbCppRestConan(ConanFile):
         deps.generate()
         tc = CMakeToolchain(self)
         # Disable tests and demo for packaging
-        tc.variables["BUILD_TESTING"] = False
-        tc.variables["BUILD_DEMO"] = False
+        tc.cache_variables["BUILD_TESTING"] = False
+        tc.cache_variables["BUILD_DEMO"] = False
         tc.generate()
 
     def build(self):
@@ -213,6 +213,21 @@ sources:
     url: "${SOURCE_URL}"
     sha256: "${SHA256}"
 EOF
+
+# Create test_package directory
+TEST_PACKAGE_DIR="${RECIPE_DIR}/test_package"
+mkdir -p "${TEST_PACKAGE_DIR}"
+
+# Copy test_package files from template
+TEMPLATE_DIR="${SCRIPT_DIR}/test_package_template"
+if [ -d "${TEMPLATE_DIR}" ]; then
+    cp "${TEMPLATE_DIR}/test_package.cpp" "${TEST_PACKAGE_DIR}/"
+    cp "${TEMPLATE_DIR}/CMakeLists.txt" "${TEST_PACKAGE_DIR}/"
+    cp "${TEMPLATE_DIR}/conanfile.py" "${TEST_PACKAGE_DIR}/"
+    echo "Created test_package files in ${TEST_PACKAGE_DIR}/"
+else
+    echo "Warning: test_package template directory not found at ${TEMPLATE_DIR}"
+fi
 
 echo "Created recipe files in ${RECIPE_DIR}/"
 

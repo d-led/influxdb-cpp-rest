@@ -22,8 +22,35 @@ if not exist "conan_toolchain.cmake" if not exist "generators\conan_toolchain.cm
     )
 )
 
-REM Configure
-cmake .. -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_STANDARD=20
+REM Configure (pass any additional arguments)
+REM Find Conan toolchain file
+set CONAN_TOOLCHAIN=
+if exist "generators\conan_toolchain.cmake" (
+    set CONAN_TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=generators\conan_toolchain.cmake
+) else if exist "conan_toolchain.cmake" (
+    set CONAN_TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake
+) else if exist "build\generators\conan_toolchain.cmake" (
+    set CONAN_TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=build\generators\conan_toolchain.cmake
+) else if exist "build\build\generators\conan_toolchain.cmake" (
+    set CONAN_TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=build\build\generators\conan_toolchain.cmake
+)
+
+set CMAKE_ARGS=%*
+set CMAKE_ARGS=!CMAKE_ARGS:%BUILD_TYPE%=!
+if not "!CMAKE_ARGS!"=="" (
+    echo Additional CMake args: !CMAKE_ARGS!
+    if not "!CONAN_TOOLCHAIN!"=="" (
+        cmake .. -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_STANDARD=20 !CONAN_TOOLCHAIN! !CMAKE_ARGS!
+    ) else (
+        cmake .. -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_STANDARD=20 !CMAKE_ARGS!
+    )
+) else (
+    if not "!CONAN_TOOLCHAIN!"=="" (
+        cmake .. -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_STANDARD=20 !CONAN_TOOLCHAIN!
+    ) else (
+        cmake .. -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_STANDARD=20
+    )
+)
 if errorlevel 1 (
     echo ERROR: CMake configuration failed
     exit /b 1
