@@ -11,10 +11,14 @@ extern "C" {
 #endif
 
     typedef struct _influx_c_rest_async_t influx_c_rest_async_t;
+    typedef struct _influx_c_rest_config_t influx_c_rest_config_t;
+    typedef struct _influx_c_rest_lines_t influx_c_rest_lines_t;
 
     /* lifetime */
     INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new(const char* url, const char* name);
     INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new_auth(const char* url, const char* name, const char* username, const char* password);
+    INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new_config(const char* url, const char* name, influx_c_rest_config_t * config);
+    INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new_auth_config(const char* url, const char* name, const char* username, const char* password, influx_c_rest_config_t * config);
     INFLUX_C_REST void influx_c_rest_async_destroy(influx_c_rest_async_t * self);
 
     /* behavior */
@@ -22,6 +26,11 @@ extern "C" {
     INFLUX_C_REST int influx_c_rest_async_create(influx_c_rest_async_t * self);
     INFLUX_C_REST void influx_c_rest_async_insert(influx_c_rest_async_t * self, const char* line);
     INFLUX_C_REST void influx_c_rest_async_insert_default_timestamp(influx_c_rest_async_t * self, const char* line);
+    INFLUX_C_REST void influx_c_rest_async_insert_lines(influx_c_rest_async_t * self, influx_c_rest_lines_t * lines);
+    INFLUX_C_REST void influx_c_rest_async_insert_lines_default_timestamp(influx_c_rest_async_t * self, influx_c_rest_lines_t * lines);
+
+    /* synchronization */
+    INFLUX_C_REST void influx_c_rest_async_wait_quiet_ms(influx_c_rest_async_t * self, unsigned quiet_period_ms);
 
 #if defined(__cplusplus)
 }

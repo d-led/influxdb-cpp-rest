@@ -7,10 +7,13 @@
 //
 
 #include "influx_c_rest_async.h"
+#include "influx_c_rest_config.h"
+#include "influx_c_rest_lines.h"
 
 #include "../influxdb-cpp-rest/influxdb_simple_api.h"
 #include "../influxdb-cpp-rest/influxdb_simple_async_api.h"
 #include "../influxdb-cpp-rest/influxdb_line.h"
+#include "../influxdb-cpp-rest/influxdb_config.h"
 
 #include <memory>
 #include <cassert>
@@ -46,6 +49,37 @@ extern "C" {
         assert(username);
         assert(password);
         auto res = influx_c_rest_async_new(url, name);
+        if (res) {
+            res->asyncdb->with_authentication(username, password);
+        }
+        return res;
+    }
+
+    extern "C" INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new_config(const char* url, const char* name, influx_c_rest_config_t * config) {
+        assert(url);
+        assert(name);
+        assert(config);
+
+        try {
+            void* config_ptr = influx_c_rest_config_get_internal(config);
+            influxdb::api::db_config* cpp_config = static_cast<influxdb::api::db_config*>(config_ptr);
+            influx_c_rest_async_t *res = new influx_c_rest_async_t {
+                std::make_unique<influxdb::async_api::simple_db>(url, name, *cpp_config)
+            };
+
+            assert(res);
+            return res;
+        } catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
+            return nullptr;
+        }
+    }
+
+    extern "C" INFLUX_C_REST influx_c_rest_async_t *influx_c_rest_async_new_auth_config(const char* url, const char* name, const char* username, const char* password, influx_c_rest_config_t * config) {
+        assert(username);
+        assert(password);
+        assert(config);
+        auto res = influx_c_rest_async_new_config(url, name, config);
         if (res) {
             res->asyncdb->with_authentication(username, password);
         }
@@ -92,5 +126,34 @@ extern "C" {
         assert(self->asyncdb.get());
         assert(line);
         self->asyncdb->insert(influxdb::api::line(std::string(line), self->timestamp));
+    }
+
+    extern "C" INFLUX_C_REST void influx_c_rest_async_insert_lines(influx_c_rest_async_t * self, influx_c_rest_lines_t * lines) {
+        assert(self);
+        assert(self->asyncdb.get());
+        assert(lines);
+        void* line_ptr = influx_c_rest_lines_get_internal(lines);
+        influxdb::api::line* line_obj = static_cast<influxdb::api::line*>(line_ptr);
+        self->asyncdb->insert(*line_obj);
+    }
+
+    extern "C" INFLUX_C_REST void influx_c_rest_async_insert_lines_default_timestamp(influx_c_rest_async_t * self, influx_c_rest_lines_t * lines) {
+        assert(self);
+        assert(self->asyncdb.get());
+        assert(lines);
+        void* line_ptr = influx_c_rest_lines_get_internal(lines);
+        influxdb::api::line* line_obj = static_cast<influxdb::api::line*>(line_ptr);
+        influxdb::api::line line_with_timestamp(line_obj->get(), self->timestamp);
+        self->asyncdb->insert(line_with_timestamp);
+    }
+
+    extern "C" INFLUX_C_REST void influx_c_rest_async_wait_quiet_ms(influx_c_rest_async_t * self, unsigned quiet_period_ms) {
+        assert(self);
+        assert(self->asyncdb.get());
+        try {
+            self->asyncdb->wait_for_submission(std::chrono::milliseconds(quiet_period_ms));
+        } catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
     }
 }

@@ -32,9 +32,11 @@ BIN_DIRS=(
     "${BUILD_DIR}"
 )
 
-# Set library path
-export LD_LIBRARY_PATH="${BUILD_DIR}:${LD_LIBRARY_PATH:-}"
-export DYLD_LIBRARY_PATH="${BUILD_DIR}:${DYLD_LIBRARY_PATH:-}"
+# Set library path - prefer bin directories first to pick up latest built dylibs
+BIN_RELEASE="${BUILD_DIR}/bin/${BUILD_TYPE}"
+BIN_GENERIC="${BUILD_DIR}/bin"
+export LD_LIBRARY_PATH="${BIN_RELEASE}:${BIN_GENERIC}:${BUILD_DIR}:${LD_LIBRARY_PATH:-}"
+export DYLD_LIBRARY_PATH="${BIN_RELEASE}:${BIN_GENERIC}:${BUILD_DIR}:${DYLD_LIBRARY_PATH:-}"
 
 # Also add build directory to PATH for shared libraries
 export PATH="${BUILD_DIR}:${PATH}"
