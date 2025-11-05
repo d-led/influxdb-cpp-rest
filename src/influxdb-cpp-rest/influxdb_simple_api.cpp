@@ -23,10 +23,22 @@ struct influxdb::api::simple_db::impl {
     {
         throw_on_invalid_identifier(name);
     }
+
+    impl(std::string const& url, std::string const& name, influxdb::api::http_config const& config) :
+        db(url, name, config),
+        name(name)
+    {
+        throw_on_invalid_identifier(name);
+    }
 };
 
 influxdb::api::simple_db::simple_db(std::string const& url, std::string const& name) :
     pimpl(std::make_unique<impl>(url, name))
+{
+}
+
+influxdb::api::simple_db::simple_db(std::string const& url, std::string const& name, influxdb::api::http_config const& config) :
+    pimpl(std::make_unique<impl>(url, name, config))
 {
 }
 

@@ -236,9 +236,10 @@ if(TARGET OpenSSL::SSL AND USE_CONAN)
     
     # Add the include directory directly to our target
     # This is critical because Boost's ASIO SSL tries to include openssl headers directly
+    # Use PRIVATE since OpenSSL is only needed for the library's implementation, not its public API
     if(_OPENSSL_INCLUDE_DIR AND EXISTS "${_OPENSSL_INCLUDE_DIR}")
         target_include_directories(influxdb-cpp-rest PRIVATE "${_OPENSSL_INCLUDE_DIR}")
-        message(STATUS "Added OpenSSL include directory to influxdb-cpp-rest: ${_OPENSSL_INCLUDE_DIR}")
+        message(STATUS "Added OpenSSL include directory to influxdb-cpp-rest (PRIVATE): ${_OPENSSL_INCLUDE_DIR}")
     else()
         message(WARNING "Could not find OpenSSL include directory - compilation may fail")
         message(WARNING "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
@@ -265,6 +266,7 @@ if(USE_CONAN)
             ${CONAN_LIBS}
     )
 endif()
+# OpenSSL includes are inherited from influxdb-cpp-rest via INTERFACE, so no need to add again
 target_compile_definitions(influx-c-rest PRIVATE BUILDING_INFLUX_C_REST)
 
 # Put DLL in bin directory (matching test executable location) so tests can find it
@@ -453,19 +455,19 @@ if(BUILD_BENCHMARK)
     # Benchmark output directory - match test executables location
     if(CMAKE_CONFIGURATION_TYPES)
         # Multi-config generator (Visual Studio, Xcode)
-        set_target_properties(format_benchmark db_insert_benchmark
+        set_target_properties(format_benchmark db_insert_benchmark db_batch_benchmark
             PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
         )
     else()
         # Single-config generator
         if(CMAKE_BUILD_TYPE)
-            set_target_properties(format_benchmark db_insert_benchmark
+            set_target_properties(format_benchmark db_insert_benchmark db_batch_benchmark
                 PROPERTIES
                 RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
             )
         else()
-            set_target_properties(format_benchmark db_insert_benchmark
+            set_target_properties(format_benchmark db_insert_benchmark db_batch_benchmark
                 PROPERTIES
                 RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
             )

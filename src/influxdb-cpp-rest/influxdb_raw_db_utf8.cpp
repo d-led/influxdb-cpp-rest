@@ -13,6 +13,25 @@
 
 using namespace utility;
 
+namespace {
+    // Helper function to convert http_config to http_client_config
+    // Hidden in compilation unit to avoid exposing cpprestsdk types
+    web::http::client::http_client_config make_http_client_config(const influxdb::api::http_config& config) {
+        web::http::client::http_client_config client_config;
+        
+        // Set timeout if specified
+        if (config.timeout_ms > 0) {
+            client_config.set_timeout(std::chrono::milliseconds(config.timeout_ms));
+        }
+        
+        // Note: cpprestsdk's http_client reuses connections by default when using the same client instance
+        // Connection reuse is handled automatically when using the same http_client.
+        // The keepalive flag in config is for documentation purposes.
+        
+        return client_config;
+    }
+}
+
 struct influxdb::raw::db_utf8::impl {
     db db_utf16;
 
@@ -25,10 +44,24 @@ public:
         db_utf16(conversions::utf8_to_utf16(url), conversions::utf8_to_utf16(name))
 #endif
     {}
+    
+    impl(std::string const& url, std::string const& name, influxdb::api::http_config const& config)
+        :
+#ifndef _MSC_VER
+        db_utf16(url, name, make_http_client_config(config))
+#else
+        db_utf16(conversions::utf8_to_utf16(url), conversions::utf8_to_utf16(name), make_http_client_config(config))
+#endif
+    {}
 };
 
 influxdb::raw::db_utf8::db_utf8(std::string const & url, std::string const& name) :
     pimpl(std::make_unique<impl>(url, name))
+{
+}
+
+influxdb::raw::db_utf8::db_utf8(std::string const & url, std::string const& name, influxdb::api::http_config const& config) :
+    pimpl(std::make_unique<impl>(url, name, config))
 {
 }
 

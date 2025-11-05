@@ -20,7 +20,7 @@ See [the demo source](src/demo/main.cpp) for the current api example.
 
 The unbatched approach (and without connection reuse) may not be sufficient in some situations, as without batching, about 200 lines/sec can be inserted.
 
-A batching api leans towards thousands inserts per second. Behind the scenes, the API uses [RxCpp](https://github.com/Reactive-Extensions/RxCpp) and [cppformat](https://github.com/fmtlib/fmt).
+An async batching api targets thousands inserts per second. Behind the scenes, the API uses [RxCpp](https://github.com/Reactive-Extensions/RxCpp) and [cppformat](https://github.com/fmtlib/fmt).
 
 ## Status
 

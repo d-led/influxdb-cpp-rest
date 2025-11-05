@@ -7,6 +7,7 @@
 
 #include <string>
 #include <memory>
+#include "influxdb_config.h"
 
 namespace influxdb {
     namespace raw {
@@ -16,6 +17,7 @@ namespace influxdb {
 
         public:
             db_utf8(std::string const& url, std::string const& name);
+            db_utf8(std::string const& url, std::string const& name, influxdb::api::http_config const& config);
             ~db_utf8();
 
             /// post queries

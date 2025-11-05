@@ -4,11 +4,31 @@ set -euo pipefail
 BUILD_DIR="${BUILD_DIR:-build}"
 BUILD_TYPE="${BUILD_TYPE:-Release}"
 
+# Build before testing to ensure we're using the latest code
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "${PROJECT_ROOT}"
+
+echo "Building project (${BUILD_TYPE})..."
+# First configure (if needed)
+"${SCRIPT_DIR}/build.sh" >/dev/null 2>&1 || true
+
+# Then build the test targets - this will show compilation errors
+echo "Compiling test targets..."
+cd "${BUILD_DIR}"
+if ! make test-influxdb-cpp-rest test-influx-c-rest test-influxdb-cpp-auth -j4 2>&1; then
+    echo "" >&2
+    echo "Build failed! Fix compilation errors above before running tests." >&2
+    exit 1
+fi
+cd "${PROJECT_ROOT}"
+
 # Determine possible binary directories
+# Prefer BUILD_TYPE-specific directories first (they contain the most recent builds)
 BIN_DIRS=(
-    "${BUILD_DIR}/bin"
     "${BUILD_DIR}/bin/${BUILD_TYPE}"
     "${BUILD_DIR}/${BUILD_TYPE}/bin"
+    "${BUILD_DIR}/bin"
     "${BUILD_DIR}"
 )
 

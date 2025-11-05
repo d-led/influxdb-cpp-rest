@@ -7,9 +7,11 @@
 
 #include <cpprest/http_client.h>
 #include <string>
+#include <memory>
 
 using utility::string_t;
 using web::http::client::http_client;
+using web::http::client::http_client_config;
 using web::uri;
 
 namespace influxdb {
@@ -23,6 +25,7 @@ namespace influxdb {
 
         public:
             db(string_t const& url, string_t const& name);
+            db(string_t const& url, string_t const& name, http_client_config const& config);
 
             /// post queries
             void post(string_t const& query);

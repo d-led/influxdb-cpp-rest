@@ -7,6 +7,9 @@
 
 #include <string>
 #include <memory>
+#include "influxdb_config.h"
+#include "influxdb_http_events.h"
+#include <rxcpp/rx.hpp>
 
 namespace influxdb {
     namespace api {
@@ -22,6 +25,7 @@ namespace influxdb {
         public:
             simple_db(std::string const& url, std::string const& name);
             simple_db(std::string const& url, std::string const& name, unsigned window_max_lines, unsigned window_max_ms);
+            simple_db(std::string const& url, std::string const& name, influxdb::api::db_config const& config);
             ~simple_db();
 
         public:
@@ -29,6 +33,15 @@ namespace influxdb {
             void drop();
             void insert(influxdb::api::line const& lines);
             void with_authentication(std::string const& username, std::string const& password);
+            
+            /// Get observable of HTTP operation results (successes and failures)
+            /// Subscribe to this to monitor HTTP requests and handle errors
+            rxcpp::observable<influxdb::api::http_result> http_events() const;
+            
+            /// Wait for all pending submissions to be sent via HTTP
+            /// Uses RxCpp debounce to wait until no HTTP events occur for the specified duration
+            /// @param quiet_period_ms Maximum time to wait for silence (default: 100ms)
+            void wait_for_submission(std::chrono::milliseconds quiet_period_ms = std::chrono::milliseconds(100)) const;
         };
     }
 

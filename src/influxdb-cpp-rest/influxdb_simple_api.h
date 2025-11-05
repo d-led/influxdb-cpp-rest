@@ -7,6 +7,7 @@
 
 #include <string>
 #include <memory>
+#include "influxdb_config.h"
 
 namespace influxdb {
 
@@ -20,6 +21,7 @@ namespace influxdb {
 
         public:
             simple_db(std::string const& url, std::string const& name);
+            simple_db(std::string const& url, std::string const& name, influxdb::api::http_config const& config);
             ~simple_db();
 
         public:

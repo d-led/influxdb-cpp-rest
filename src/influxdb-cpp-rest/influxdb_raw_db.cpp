@@ -65,6 +65,16 @@ influxdb::raw::db::db(string_t const & url, string_t const & name)
     uri_with_db = builder.to_uri();
 }
 
+influxdb::raw::db::db(string_t const & url, string_t const & name, http_client_config const& config)
+    :
+    client(url, config)
+{
+    uri_builder builder(client.base_uri());
+    builder.append(U("/write"));
+    builder.append_query(U("db"), name);
+    uri_with_db = builder.to_uri();
+}
+
 void influxdb::raw::db::post(string_t const & query)
 {
     uri_builder builder(U("/query"));

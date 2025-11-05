@@ -31,3 +31,14 @@ if(USE_CONAN)
     target_link_libraries(db_insert_benchmark PRIVATE ${CONAN_LIBS})
 endif()
 
+# Database batch strategy benchmark (requires InfluxDB)
+add_executable(db_batch_benchmark db_batch_benchmark.cpp)
+target_compile_features(db_batch_benchmark PRIVATE cxx_std_20)
+target_link_libraries(db_batch_benchmark PRIVATE 
+    benchmark::benchmark
+    influxdb-cpp-rest
+)
+if(USE_CONAN)
+    target_link_libraries(db_batch_benchmark PRIVATE ${CONAN_LIBS})
+endif()
+
