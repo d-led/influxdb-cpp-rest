@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.1] - Unreleased
+## [1.0.2] - Unreleased
+
+- Added compiler version validation to Conan recipe (requires GCC 13+, Clang 14+, or MSVC 19.29+ for std::format support)
+
+## [1.0.1] - 2025-11-05
 
 - Prepared for Conan Center
 
@@ -23,7 +27,7 @@ All notable changes to this project will be documented in this file.
 
 - **C++ Standard**: Requires C++20 or later
   - Minimum compiler versions:
-    - GCC 11+
+    - GCC 13+ (for std::format support)
     - Clang 14+
     - MSVC 2019+ (19.29+) with `/std:c++20` or later
 - **InfluxDB Compatibility**: Supports InfluxDB 1.x (tested with v1.8+)

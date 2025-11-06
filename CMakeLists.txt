@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(
     influxdb-cpp-rest
-    VERSION 1.0.1
+    VERSION 1.0.2
     LANGUAGES CXX
     DESCRIPTION "A C++ client library for InfluxDB using C++ REST SDK"
 )
