@@ -4,10 +4,42 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to Conan Center (must be set to "true")'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
-  publish:
+  extract-version:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+    - name: Extract version from tag
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" = "push" ]; then
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+        else
+          # For workflow_dispatch, use the tag input or default
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+        fi
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "tag=${TAG}" >> $GITHUB_OUTPUT
+        echo "Tag: ${TAG}, Version: ${VERSION}"
+
+  publish-conan:
+    needs: extract-version
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.publish == true) ||
+      (github.event_name == 'push' && vars.PUBLISH_TO_CONAN == 'true')
     permissions:
       contents: write
       pull-requests: write
@@ -17,13 +49,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
-    - name: Extract version from tag
-      id: version
-      run: |
-        VERSION=${GITHUB_REF#refs/tags/v}
-        echo "version=${VERSION}" >> $GITHUB_OUTPUT
-        echo "Tag: ${GITHUB_REF}, Version: ${VERSION}"
     
     - name: Setup Git
       run: |
@@ -54,5 +79,62 @@ jobs:
         CONAN_INDEX_DIR: ${{ github.workspace }}/conan-center-index
         GITHUB_TOKEN: ${{ secrets.CONAN_INDEX_PAT || secrets.GITHUB_TOKEN }}
       run: |
-        ./scripts/publish-conan-version.sh "${{ steps.version.outputs.version }}"
+        ./scripts/publish-conan-version.sh "${{ needs.extract-version.outputs.version }}"
+
+  create-release:
+    needs: extract-version
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        TAG="${{ needs.extract-version.outputs.tag }}"
+        VERSION="${{ needs.extract-version.outputs.version }}"
+        
+        # Try to extract release notes from CHANGELOG.md if it exists
+        if [ -f CHANGELOG.md ]; then
+          # Extract section for this version (format: ## [version] or ## [version] - date)
+          # Use awk to extract from the version heading until the next ## heading or --- separator
+          RELEASE_NOTES=$(awk -v version="${VERSION}" '
+            BEGIN { in_section = 0 }
+            /^## \[/ { 
+              if (in_section) exit
+              if ($0 ~ "\\[" version "\\]") in_section = 1
+            }
+            /^---$/ { if (in_section) exit }
+            in_section { print }
+          ' CHANGELOG.md)
+        else
+          RELEASE_NOTES=""
+        fi
+        
+        # If no notes found, create a simple one
+        if [ -z "$RELEASE_NOTES" ]; then
+          RELEASE_NOTES="## Release ${VERSION}
+
+This release includes the latest changes and improvements."
+        fi
+        
+        # Use multiline output
+        echo "notes<<EOF" >> $GITHUB_OUTPUT
+        echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ needs.extract-version.outputs.tag }}
+        name: Release ${{ needs.extract-version.outputs.version }}
+        body: ${{ steps.release_notes.outputs.notes }}
+        draft: false
+        prerelease: ${{ contains(needs.extract-version.outputs.version, '-rc') || contains(needs.extract-version.outputs.version, '-alpha') || contains(needs.extract-version.outputs.version, '-beta') }}
 

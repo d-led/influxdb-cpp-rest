@@ -81,6 +81,9 @@ else
     cd "${CONAN_INDEX_DIR}"
     if [ "${DRY_RUN}" != true ]; then
         git fetch upstream master
+        git fetch origin master 2>/dev/null || true
+        # We merge upstream to get latest recipe structure, but create branches from origin/master
+        # to avoid including workflow changes that require 'workflow' scope
         git checkout master 2>/dev/null || git checkout -b master
         git merge upstream/master || true
     fi
@@ -274,7 +277,14 @@ fi
 
 # Create branch and commit
 echo "Creating branch and committing..."
-git checkout -b "${BRANCH_NAME}" 2>/dev/null || git checkout "${BRANCH_NAME}"
+# Create branch from origin/master (fork's state) to avoid including workflow changes from merge
+# This prevents requiring 'workflow' scope when pushing
+if git show origin/master >/dev/null 2>&1; then
+    git checkout -b "${BRANCH_NAME}" origin/master 2>/dev/null || git checkout "${BRANCH_NAME}"
+else
+    # Fallback: create from current branch if origin/master doesn't exist
+    git checkout -b "${BRANCH_NAME}" 2>/dev/null || git checkout "${BRANCH_NAME}"
+fi
 git add "${RECIPE_DIR}/"
 git commit -m "Add influxdb-cpp-rest/${VERSION}
 
