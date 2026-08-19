@@ -9,22 +9,29 @@ on:
 jobs:
   linux:
     runs-on: ubuntu-latest
-    
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+    env:
+      CC: ${{ matrix.compiler == 'clang' && 'clang' || 'gcc' }}
+      CXX: ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }}
     steps:
     - uses: actions/checkout@v4
-    
-    # - name: Install build tools
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y cmake build-essential
-    
+
+    - name: Install Clang
+      if: matrix.compiler == 'clang'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang
+
     - name: Cache Conan
       uses: actions/cache@v4
       with:
         path: ~/.conan2
-        key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.py') }}
+        key: conan-${{ runner.os }}-${{ matrix.compiler }}-${{ hashFiles('**/conanfile.py') }}
         restore-keys: |
-          conan-${{ runner.os }}-
+          conan-${{ runner.os }}-${{ matrix.compiler }}-
     
     - name: Install Conan
       run: |
@@ -106,6 +113,8 @@ jobs:
         echo "compiler.cppstd=20" >> ~/.conan2/profiles/default || true
     
     - name: Build project
+      env:
+        CMAKE_ARGS: "-DCMAKE_OSX_DEPLOYMENT_TARGET=13.0"
       run: |
         chmod +x scripts/build.sh scripts/test.sh
         ./scripts/build.sh Release
