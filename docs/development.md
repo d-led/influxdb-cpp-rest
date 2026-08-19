@@ -146,138 +146,79 @@ cmake .. -DBUILD_TESTING=OFF -DBUILD_DEMO=OFF
 ### Managed via Conan
 
 - **cpprestsdk/2.10.19** - HTTP client library
-- **catch2/3.5.3** - Testing framework
-- **fmt/11.1.4** - Formatting library (C++20 compatible)
-
-### Bundled (header-only or source)
-
-- **fmt** - Formatting library (in `deps/fmt/`)
-- **RxCpp** - Reactive Extensions (in `deps/rxcpp/`, header-only)
-
-These bundled dependencies may be migrated to Conan in the future.
+- **rxcpp/4.1.1** - Reactive Extensions for C++
+- **catch2/3.11.0** - Testing framework (test-only)
 
 ## Publishing to Conan Center
 
-The package is published to [Conan Center](https://conan.io/center) via pull requests to the [conan-center-index](https://github.com/conan-io/conan-center-index) repository. The recipe is maintained at `recipes/influxdb-cpp-rest/` in that repository.
+The package is published to [Conan Center](https://conan.io/center) via pull requests to the [conan-center-index](https://github.com/conan-io/conan-center-index) repository. The recipe lives at `recipes/influxdb-cpp-rest/` and follows the "all" recipe convention: a single recipe in `all/` serves every version, and `config.yml` maps versions to that folder.
 
-### Initial Setup (One-time)
+### One-time setup
 
 1. Fork https://github.com/conan-io/conan-center-index
-2. Clone your fork locally
-3. Set upstream remote: `git remote add upstream https://github.com/conan-io/conan-center-index.git`
-4. **Create a GitHub Personal Access Token (PAT)** with `repo` scope:
-   - Go to https://github.com/settings/tokens
-   - Generate a new token (classic) with `repo` scope
-   - Add it as a repository secret named `CONAN_INDEX_PAT` in your influxdb-cpp-rest repository
-     - Go to Settings → Secrets and variables → Actions → New repository secret
-     - Name: `CONAN_INDEX_PAT`
-     - Value: your PAT token
-
-   **Note:** The workflow will use `GITHUB_TOKEN` if `CONAN_INDEX_PAT` is not set, but `GITHUB_TOKEN` cannot push to forks. A PAT is required for automated publishing.
-
-### Publishing a New Version
-
-Use the automated script (recommended):
-
-```bash
-./scripts/publish-conan-version.sh 1.0.0
-```
-
-Or manually:
-
-1. **Create a GitHub release/tag** for the version (if not already exists)
-2. **Navigate to conan-center-index repository**:
+2. Clone your fork and add the upstream remote:
    ```bash
-   cd ../conan-center-index  # or wherever you cloned it
+   git remote add upstream https://github.com/conan-io/conan-center-index.git
+   ```
+
+### Publishing a new version
+
+1. **Create and push a Git tag** (e.g. `v1.0.4`):
+   ```bash
+   ./scripts/tag-version.sh patch  # or major / minor / rc / release
+   ./scripts/push-latest-version.sh
+   ```
+
+   Pushing a `v*` tag also creates a GitHub release automatically (`.github/workflows/release.yml`).
+
+2. **Open the recipe in your conan-center-index fork**:
+   ```bash
+   cd ../conan-center-index
    git checkout master
    git pull upstream master
+   git checkout -b recipes/influxdb-cpp-rest/1.0.4
    ```
-3. **Create version branch**:
+
+3. **Add the new version to two files** under `recipes/influxdb-cpp-rest/`:
+   - `config.yml` — map `"1.0.4"` to `folder: all`
+   - `all/conandata.yml` — add the source URL and SHA256 of the tag tarball
+
+   Compute the checksum with:
    ```bash
-   git checkout -b recipes/influxdb-cpp-rest/X.Y.Z
+   curl -sL https://github.com/d-led/influxdb-cpp-rest/archive/refs/tags/v1.0.4.tar.gz | shasum -a 256
    ```
-4. **Create recipe directory and files**:
+
+4. **Test the recipe locally**:
    ```bash
-   mkdir -p recipes/influxdb-cpp-rest/X.Y.Z
-   # Copy conanfile.py template and adapt for conan-center-index format
-   # Create conandata.yml with source URL and SHA256
+   cd recipes/influxdb-cpp-rest/all
+   conan create . --version=1.0.4
    ```
-5. **Commit and push**:
+
+5. **Commit, push and open a PR**:
    ```bash
-   git add recipes/influxdb-cpp-rest/X.Y.Z/
-   git commit -m "Add influxdb-cpp-rest/X.Y.Z"
-   git push origin recipes/influxdb-cpp-rest/X.Y.Z
-   ```
-6. **Create pull request**:
-   ```bash
-   gh pr create --repo conan-io/conan-center-index --title "Add influxdb-cpp-rest/X.Y.Z"
+   git add recipes/influxdb-cpp-rest
+   git commit -m "influxdb-cpp-rest: add version 1.0.4"
+   git push origin recipes/influxdb-cpp-rest/1.0.4
+   gh pr create --repo conan-io/conan-center-index --title "Add influxdb-cpp-rest/1.0.4"
    ```
 
-See [Publishing New Versions](#publishing-new-versions) section below for details.
+6. **Address review comments and CI failures** until the maintainers merge it.
 
-## Publishing New Versions
+### Recipe conventions
 
-When releasing a new version of influxdb-cpp-rest:
-
-1. **Create and push a Git tag** (e.g., `v1.0.0`):
-   ```bash
-   ./scripts/tag-version.sh patch  # or major/minor
-   git push --tags
-   ```
-
-2. **Automatic publishing**: Pushing a tag starting with `v` (e.g., `v1.0.0`) automatically triggers the GitHub Actions workflow that:
-   - Calculates the SHA256 hash of the source tarball
-   - Creates the recipe files in the correct format
-   - Commits and pushes to your conan-center-index fork
-   - Creates a pull request to conan-center-index
-
-3. **Monitor the PR**: The Conan Center CI will automatically test the recipe. Address any review comments or CI failures.
-
-### Manual Publishing (Alternative)
-
-If you need to publish manually or the automated workflow fails:
-
-```bash
-./scripts/publish-conan-version.sh 1.0.0
-```
-
-This script will:
-- Clone/update your conan-center-index fork if needed
-- Calculate the SHA256 hash of the source tarball
-- Create the recipe files in the correct format
-- Commit and push the changes
-- Create a pull request to conan-center-index
-
-### Recipe Format for Conan Center
-
-The recipe in conan-center-index differs from the local `conanfile.py`:
-
-- **No `version` field** - version comes from directory path
-- **`source()` method** - downloads from GitHub release/tag
-- **`conandata.yml`** - contains source URL and SHA256 checksum
-- **No `exports_sources`** - source is downloaded, not exported
-
-The automation script handles these differences automatically.
+- No `version` field in `conanfile.py` — the version comes from `config.yml` / `conandata.yml`.
+- `source()` downloads the tag tarball; its SHA256 lives in `conandata.yml`.
+- No `exports_sources` — the source is downloaded, not exported.
+- The license file is copied into `licenses/` in `package()`.
 
 ### Conan Recipe Checklist
 
 - [ ] Recipe follows Conan Center conventions
 - [ ] All dependencies are declared in `requirements()`
-- [ ] Test package included (optional but recommended)
-- [ ] License file included
-- [ ] Source code properly exported
+- [ ] Test package included
+- [ ] License file packaged
 - [ ] Compatible with major compilers (GCC, Clang, MSVC)
 - [ ] Works on Linux, macOS, Windows
-
-### Testing Locally
-
-Before publishing, test the recipe locally:
-
-```bash
-# In your conan-center-index fork
-cd recipes/influxdb-cpp-rest/1.0.0
-conan create . influxdb-cpp-rest/1.0.0@
-```
 
 ### Conan Center Requirements
 
