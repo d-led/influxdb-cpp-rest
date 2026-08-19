@@ -119,9 +119,7 @@ jobs:
         
         # If no notes found, create a simple one
         if [ -z "$RELEASE_NOTES" ]; then
-          RELEASE_NOTES="## Release ${VERSION}
-
-This release includes the latest changes and improvements."
+          RELEASE_NOTES="## Release ${VERSION} - This release includes the latest changes and improvements."
         fi
         
         # Use multiline output
