@@ -65,6 +65,22 @@ TEST_CASE("tags and values should be formatted according to the line protocol") 
 }
 
 
+TEST_CASE("scalar values are formatted according to the line protocol") {
+    CHECK(key_value_pairs("i", 42).get() == "i=42i");
+    CHECK(key_value_pairs("s", "x").get() == "s=\"x\"");
+    CHECK(key_value_pairs("b", true).get() == "b=true");
+    CHECK(key_value_pairs("b", false).get() == "b=false");
+    CHECK(key_value_pairs("f", 0.5).get() == "f=0.5");
+}
+
+
+TEST_CASE("floating point values are formatted losslessly") {
+    // More significant digits than a naive conversion would preserve, and
+    // exactly what the shortest round-tripping representation should produce.
+    CHECK(key_value_pairs("pi", 3.141592653589793).get() == "pi=3.141592653589793");
+}
+
+
 struct dummy_timestamp {
     std::string stamp;
     std::string now() const {

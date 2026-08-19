@@ -17,8 +17,6 @@
 #include <rxcpp/rx.hpp>
 #include <chrono>
 #include <atomic>
-#include <format>
-#include <iterator>
 #include <thread>
 
 using namespace influxdb::utility;
@@ -167,7 +165,8 @@ struct influxdb::async_api::simple_db::impl {
                         window.scan(
                             std::make_shared<std::string>(),
                             [](std::shared_ptr<std::string> const& w, std::string const& v) {
-                                std::format_to(std::back_inserter(*w), "{}\n", v);
+                                *w += v;
+                                *w += '\n';
                                 return w;
                             })
                         .start_with(std::make_shared<std::string>())

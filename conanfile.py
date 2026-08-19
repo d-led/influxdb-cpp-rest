@@ -1,4 +1,5 @@
 from conan import ConanFile
+from conan.tools.build import check_min_cppstd
 from conan.tools.cmake import CMake, cmake_layout, CMakeDeps, CMakeToolchain
 
 
@@ -24,6 +25,11 @@ class InfluxdbCppRestConan(ConanFile):
     def configure(self):
         if self.options.shared:
             self.options["cpprestsdk"].shared = True
+            # Conan Center hook: fPIC must not be used for shared libraries
+            self.options.rm_safe("fPIC")
+
+    def validate(self):
+        check_min_cppstd(self, 20)
 
     def requirements(self):
         self.requires("cpprestsdk/2.10.19")

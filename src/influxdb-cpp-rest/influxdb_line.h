@@ -6,13 +6,12 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <utility>
 #include <chrono>
 #include <type_traits>
-#include <iterator>
-#include <format>
+#include <sstream>
 #include "input_sanitizer.h"
+#include "format_float.h"
 
 namespace influxdb {
 
@@ -28,11 +27,11 @@ namespace influxdb {
             ~key_value_pairs() {};
 
             key_value_pairs(key_value_pairs const& other) {
-                std::format_to(std::back_inserter(res), "{}", other.get());
+                res = other.res;
             }
 
             key_value_pairs& operator=(key_value_pairs const& other) {
-                std::format_to(std::back_inserter(res), "{}", other.get());
+                res += other.res;
                 return *this;
             }
 
@@ -58,7 +57,9 @@ namespace influxdb {
 
                 add_comma_if_necessary();
 
-                std::format_to(std::back_inserter(res), "{}={}i", key, value);
+                std::ostringstream out;
+                out << key << '=' << value << 'i';
+                res += out.str();
 
                 return *this;
             }
@@ -75,7 +76,9 @@ namespace influxdb {
 
                 add_comma_if_necessary();
 
-                std::format_to(std::back_inserter(res), "{}={}", key, value);
+                res += key;
+                res.push_back('=');
+                res += (value ? "true" : "false");
 
                 return *this;
             }
@@ -91,7 +94,9 @@ namespace influxdb {
 
                 add_comma_if_necessary();
 
-                std::format_to(std::back_inserter(res), "{}={}", key, value);
+                res += key;
+                res.push_back('=');
+                res += ::influxdb::utility::format_float(value);
 
                 return *this;
             }
@@ -101,7 +106,10 @@ namespace influxdb {
 
                 add_comma_if_necessary();
 
-                std::format_to(std::back_inserter(res), "{}=\"{}\"", key, value);
+                res += key;
+                res += "=\"";
+                res += value;
+                res.push_back('"');
 
                 return *this;
             }
@@ -117,7 +125,7 @@ namespace influxdb {
         private:
             inline void add_comma_if_necessary() {
                 if (!this->empty())
-                    std::format_to(std::back_inserter(res), ",");
+                    res.push_back(',');
             }
         };
 
@@ -139,12 +147,12 @@ namespace influxdb {
             ~line() {};
 
             line& operator=(line const& other) {
-                std::format_to(std::back_inserter(res), "{}", other.get());
+                res += other.res;
                 return *this;
             }
 
             line(line const& other) {
-                std::format_to(std::back_inserter(res), "{}", other.get());
+                res = other.res;
             }
 
             line(line && other) {
@@ -152,43 +160,51 @@ namespace influxdb {
             }
 
             explicit line(std::string const& raw) {
-                std::format_to(std::back_inserter(res), "{}", raw);
+                res = raw;
             }
 
             template<typename TTimestamp>
             explicit line(std::string const& raw, TTimestamp const& timestamp) {
-                std::format_to(std::back_inserter(res), "{} {}", raw, timestamp.now());
+                std::ostringstream out;
+                out << raw << ' ' << timestamp.now();
+                res = out.str();
             }
 
             template<typename TMap>
             inline line(std::string const& measurement, TMap const& tags, TMap const& values) {
                 ::influxdb::utility::throw_on_invalid_identifier(measurement);
 
-                std::format_to(std::back_inserter(res), "{}", measurement);
+                res += measurement;
                 if (!tags.empty()) {
-                    std::format_to(std::back_inserter(res), ",{}", tags.get());
+                    res.push_back(',');
+                    res += tags.get();
                 }
 
                 if (!values.empty()) {
-                    std::format_to(std::back_inserter(res), " {}", values.get());
+                    res.push_back(' ');
+                    res += values.get();
                 }
             }
 
             template<typename TMap,typename TTimestamp>
             inline line(std::string const& measurement, TMap const& tags, TMap const& values, TTimestamp const& timestamp):
             line(measurement, tags, values) {
-                std::format_to(std::back_inserter(res), " {}", timestamp.now());
+                std::ostringstream out;
+                out << ' ' << timestamp.now();
+                res += out.str();
             }
 
             template<typename TMap>
             inline line& operator()(std::string const& measurement, TMap const& tags, TMap const& values) {
-                std::format_to(std::back_inserter(res), "\n{}", line(measurement, tags, values).get());
+                res.push_back('\n');
+                res += line(measurement, tags, values).get();
                 return *this;
             }
 
             template<typename TMap, typename TTimestamp>
             inline line& operator()(std::string const& measurement, TMap const& tags, TMap const& values, TTimestamp const& timestamp) {
-                std::format_to(std::back_inserter(res), "\n{}", line(measurement, tags, values, timestamp).get());
+                res.push_back('\n');
+                res += line(measurement, tags, values, timestamp).get();
                 return *this;
             }
         public:
