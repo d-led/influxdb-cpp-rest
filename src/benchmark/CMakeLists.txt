@@ -18,7 +18,13 @@ FetchContent_MakeAvailable(googlebenchmark)
 # Formatting benchmark (no database required)
 add_executable(format_benchmark format_benchmark.cpp)
 target_compile_features(format_benchmark PRIVATE cxx_std_20)
-target_link_libraries(format_benchmark PRIVATE benchmark::benchmark)
+target_link_libraries(format_benchmark PRIVATE 
+    benchmark::benchmark
+    influxdb-cpp-rest
+)
+if(USE_CONAN)
+    target_link_libraries(format_benchmark PRIVATE ${CONAN_LIBS})
+endif()
 
 # Database insert benchmark (requires InfluxDB)
 add_executable(db_insert_benchmark db_insert_benchmark.cpp)

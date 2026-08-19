@@ -1,44 +1,34 @@
 #include <benchmark/benchmark.h>
-#include <format>
+#include <influxdb_line.h>
 #include <string>
 
-// Simulate key_value_pairs formatting: "key=value"
+// Benchmark the library's key_value_pairs formatting.
 static void BM_FormatKVP(benchmark::State& state) {
     for (auto _ : state) {
-        std::string out;
-        out.reserve(100);
-        std::format_to(std::back_inserter(out), "{}={}", "tag1", "value1");
-        benchmark::DoNotOptimize(out);
+        auto kvp = influxdb::api::key_value_pairs("tag1", "value1");
+        benchmark::DoNotOptimize(kvp.get());
     }
 }
 BENCHMARK(BM_FormatKVP);
 
-// Simulate line formatting: "measurement,tag1=value1 field1=42i"
+// Benchmark the library's line formatting (integer field).
 static void BM_FormatLine(benchmark::State& state) {
     for (auto _ : state) {
-        std::string out;
-        out.reserve(100);
-        std::format_to(std::back_inserter(out), "{},{}={} {}={}i", 
-                       "measurement", "tag1", "value1", "field1", 42);
-        benchmark::DoNotOptimize(out);
+        auto l = influxdb::api::line("measurement",
+                                     influxdb::api::key_value_pairs("tag1", "value1"),
+                                     influxdb::api::key_value_pairs("field1", 42));
+        benchmark::DoNotOptimize(l.get());
     }
 }
 BENCHMARK(BM_FormatLine);
 
-// Combined: simulate a typical usage pattern
+// Benchmark the library's line formatting (integer + floating-point fields).
 static void BM_FormatCombined(benchmark::State& state) {
     for (auto _ : state) {
-        std::string out;
-        out.reserve(100);
-        
-        // Simulate key_value_pairs formatting
-        std::format_to(std::back_inserter(out), "{}={}", "tag1", "value1");
-        
-        // Simulate line formatting
-        std::format_to(std::back_inserter(out), "{},{}={} {}={}i", 
-                       "measurement", "tag1", "value1", "field1", 42);
-        
-        benchmark::DoNotOptimize(out);
+        auto l = influxdb::api::line("measurement",
+                                     influxdb::api::key_value_pairs("tag1", "value1"),
+                                     influxdb::api::key_value_pairs("field1", 42).add("field2", 3.14));
+        benchmark::DoNotOptimize(l.get());
     }
 }
 BENCHMARK(BM_FormatCombined);
