@@ -175,6 +175,17 @@ scripts\test.bat                   # Windows
 scripts\stop-influxdb.bat         # Windows
 ```
 
+### Testing the Conan Center recipe
+
+The Conan Center recipe lives in your `conan-center-index` fork. To test it locally (assumes the fork is cloned next to this repository, i.e. `../conan-center-index`):
+
+```bash
+./scripts/test-conan-recipe.sh 1.0.3              # build + test package
+./scripts/test-conan-recipe.sh 1.0.3 -b missing   # also build missing deps (first run)
+```
+
+This runs `conan create` on the recipe — no InfluxDB needed, since the test package only checks line-protocol formatting.
+
 **Using docker compose directly:**
 
 ```bash
