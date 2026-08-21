@@ -1,6 +1,6 @@
 # influxdb-cpp-rest
 
-[![CI](https://github.com/d-led/influxdb-cpp-rest/workflows/CI/badge.svg)](https://github.com/d-led/influxdb-cpp-rest/actions)
+[![CI](https://github.com/d-led/influxdb-cpp-rest/workflows/CI/badge.svg)](https://github.com/d-led/influxdb-cpp-rest/actions) [![Conan Center](https://img.shields.io/conan/v/influxdb-cpp-rest)](https://conan.io/center/recipes/influxdb-cpp-rest)
 
 A modern C++20 [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) client via [C++ REST SDK](https://github.com/Microsoft/cpprestsdk) + a C wrapper of the asynchronous API as a shared library.
 
